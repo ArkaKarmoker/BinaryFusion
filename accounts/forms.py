@@ -1,0 +1,106 @@
+from django import forms
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from .models import Profile, PaymentHistory  # Add PaymentHistory import
+
+# Input widget attributes
+INPUT_FIELD_ATTRS = {
+    'class': 'input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+}
+
+# Custom registration form
+class RegistrationForm(forms.Form):
+    first_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Last Name'}))
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Username'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Password'}))
+    password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Confirm Password'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise ValidationError("Passwords do not match.")
+        return cleaned_data
+
+# Form for editing user profile
+class EditProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Last Name'}))
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Username'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Email'}))
+    
+    class Meta:
+        model = Profile
+        fields = ['telegram', 'phone']
+        widgets = {
+            'telegram': forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Telegram'}),
+            'phone': forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Phone'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['username'].initial = self.user.username
+            self.fields['email'].initial = self.user.email
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if username != self.user.username and User.objects.filter(username=username).exists():
+            raise ValidationError("Username already exists.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if email != self.user.email and User.objects.filter(email=email).exists():
+            raise ValidationError("Email already exists.")
+        return email
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            # Update User model fields
+            self.user.first_name = self.cleaned_data['first_name']
+            self.user.last_name = self.cleaned_data['last_name']
+            self.user.username = self.cleaned_data['username']
+            self.user.email = self.cleaned_data['email']
+            self.user.save()
+            profile.save()
+        return profile
+
+# Form for changing password
+class ChangePasswordForm(forms.Form):
+    current_password = forms.CharField(widget=forms.PasswordInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Current Password'}))
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'New Password'}))
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Confirm New Password'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_new_password = cleaned_data.get('confirm_new_password')
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            raise ValidationError("New passwords do not match.")
+        return cleaned_data
+
+# Form for depositing USDT
+class DepositForm(forms.Form):
+    transaction_id = forms.CharField(max_length=100, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Binance Order ID'}))
+    payment_note = forms.CharField(widget=forms.Textarea(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Payment Note (Optional)', 'rows': 4}), required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_transaction_id(self):
+        transaction_id = self.cleaned_data['transaction_id']
+        if not transaction_id:
+            raise ValidationError("Binance Order ID is required.")
+        # Check for duplicates per user
+        if self.user and PaymentHistory.objects.filter(user=self.user, transaction_id=transaction_id).exists():
+            raise ValidationError("This transaction ID has already been used in a previous deposit request.")
+        return transaction_id

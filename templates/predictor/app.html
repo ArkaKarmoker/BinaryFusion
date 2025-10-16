@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTradeVision - Predictor</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Custom styles for additional flair */
+        .light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .dark-mode {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            max-width: 400px; /* Smaller card size */
+        }
+        
+        .light-mode .card {
+            background: white;
+            color: #2d3748;
+        }
+        
+        .dark-mode .card {
+            background: #2d3748;
+            color: #f7fafc;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            border-bottom: 2px solid #4a90e2;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+        
+        .light-mode .section-title {
+            color: #2d3748;
+        }
+        
+        .dark-mode .section-title {
+            color: #e2e8f0;
+        }
+        
+        .graph-container img {
+            border-radius: 8px;
+            width: 100%; /* Ensure chart scales to card width */
+            cursor: pointer; /* Add cursor pointer for clickable image */
+        }
+        
+        .light-mode .graph-container img {
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dark-mode .graph-container img {
+            border: 1px solid #718096;
+        }
+        
+        .error-message {
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .light-mode .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .dark-mode .error-message {
+            background: #742a2a;
+            color: #fed7d7;
+        }
+        
+        pre {
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        
+        .light-mode pre {
+            background: #f7fafc;
+            color: #2d3748;
+        }
+        
+        .dark-mode pre {
+            background: #4a5568;
+            color: #e2e8f0;
+        }
+        
+        /* Toggle button styles */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        /* Spinner styles */
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Countdown timer styles */
+        .countdown {
+            display: none;
+            margin-left: 10px;
+            font-size: 0.9rem;
+            color: #ffffff;
+        }
+
+        /* Optimized input field for dark mode */
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        .light-mode .input-field {
+            background-color: #ffffff;
+            color: #2d3748;
+            border-color: #e2e8f0;
+        }
+        .dark-mode .input-field {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #718096;
+        }
+        .input-field:focus {
+            ring-color: #4a90e2;
+        }
+
+        /* Background animation styles */
+        .trading-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .candle {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            background: #4a90e2;
+            opacity: 0.6;
+            transition: height 1s ease-in-out;
+        }
+
+        .light-mode .candle {
+            background: #4a90e2;
+        }
+
+        .dark-mode .candle {
+            background: #63b3ed;
+        }
+
+        .candle.wick {
+            width: 2px;
+            background: #2d3748;
+            position: absolute;
+            left: 3px;
+        }
+
+        .light-mode .candle.wick {
+            background: #2d3748;
+        }
+
+        .dark-mode .candle.wick {
+            background: #e2e8f0;
+        }
+
+        /* Center cards side by side */
+        .results-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem; /* Add space for buttons */
+        }
+
+        /* Button container styles - now positioned below results */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        /* Modal styles for enlarged image */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Tooltip styles for Martingale info */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .light-mode .tooltip .tooltiptext {
+            background-color: #4a5568;
+        }
+
+        .dark-mode .tooltip .tooltiptext {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
+    <!-- Trading Background Animation -->
+    <canvas id="tradingCanvas" class="trading-animation"></canvas>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
+        <span class="light-icon">🌙</span>
+        <span class="dark-icon hidden">☀️</span>
+    </button>
+
+    <!-- Modal for Enlarged Image -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="enlargedImage">
+    </div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold">📊 FinTradeVision</h1>
+                <p class="text-lg mt-1"><i>AI Powered Trading Signal</i></p>
+            </div>
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white">🎉 Welcome, {{ user.username }}!</span>
+                    <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base" target="_blank"><i class="fa fa-dashboard"> Dashboard</i></a>
+                    <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-blue-500 hover:underline text-base">Login</a>
+                    <a href="{% url 'register' %}" class="text-blue-500 hover:underline text-base">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Form Section -->
+        <section class="mb-8">
+            <div class="card p-6 max-w-md mx-auto">
+                <h2 class="text-xl section-title mb-4 w-full text-center">Enter Trading Asset</h2>
+                <form id="predict-form" class="flex space-x-4" onsubmit="submitPrediction(event)">
+                    {% csrf_token %}
+                    <input type="text" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
+                           class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center">
+                        Predict
+                        <span id="loading-spinner" class="spinner"></span>
+                        <span id="countdown-timer" class="countdown"></span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <div id="results-wrapper" class="hidden">
+            <section id="results-section" class="results-container">
+                <!-- Content will be dynamically inserted here -->
+            </section>
+            <!-- Button Container - now inside results wrapper -->
+            <div id="button-container" class="button-container">
+                <button onclick="sendToTelegram()" class="bg-transparent hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                    <i class="fa fa-telegram"> Send to Telegram</i>
+                </button>
+                <button onclick="closeResults()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                    <i class="fa fa-close"> Close</i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 FinTradeVision. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Theme Toggling, AJAX, Background Animation, and Modal -->
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.getElementById('body');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.getElementById('body');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+
+            if (savedTheme === 'dark') {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+
+            // Initialize trading animation
+            initTradingAnimation();
+        });
+
+        // Trading Background Animation
+        function initTradingAnimation() {
+            const canvas = document.getElementById('tradingCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+
+            const candles = [];
+            const candleCount = Math.floor(window.innerWidth / 20); // Space candles 20px apart
+            const maxHeight = window.innerHeight * 0.3; // Max candle height
+            const minHeight = 20; // Min candle height
+
+            // Initialize candles
+            for (let i = 0; i < candleCount; i++) {
+                candles.push({
+                    x: i * 20,
+                    height: minHeight + Math.random() * (maxHeight - minHeight),
+                    direction: Math.random() > 0.5 ? 1 : -1,
+                    speed: 0.5 + Math.random() * 0.5,
+                    wickHeight: 10 + Math.random() * 20
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                candles.forEach(candle => {
+                    // Update candle height
+                    candle.height += candle.direction * candle.speed;
+                    if (candle.height > maxHeight || candle.height < minHeight) {
+                        candle.direction *= -1; // Reverse direction
+                    }
+
+                    // Draw candle body
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#63b3ed' : '#4a90e2';
+                    ctx.fillRect(candle.x, canvas.height - candle.height, 8, candle.height);
+
+                    // Draw wick
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#2d3748';
+                    ctx.fillRect(candle.x + 3, canvas.height - candle.height - candle.wickHeight, 2, candle.wickHeight);
+                    ctx.fillRect(candle.x + 3, canvas.height, 2, candle.wickHeight);
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            animate();
+        }
+
+        // Modal Functionality
+        function openModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('enlargedImage');
+            modal.style.display = 'flex';
+            modalImg.src = src;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // AJAX Prediction Submission with Countdown
+        function submitPrediction(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('predict-form');
+            const symbol = document.getElementById('symbol').value;
+            const spinner = document.getElementById('loading-spinner');
+            const countdownTimer = document.getElementById('countdown-timer');
+            const resultsWrapper = document.getElementById('results-wrapper');
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            // Show spinner, countdown, and disable button
+            spinner.style.display = 'inline-block';
+            countdownTimer.style.display = 'inline-block';
+            form.querySelector('button').disabled = true;
+            resultsWrapper.classList.add('hidden'); // Hide previous results
+
+            // Start countdown from 5 seconds
+            let timeLeft = 5;
+            countdownTimer.textContent = `${timeLeft}s`;
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft >= 0) {
+                    countdownTimer.textContent = `${timeLeft}s`;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownTimer.style.display = 'none';
+                }
+            }, 1000);
+
+            // Fetch prediction
+            fetch('/app/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `symbol=${encodeURIComponent(symbol)}&csrfmiddlewaretoken=${encodeURIComponent(csrfToken)}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Expect JSON response from server
+            })
+            .then(data => {
+                // Stop countdown and hide spinner/countdown
+                clearInterval(countdownInterval);
+                spinner.style.display = 'none';
+                countdownTimer.style.display = 'none';
+                form.querySelector('button').disabled = false;
+
+                // Update results section
+                const resultsSection = document.getElementById('results-section');
+                resultsSection.innerHTML = renderResults(data);
+                resultsWrapper.classList.remove('hidden'); // Show results and buttons
+
+                // Add click event to the candlestick chart image
+                const chartImage = document.querySelector('.graph-container img');
+                if (chartImage) {
+                    chartImage.addEventListener('click', () => openModal(chartImage.src));
+                }
+            })
+            .catch(error => {
+                // Handle errors
+                clearInterval(countdownInterval);
+                spinner.style.display = 'none';
+                countdownTimer.style.display = 'none';
+                form.querySelector('button').disabled = false;
+                
+                const resultsSection = document.getElementById('results-section');
+                resultsSection.innerHTML = `
+                    <div class="card p-6 error-message">
+                        <h3 class="text-lg font-semibold">Error</h3>
+                        <p>Failed to fetch prediction: ${error.message}</p>
+                    </div>`;
+                resultsWrapper.classList.remove('hidden'); // Show error and buttons
+            });
+        }
+
+        // Function to render results dynamically
+        function renderResults(result) {
+            if (result.error) {
+                return `
+                    <div class="card p-6 error-message">
+                        <h3 class="text-lg font-semibold">Error</h3>
+                        <p>${result.error}</p>
+                    </div>`;
+            }
+
+            // Determine the signal direction and filter indicators
+            let signalType = result.direction.includes("UP") ? "Bullish" : result.direction.includes("DOWN") ? "Bearish" : null;
+            let indicatorContent = '';
+
+            if (signalType && result.indicator_signals && result.indicator_values) {
+                // Filter indicators that match the signal direction
+                const contributingIndicators = Object.keys(result.indicator_signals).filter(indicator => 
+                    result.indicator_signals[indicator].includes(signalType)
+                );
+
+                // Generate content for contributing indicators only
+                indicatorContent = '<ul class="list-disc pl-5 space-y-2">';
+                contributingIndicators.forEach(indicator => {
+                    if (indicator === 'RSI') {
+                        indicatorContent += `<li><span class="font-semibold">RSI:</span> ${result.indicator_values.RSI.toFixed(2)} (${result.indicator_signals.RSI})</li>`;
+                    } else if (indicator === 'MACD') {
+                        indicatorContent += `<li><span class="font-semibold">MACD:</span> ${result.indicator_values.MACD.toFixed(4)} vs Signal: ${result.indicator_values.MACD_Signal.toFixed(4)} (${result.indicator_signals.MACD})</li>`;
+                    } else if (indicator === 'Bollinger Bands') {
+                        indicatorContent += `<li><span class="font-semibold">Bollinger Bands:</span> Upper: ${result.indicator_values.BB_Upper.toFixed(4)}, Middle: ${result.indicator_values.BB_Middle.toFixed(4)}, Lower: ${result.indicator_values.BB_Lower.toFixed(4)} (${result.indicator_signals['Bollinger Bands']})</li>`;
+                    } else if (indicator === 'ADX') {
+                        indicatorContent += `<li><span class="font-semibold">ADX:</span> ${result.indicator_values.ADX.toFixed(2)}, +DI: ${result.indicator_values.Plus_DI.toFixed(2)}, -DI: ${result.indicator_values.Minus_DI.toFixed(2)} (${result.indicator_signals.ADX})</li>`;
+                    } else if (indicator === 'Stochastic') {
+                        indicatorContent += `<li><span class="font-semibold">Stochastic:</span> %K: ${result.indicator_values.Stochastic_K.toFixed(2)}, %D: ${result.indicator_values.Stochastic_D.toFixed(2)} (${result.indicator_signals.Stochastic})</li>`;
+                    } else if (indicator === 'EMA') {
+                        indicatorContent += `<li><span class="font-semibold">EMA:</span> Fast: ${result.indicator_values.EMA_Fast.toFixed(4)}, Slow: ${result.indicator_values.EMA_Slow.toFixed(4)} (${result.indicator_signals.EMA})</li>`;
+                    } else if (indicator === 'ATR') {
+                        indicatorContent += `<li><span class="font-semibold">ATR:</span> ${result.indicator_values.ATR.toFixed(4)} (${result.indicator_signals.ATR})</li>`;
+                    } else if (indicator === 'Ichimoku Cloud') {
+                        indicatorContent += `<li><span class="font-semibold">Ichimoku Cloud:</span> Tenkan: ${result.indicator_values.Ichimoku_Tenkan.toFixed(4)}, Kijun: ${result.indicator_values.Ichimoku_Kijun.toFixed(4)}, Senkou A: ${result.indicator_values.Ichimoku_Senkou_A.toFixed(4)}, Senkou B: ${result.indicator_values.Ichimoku_Senkou_B.toFixed(4)}, Chikou: ${result.indicator_values.Ichimoku_Chikou ? result.indicator_values.Ichimoku_Chikou.toFixed(4) : 'N/A'} (${result.indicator_signals['Ichimoku Cloud']})</li>`;
+                    }
+                });
+                indicatorContent += '</ul>';
+
+                // If no indicators contributed to the signal, show a message
+                if (contributingIndicators.length === 0) {
+                    indicatorContent = '<p>No indicators contributed to the signal.</p>';
+                }
+            } else {
+                indicatorContent = '<p>No clear signal direction available.</p>';
+            }
+
+            return `
+                <!-- Generated Signal Card -->
+                <div class="card p-6">
+                    <h2 class="text-2xl section-title mb-4">⚡ Generated Signal</h2>
+                    <div class="space-y-3">
+                        <p><span class="font-semibold">💰 Asset:</span> ${result.symbol}</p>
+                        <p><span class="font-semibold">🚀 Signal:</span> ${result.direction}</p>
+                        <p><span class="font-semibold">🎯 Accuracy:</span> ${result.accuracy}%</p>
+                        <p><span class="font-semibold">⏳ Timeframe:</span> M5</p>
+                        <p><span class="font-semibold">⏰ Impact Time:</span> ${result.impact_time}</p>
+                        <p><span class="font-semibold"><i>Use 1 Step Martingale if loss.</i> <span class="tooltip"><i class="fa fa-info-circle"></i><span class="tooltiptext">1-Step Martingale: Double your position size after a loss to recover the loss with the next trade, then revert to the original size. Use cautiously due to high risk.</span></span></p>
+                    </div>
+                </div>
+                <!-- Candlestick Chart Card -->
+                <div class="card p-6">
+                    <h3 class="text-xl section-title mb-4">📊 Candlestick Chart (M5)</h3>
+                    <div class="graph-container">
+                        <img src="data:image/png;base64,${result.candlestick_plot}" alt="Candlestick Chart">
+                    </div>
+                </div>
+                <!-- Technical Indicators Card -->
+                <div class="card p-6">
+                    <h3 class="text-xl section-title mb-4">⚖ Technical Indicators</h3>
+                    ${indicatorContent}
+                </div>`;
+        }
+
+        // Send to Telegram (inactive for now)
+        function sendToTelegram() {
+            // Placeholder for Telegram functionality
+            alert('Send to Telegram functionality is not implemented yet.');
+        }
+
+        // Close Results and Refresh Page
+        function closeResults() {
+            document.getElementById('results-wrapper').classList.add('hidden');
+            document.getElementById('symbol').value = ''; // Clear the input field
+        }
+    </script>
+</body>
+</html>

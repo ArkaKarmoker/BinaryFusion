@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FinTradeVision</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
+
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Custom styles matching app.html */
+        .light-mode {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .dark-mode {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        
+        .login-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            max-width: 400px;
+        }
+        
+        .light-mode .login-card {
+            background: white;
+            color: #2d3748;
+        }
+        
+        .dark-mode .login-card {
+            background: #2d3748;
+            color: #f7fafc;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            border-bottom: 2px solid #4a90e2;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+        
+        .light-mode .section-title {
+            color: #2d3748;
+        }
+        
+        .dark-mode .section-title {
+            color: #e2e8f0;
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .light-mode .input-field {
+            background-color: #ffffff;
+            color: #2d3748;
+            border-color: #e2e8f0;
+        }
+        
+        .dark-mode .input-field {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #718096;
+        }
+        
+        /* .input-field:focus {
+            ring-color: #4a90e2;
+        } */
+
+        .input-field:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #4a90e2;
+        }
+        
+        .login-button {
+            transition: all 0.3s ease;
+        }
+        
+        .message {
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .light-mode .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .dark-mode .error-message {
+            background: #742a2a;
+            color: #fed7d7;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .light-mode .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+        
+        .dark-mode .success-message {
+            background: #22543d;
+            color: #c6f6d5;
+            border-left: 4px solid #38a169;
+        }
+
+        /* Trading Background Animation */
+        .trading-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
+    <!-- Trading Background Animation -->
+    <canvas id="tradingCanvas" class="trading-animation"></canvas>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
+        <span class="light-icon">🌙</span>
+        <span class="dark-icon hidden">☀️</span>
+    </button>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl font-bold">📊 FinTradeVision</h1>
+            <p class="text-lg mt-1">Login to Access Asset Price Predictor</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="login-card p-8 w-full max-w-md">
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <p class="message {% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm font-medium">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- <h2 class="text-xl section-title mb-6">🔒 Account Login</h2> -->
+            <div class="flex justify-center">
+                <h2 class="text-xl section-title mb-6">🔒 Account Login</h2>
+            </div>
+            
+            <form method="POST" action="{% url 'login' %}" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                    <input id="username" name="username" type="text" 
+                           class="input-field w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           placeholder="Enter your username" required>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium mb-1">Password</label>
+                    <input id="password" name="password" type="password" 
+                           class="input-field w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" 
+                        class="login-button w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                    <i class="fa fa-sign-in"></i> Login
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm">
+                <p>Don't have an account? 
+                    <a href="{% url 'register' %}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                        <i class="fa fa-user-plus"></i> Register
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 FinTradeVision. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Theme Toggling and Background Animation -->
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.getElementById('body');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.getElementById('body');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+
+            if (savedTheme === 'dark') {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+
+            // Initialize trading animation
+            initTradingAnimation();
+        });
+
+        // Trading Background Animation
+        function initTradingAnimation() {
+            const canvas = document.getElementById('tradingCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+
+            const candles = [];
+            const candleCount = Math.floor(window.innerWidth / 20);
+            const maxHeight = window.innerHeight * 0.3;
+            const minHeight = 20;
+
+            // Initialize candles
+            for (let i = 0; i < candleCount; i++) {
+                candles.push({
+                    x: i * 20,
+                    height: minHeight + Math.random() * (maxHeight - minHeight),
+                    direction: Math.random() > 0.5 ? 1 : -1,
+                    speed: 0.5 + Math.random() * 0.5,
+                    wickHeight: 10 + Math.random() * 20
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                candles.forEach(candle => {
+                    // Update candle height
+                    candle.height += candle.direction * candle.speed;
+                    if (candle.height > maxHeight || candle.height < minHeight) {
+                        candle.direction *= -1;
+                    }
+
+                    // Draw candle body
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#63b3ed' : '#4a90e2';
+                    ctx.fillRect(candle.x, canvas.height - candle.height, 8, candle.height);
+
+                    // Draw wick
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#2d3748';
+                    ctx.fillRect(candle.x + 3, canvas.height - candle.height - candle.wickHeight, 2, candle.wickHeight);
+                    ctx.fillRect(candle.x + 3, canvas.height, 2, candle.wickHeight);
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            animate();
+        }
+    </script>
+</body>
+</html>
