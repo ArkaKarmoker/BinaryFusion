@@ -714,6 +714,16 @@
                             <p class="text-sm font-medium opacity-75">Expiry Date</p>
                             <p class="text-lg" id="subscription-expiry-date">{% if user.profile.subscription_end_date %}{{ user.profile.subscription_end_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
                         </div>
+                        <div>
+                            <p class="text-sm font-medium opacity-75">Remaining Tokens</p>
+                            <p class="text-lg" id="remaining-tokens-value">{{ tokens }} / {{ max_tokens }}</p>
+                        </div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-2" id="token-bar-container">
+                            <div class="h-2 rounded-full" id="token-bar"></div>
+                        </div>
+                        <div>
+                            <button onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1448,6 +1458,25 @@
             const tabButton = document.querySelector(`.tab-button[onclick="openTab(event, '${activeTab}')"]`);
             if (tabButton) {
                 tabButton.click();
+            }
+
+            // Initialize token bar
+            const remainingTokensElement = document.getElementById('remaining-tokens-value');
+            if (remainingTokensElement) {
+                const remainingTokens = {{ tokens }};
+                const maxTokens = {{ max_tokens }};
+                const percentage = (remainingTokens / maxTokens) * 100;
+                const tokenBar = document.getElementById('token-bar');
+                tokenBar.style.width = `${percentage}%`;
+                let color;
+                if (remainingTokens / maxTokens > 0.66) {
+                    color = '#22c55e'; // green for high
+                } else if (remainingTokens / maxTokens > 0.33) {
+                    color = '#eab308'; // yellow for medium
+                } else {
+                    color = '#ef4444'; // red for low
+                }
+                tokenBar.style.backgroundColor = color;
             }
         });
 

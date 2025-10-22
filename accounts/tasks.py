@@ -6,6 +6,7 @@ from .models import Profile  # Import your Profile model
 def check_expired_subscriptions():
     """
     Checks for expired premium subscriptions and downgrades them to free.
+    Resets tokens for free users to their default allocation.
     Runs daily at the scheduled time.
     """
     now = timezone.now()
@@ -17,6 +18,8 @@ def check_expired_subscriptions():
         profile.subscription = 'free'
         profile.subscription_start_date = None  # Optional: Clear dates
         profile.subscription_end_date = None    # Optional: Clear dates
+        profile.tokens = 5                      # Reset to default free tier tokens
+        profile.max_tokens = 5                  # Set max tokens for free tier
         profile.save()
     print(f"Checked subscriptions at {now}. Downgraded {expired_profiles.count()} users.")  # For logging/debug
 
@@ -29,13 +32,12 @@ def start_scheduler():
 
     scheduler.add_job(
         check_expired_subscriptions,
-        trigger=CronTrigger(hour=00, minute=00),
+        trigger=CronTrigger(hour=21, minute=33),
         id='check_subscriptions',  # Unique ID for the job
         replace_existing=True      # Overwrite if already exists (handles restarts)
     )
     scheduler.start()
     print("Scheduler started for daily subscription checks.")
-
 
 """
 Drawbacks/Notes: In dev, if you restart the server, 
@@ -43,5 +45,4 @@ the scheduler restarts (potential duplicate runs,
 but idempotent checks in your task prevent issues). 
 For production, add persistence (e.g., via database job store), 
 but that's future-proofing.
-
 """

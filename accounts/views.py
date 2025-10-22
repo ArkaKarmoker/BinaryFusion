@@ -29,7 +29,7 @@ def register(request):
                 user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
                 user.save()
                 # Create a Profile instance for the new user
-                Profile.objects.create(user=user)
+                Profile.objects.create(user=user, tokens=10, max_tokens=10)
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('login')
         else:
@@ -61,7 +61,7 @@ def dashboard(request):
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
-        profile = Profile.objects.create(user=request.user)
+        profile = Profile.objects.create(user=request.user, tokens=10, max_tokens=10)
     
     # Initialize forms to avoid UnboundLocalError
     form = EditProfileForm(instance=profile, user=request.user)
@@ -185,13 +185,13 @@ def dashboard(request):
                 messages.error(request, 'Please correct the errors below.', extra_tags='deposit')
         elif 'subscribe' in request.POST:
             # Handle subscription request
-            if profile.subscription == 'premium':
+            if profile.subscription == 'premium' and profile.subscription_end_date > timezone.now() and profile.tokens > 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
                         'status': 'error',
-                        'message': 'You are already subscribed to Premium.'
+                        'message': 'You are already subscribed to Premium with active tokens.'
                     })
-                messages.error(request, 'You are already subscribed to Premium.', extra_tags='subscription')
+                messages.error(request, 'You are already subscribed to Premium with active tokens.', extra_tags='subscription')
             else:
                 # Get subscription price
                 subscription_price = subscription_settings.effective_price if subscription_settings else 5.00
@@ -213,12 +213,14 @@ def dashboard(request):
                         payment_method='Balance',
                         transaction_id=f'SUB-{request.user.id}-{int(timezone.now().timestamp())}',
                         status='successful',
-                        payment_note='Premium subscription purchase'
+                        payment_note='Premium subscription purchase - Assigned 3000 tokens'
                     )
-                    # Update subscription status and dates
+                    # Update subscription status, dates, and tokens
                     profile.subscription = 'premium'
                     profile.subscription_start_date = timezone.now()
                     profile.subscription_end_date = timezone.now() + timedelta(days=30)
+                    profile.tokens = 3000  # Assign or refill 3000 tokens
+                    profile.max_tokens = 3000
                     profile.save()
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                         return JsonResponse({
@@ -226,6 +228,8 @@ def dashboard(request):
                             'message': 'Successfully subscribed to Premium!',
                             'balance': str(profile.balance),
                             'subscription': 'Premium',
+                            'tokens': profile.tokens,
+                            'max_tokens': profile.max_tokens,
                             'subscription_end_date': profile.subscription_end_date.astimezone(pytz.timezone('Asia/Dhaka')).strftime('%B %d, %Y')
                         })
                     messages.success(request, 'Successfully subscribed to Premium!', extra_tags='subscription')
@@ -299,6 +303,8 @@ def dashboard(request):
         'prediction_percentage': round(prediction_percentage, 1),
         'ranking_percentage': round(ranking_percentage, 1),
         'balance': profile.balance,
+        'tokens': profile.tokens,
+        'max_tokens': profile.max_tokens,
         'effective_price': effective_price,
         'regular_price': regular_price,
         'is_discounted': is_discounted

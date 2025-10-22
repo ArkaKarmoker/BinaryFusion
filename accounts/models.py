@@ -17,9 +17,19 @@ class Profile(models.Model):
     subscription = models.CharField(max_length=10, choices=SUBSCRIPTION_CHOICES, default='free')
     subscription_start_date = models.DateTimeField(blank=True, null=True)
     subscription_end_date = models.DateTimeField(blank=True, null=True)
+    tokens = models.IntegerField(default=0, help_text="User's available tokens")
+    max_tokens = models.IntegerField(default=10, help_text="Maximum tokens allowed based on subscription")
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+    def save(self, *args, **kwargs):
+        # Ensure max_tokens is set based on subscription type
+        if self.subscription == 'free':
+            self.max_tokens = 10
+        elif self.subscription == 'premium':
+            self.max_tokens = 3000
+        super().save(*args, **kwargs)
 
 
 class PaymentHistory(models.Model):
@@ -94,6 +104,7 @@ def post_save_payment(sender, instance, created, **kwargs):
                 return
             profile.balance -= amount
         profile.save()
+
 
 # New model for subscription settings
 class SubscriptionSettings(models.Model):
