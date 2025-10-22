@@ -1055,6 +1055,20 @@
                         document.getElementById('subscription-status-user').textContent = response.subscription;
                         document.getElementById('subscription-expiry-user').textContent = 'Expires on: ' + response.subscription_end_date;
 
+                        // Update tokens
+                        document.getElementById('remaining-tokens-value').textContent = response.tokens + ' / ' + response.max_tokens;
+                        const percentage = (response.tokens / response.max_tokens) * 100;
+                        document.getElementById('token-bar').style.width = `${percentage}%`;
+                        let color;
+                        if (response.tokens / response.max_tokens > 0.66) {
+                            color = '#22c55e'; // green for high
+                        } else if (response.tokens / response.max_tokens > 0.33) {
+                            color = '#eab308'; // yellow for medium
+                        } else {
+                            color = '#ef4444'; // red for low
+                        }
+                        document.getElementById('token-bar').style.backgroundColor = color;
+
                         closeSubscriptionModal();
                         setTimeout(() => {
                             successMessage.classList.add('fade-out');
