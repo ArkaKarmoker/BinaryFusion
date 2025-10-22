@@ -392,6 +392,20 @@
         </div>
     </div>
 
+    <!-- Modal for Renewal Confirmation -->
+    <div id="renewModal" class="modal" onclick="closeRenewModal(event)">
+        <span class="close-modal" onclick="closeRenewModal()">&times;</span>
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full" onclick="event.stopPropagation();">
+            <h2 class="text-xl font-bold mb-4">Confirm Premium Renewal</h2>
+            <p class="mb-4">Are you sure you want to renew your Premium plan? <strong>{{ effective_price }} USDT</strong> will be deducted from your balance. This will reset your tokens to 3000/3000 and extend your subscription by 30 days from now.</p>
+            <p class="mb-4">Current Balance: <strong><span id="modal-current-balance-renew">{{ balance }} USDT</span></strong></p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeRenewModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200">Cancel</button>
+                <button onclick="renew()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">Renew</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
         <div class="container mx-auto px-4 flex items-center justify-between">
@@ -722,7 +736,11 @@
                             <div class="h-2 rounded-full" id="token-bar"></div>
                         </div>
                         <div>
-                            <button onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
+                            {% if user.profile.subscription == 'premium' %}
+                            <button onclick="openRenewModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
+                            {% else %}
+                            <button onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Subscribe to Premium</button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -1048,7 +1066,7 @@
                         // Update premium plan button to "Current Plan"
                         document.querySelector('#premium-plan-button').outerHTML = '<button class="mt-6 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-lg" id="premium-plan-button">Current Plan</button>';
 
-                        // Update free plan button to "Basic"
+                        // Update free plan button to "Previous Plan"
                         document.querySelector('#free-plan-button').textContent = 'Previous Plan';
 
                         // Update subscription status in user profile tab
@@ -1092,6 +1110,100 @@
                     errorMessage.innerHTML = `<span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
                     messagesContainer.appendChild(errorMessage);
                     closeSubscriptionModal();
+                    setTimeout(() => {
+                        errorMessage.classList.add('fade-out');
+                        setTimeout(() => errorMessage.remove(), 500);
+                    }, 5000);
+                }
+            });
+        }
+
+        // Renewal Modal Functionality
+        function openRenewModal() {
+            document.getElementById('renewModal').style.display = 'flex';
+        }
+
+        function closeRenewModal(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('renewModal').style.display = 'none';
+        }
+
+        function renew() {
+            const messagesContainer = document.getElementById('subscription-messages');
+            messagesContainer.innerHTML = ''; // Clear previous messages
+            const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            $.ajax({
+                url: '{% url "dashboard" %}',
+                type: 'POST',
+                data: { renew: 'renew', csrfmiddlewaretoken: csrftoken },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        const successMessage = document.createElement('div');
+                        successMessage.className = 'message p-2 bg-green-500 text-white rounded flex justify-between items-center';
+                        successMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
+                        messagesContainer.appendChild(successMessage);
+
+                        // Update balance
+                        document.getElementById('usdt-balance').textContent = response.balance + ' USDT';
+                        document.getElementById('modal-current-balance-renew').textContent = response.balance + ' USDT';
+                        document.getElementById('profile-balance').textContent = response.balance + ' USDT';
+
+                        // Update subscription status (though it remains 'Premium')
+                        document.getElementById('subscription-status').textContent = response.subscription;
+
+                        // Update start date to current date
+                        let today = new Date();
+                        let month = today.toLocaleString('default', { month: 'long' });
+                        let day = today.getDate();
+                        let year = today.getFullYear();
+                        let startDate = `${month} ${day}, ${year}`;
+                        document.getElementById('subscription-start-date').textContent = startDate;
+
+                        // Update expiry date
+                        document.getElementById('subscription-expiry-date').textContent = response.subscription_end_date;
+
+                        // Update subscription status in user profile tab
+                        document.getElementById('subscription-status-user').textContent = response.subscription;
+                        document.getElementById('subscription-expiry-user').textContent = 'Expires on: ' + response.subscription_end_date;
+
+                        // Update tokens
+                        document.getElementById('remaining-tokens-value').textContent = response.tokens + ' / ' + response.max_tokens;
+                        const percentage = (response.tokens / response.max_tokens) * 100;
+                        document.getElementById('token-bar').style.width = `${percentage}%`;
+                        let color;
+                        if (response.tokens / response.max_tokens > 0.66) {
+                            color = '#22c55e'; // green for high
+                        } else if (response.tokens / response.max_tokens > 0.33) {
+                            color = '#eab308'; // yellow for medium
+                        } else {
+                            color = '#ef4444'; // red for low
+                        }
+                        document.getElementById('token-bar').style.backgroundColor = color;
+
+                        closeRenewModal();
+                        setTimeout(() => {
+                            successMessage.classList.add('fade-out');
+                            setTimeout(() => successMessage.remove(), 500);
+                        }, 5000);
+                    } else {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
+                        errorMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
+                        messagesContainer.appendChild(errorMessage);
+                        closeRenewModal();
+                        setTimeout(() => {
+                            errorMessage.classList.add('fade-out');
+                            setTimeout(() => errorMessage.remove(), 500);
+                        }, 5000);
+                    }
+                },
+                error: function() {
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
+                    errorMessage.innerHTML = `<span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
+                    messagesContainer.appendChild(errorMessage);
+                    closeRenewModal();
                     setTimeout(() => {
                         errorMessage.classList.add('fade-out');
                         setTimeout(() => errorMessage.remove(), 500);

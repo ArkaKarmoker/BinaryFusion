@@ -233,6 +233,61 @@ def dashboard(request):
                             'subscription_end_date': profile.subscription_end_date.astimezone(pytz.timezone('Asia/Dhaka')).strftime('%B %d, %Y')
                         })
                     messages.success(request, 'Successfully subscribed to Premium!', extra_tags='subscription')
+        elif 'renew' in request.POST:
+            if profile.subscription != 'premium':
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Only premium users can renew. Please subscribe first.'
+                    })
+                messages.error(request, 'Only premium users can renew. Please subscribe first.', extra_tags='subscription')
+            elif profile.tokens >= profile.max_tokens:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Your tokens are already full. No need to renew now.'
+                    })
+                messages.error(request, 'Your tokens are already full. No need to renew now.', extra_tags='subscription')
+            else:
+                # Get subscription price
+                subscription_price = subscription_settings.effective_price if subscription_settings else 5.00
+                # Check balance
+                if profile.balance < subscription_price:
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': f'Insufficient balance. You need {subscription_price} USDT.'
+                        })
+                    messages.error(request, f'Insufficient balance. You need {subscription_price} USDT.', extra_tags='subscription')
+                else:
+                    # Create payment history entry
+                    payment = PaymentHistory.objects.create(
+                        user=request.user,
+                        payment_type='subscription',
+                        currency='USDT',
+                        amount=subscription_price,
+                        payment_method='Balance',
+                        transaction_id=f'RENEW-{request.user.id}-{int(timezone.now().timestamp())}',
+                        status='successful',
+                        payment_note='Premium subscription renewal - Reset to 3000 tokens'
+                    )
+                    # Update subscription dates and reset tokens
+                    profile.subscription_start_date = timezone.now()
+                    profile.subscription_end_date = timezone.now() + timedelta(days=30)
+                    profile.tokens = 3000  # Reset to 3000 tokens
+                    profile.max_tokens = 3000
+                    profile.save()
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'status': 'success',
+                            'message': 'Successfully renewed Premium subscription!',
+                            'balance': str(profile.balance),
+                            'subscription': 'Premium',
+                            'tokens': profile.tokens,
+                            'max_tokens': profile.max_tokens,
+                            'subscription_end_date': profile.subscription_end_date.astimezone(pytz.timezone('Asia/Dhaka')).strftime('%B %d, %Y')
+                        })
+                    messages.success(request, 'Successfully renewed Premium subscription!', extra_tags='subscription')
 
     # Get current time in UTC+6
     utc6_tz = pytz.timezone('Asia/Dhaka')  # UTC+6
