@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm
+from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm, SettingsForm
 from .models import Profile, PaymentHistory, SubscriptionSettings
 from predictor.models import Prediction
 from django.utils import timezone
@@ -67,6 +67,7 @@ def dashboard(request):
     form = EditProfileForm(instance=profile, user=request.user)
     change_password_form = ChangePasswordForm()
     deposit_form = DepositForm(user=request.user)  # Pass user to DepositForm
+    settings_form = SettingsForm(instance=profile)
 
     # Fetch subscription price from SubscriptionSettings
     subscription_settings = SubscriptionSettings.objects.first()
@@ -288,6 +289,32 @@ def dashboard(request):
                             'subscription_end_date': profile.subscription_end_date.astimezone(pytz.timezone('Asia/Dhaka')).strftime('%B %d, %Y')
                         })
                     messages.success(request, 'Successfully renewed Premium subscription!', extra_tags='subscription')
+        elif 'save_settings' in request.POST:
+            settings_form = SettingsForm(request.POST, instance=profile)
+            if settings_form.is_valid():
+                settings_form.save()
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'Settings updated successfully.',
+                        'settings': {
+                            'timezone': profile.timezone,
+                            'theme_preference': profile.theme_preference,
+                            'auto_renew_subscription': profile.auto_renew_subscription,
+                            'auto_refill_tokens': profile.auto_refill_tokens,
+                            'email_notifications': profile.email_notifications,
+                            'push_notifications': profile.push_notifications,
+                        }
+                    })
+                messages.success(request, 'Settings updated successfully.')
+            else:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please correct the errors below.',
+                        'errors': settings_form.errors
+                    })
+                messages.error(request, 'Please correct the errors below.')
 
     # Get current time in UTC+6
     utc6_tz = pytz.timezone('Asia/Dhaka')  # UTC+6
@@ -351,6 +378,7 @@ def dashboard(request):
         'form': form,
         'change_password_form': change_password_form,
         'deposit_form': deposit_form,
+        'settings_form': settings_form,
         'predictions': prediction_data,
         'total_predictions_all_users': total_predictions_all_users,
         'total_predictions_user': total_predictions_user,

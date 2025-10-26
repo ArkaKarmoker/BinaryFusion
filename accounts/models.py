@@ -4,6 +4,21 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
+TIMEZONE_CHOICES = [
+    ('UTC', 'UTC'),
+    ('EST', 'Eastern Time (EST/EDT)'),
+    ('CST', 'Central Time (CST/CDT)'),
+    ('MST', 'Mountain Time (MST/MDT)'),
+    ('PST', 'Pacific Time (PST/PDT)'),
+    ('GMT', 'London (GMT/BST)'),
+    ('CET', 'Central European Time (CET/CEST)'),
+]
+
+THEME_CHOICES = [
+    ('system', 'System Default'),
+    ('light', 'Light Mode'),
+    ('dark', 'Dark Mode'),
+]
 
 class Profile(models.Model):
     SUBSCRIPTION_CHOICES = [
@@ -19,6 +34,12 @@ class Profile(models.Model):
     subscription_end_date = models.DateTimeField(blank=True, null=True)
     tokens = models.IntegerField(default=0, help_text="User's available tokens")
     max_tokens = models.IntegerField(default=10, help_text="Maximum tokens allowed based on subscription")
+    timezone = models.CharField(max_length=10, choices=TIMEZONE_CHOICES, default='EST')
+    theme_preference = models.CharField(max_length=10, choices=THEME_CHOICES, default='system')
+    auto_renew_subscription = models.BooleanField(default=False)
+    auto_refill_tokens = models.BooleanField(default=False)
+    email_notifications = models.BooleanField(default=True)
+    push_notifications = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

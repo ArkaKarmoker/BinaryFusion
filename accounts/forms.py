@@ -104,3 +104,17 @@ class DepositForm(forms.Form):
         if self.user and PaymentHistory.objects.filter(user=self.user, transaction_id=transaction_id).exists():
             raise ValidationError("This transaction ID has already been used in a previous deposit request.")
         return transaction_id
+
+# Form for user settings
+class SettingsForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['timezone', 'theme_preference', 'auto_renew_subscription', 'auto_refill_tokens', 'email_notifications', 'push_notifications']
+        widgets = {
+            'timezone': forms.Select(attrs=INPUT_FIELD_ATTRS),
+            'theme_preference': forms.Select(attrs=INPUT_FIELD_ATTRS),
+            'auto_renew_subscription': forms.CheckboxInput(),
+            'auto_refill_tokens': forms.CheckboxInput(),
+            'email_notifications': forms.CheckboxInput(),
+            'push_notifications': forms.CheckboxInput(),
+        }
