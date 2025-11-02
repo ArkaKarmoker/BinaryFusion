@@ -3,6 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 # import uuid  # Import for UUID generation
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from accounts.models import Profile
 
 def generate_signal_id():
     return 'PRED-' + timezone.now().strftime("%Y%m%d%H%M%S")
@@ -16,6 +19,18 @@ class Prediction(models.Model):
     # impact_time = models.DateField(default=timezone.now)
     impact_time = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk:  # If updating an existing instance, just save without token check/deduction
+            super().save(*args, **kwargs)
+            return
+        with transaction.atomic():  # Ensure atomicity for new predictions: check, save, deduct
+            profile = self.user.profile
+            if profile.tokens <= 0:
+                raise ValidationError('Insufficient tokens. Please upgrade your subscription or refill tokens.')
+            super().save(*args, **kwargs)
+            profile.tokens -= 1
+            profile.save()
 
     def __str__(self):
         return f"{self.signal_id} - {self.asset} - {self.direction} ({self.timeframe})" if self.signal_id else f"{self.asset} - {self.direction} ({self.timeframe})"

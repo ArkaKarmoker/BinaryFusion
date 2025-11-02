@@ -338,6 +338,7 @@
                         <span id="countdown-timer" class="countdown"></span>
                     </button>
                 </form>
+                <p class="text-sm text-center mt-4">Available Tokens: <span id="token-count">{{ initial_tokens }}</span> / <span id="max-tokens">{{ max_tokens }}</span></p>
             </div>
         </section>
 
@@ -530,6 +531,11 @@
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = renderResults(data);
                 resultsWrapper.classList.remove('hidden'); // Show results and buttons
+
+                // Update token count in real-time
+                if (data.current_tokens !== undefined) {
+                    document.getElementById('token-count').textContent = data.current_tokens;
+                }
 
                 // Add click event to the candlestick chart image
                 const chartImage = document.querySelector('.graph-container img');

@@ -41,13 +41,15 @@ def app(request):
                 prediction.save()
                 logger.info(f"Prediction saved for {symbol}, ID: {prediction.id}")
                 
+                result['current_tokens'] = request.user.profile.tokens
+                
                 return JsonResponse(result)
             except Exception as e:
                 logger.error(f"Prediction error: {str(e)}")
                 return JsonResponse({'error': str(e)})
         else:
             return JsonResponse({'error': 'No symbol provided'})
-    return render(request, 'predictor/app.html', {})
+    return render(request, 'predictor/app.html', {'initial_tokens': request.user.profile.tokens, 'max_tokens': request.user.profile.max_tokens})
 
 @csrf_exempt
 @login_required(login_url='login')
