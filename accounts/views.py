@@ -214,14 +214,14 @@ def dashboard(request):
                         payment_method='Balance',
                         transaction_id=f'SUB-{request.user.id}-{int(timezone.now().timestamp())}',
                         status='successful',
-                        payment_note='Premium subscription purchase - Assigned 3000 tokens'
+                        payment_note='Premium subscription purchase - Assigned 100 tokens'
                     )
                     # Update subscription status, dates, and tokens
                     profile.subscription = 'premium'
                     profile.subscription_start_date = timezone.now()
                     profile.subscription_end_date = timezone.now() + timedelta(days=30)
-                    profile.tokens = 3000  # Assign or refill 3000 tokens
-                    profile.max_tokens = 3000
+                    profile.tokens = 100  # Assign or refill 100 tokens
+                    profile.max_tokens = 100
                     profile.save()
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                         return JsonResponse({
@@ -270,13 +270,13 @@ def dashboard(request):
                         payment_method='Balance',
                         transaction_id=f'RENEW-{request.user.id}-{int(timezone.now().timestamp())}',
                         status='successful',
-                        payment_note='Premium subscription renewal - Reset to 3000 tokens'
+                        payment_note='Premium subscription renewal - Reset to 100 tokens'
                     )
                     # Update subscription dates and reset tokens
                     profile.subscription_start_date = timezone.now()
                     profile.subscription_end_date = timezone.now() + timedelta(days=30)
-                    profile.tokens = 3000  # Reset to 3000 tokens
-                    profile.max_tokens = 3000
+                    profile.tokens = 100  # Reset to 100 tokens
+                    profile.max_tokens = 100
                     profile.save()
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                         return JsonResponse({

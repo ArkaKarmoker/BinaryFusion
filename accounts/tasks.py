@@ -34,18 +34,30 @@ def check_expired_subscriptions():
                 )
                 profile.subscription_start_date = now
                 profile.subscription_end_date = now + timezone.timedelta(days=30)
-                profile.tokens = 3000  # Reset to premium tier tokens
-                profile.max_tokens = 3000  # Set max tokens for premium tier
+                profile.tokens = 100  # Reset to premium tier tokens
+                profile.max_tokens = 100  # Set max tokens for premium tier
                 profile.save()
             else:
+                # If auto-renew was enabled but failed, record the failure
+                if profile.auto_renew_subscription:
+                    PaymentHistory.objects.create(
+                        user=profile.user,
+                        payment_type='subscription',
+                        currency='USDT',
+                        amount=effective_price,
+                        payment_method='Auto-Renewal',
+                        transaction_id=f"AUTO_RENEW_FAILED_{profile.user.id}_{now.strftime('%Y%m%d%H%M%S')}",
+                        status='cancelled',
+                        payment_note='Auto-renew failed: insufficient balance',
+                        remark='Auto-renew disabled due to insufficient balance'
+                    )
+                    profile.auto_renew_subscription = False  # Turn off auto-renewal if balance insufficient
                 # Downgrade to free
                 profile.subscription = 'free'
                 profile.subscription_start_date = None  # Optional: Clear dates
                 profile.subscription_end_date = None    # Optional: Clear dates
                 profile.tokens = 5                      # Reset to default free tier tokens
                 profile.max_tokens = 5                  # Set max tokens for free tier
-                if profile.auto_renew_subscription:
-                    profile.auto_renew_subscription = False  # Turn off auto-renewal if balance insufficient
                 profile.save()
     print(f"Checked subscriptions at {now}. Downgraded {expired_profiles.count()} users.")  # For logging/debug
 
@@ -58,7 +70,7 @@ def start_scheduler():
 
     scheduler.add_job(
         check_expired_subscriptions,
-        trigger=CronTrigger(hour=22, minute=5),
+        trigger=CronTrigger(hour=12, minute=29),
         id='check_subscriptions',  # Unique ID for the job
         replace_existing=True      # Overwrite if already exists (handles restarts)
     )

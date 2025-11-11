@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.db import transaction
 
 TIMEZONE_CHOICES = [
     ('UTC', 'UTC'),
@@ -49,9 +51,43 @@ class Profile(models.Model):
         if self.subscription == 'free':
             self.max_tokens = 10
         elif self.subscription == 'premium':
-            self.max_tokens = 3000
-        super().save(*args, **kwargs)
+            self.max_tokens = 100
 
+        # Auto-refill logic
+        if self.auto_refill_tokens and self.tokens < 1 and self.subscription == 'premium':
+            subscription_settings = SubscriptionSettings.objects.first()
+            effective_price = subscription_settings.effective_price if subscription_settings else 5.00
+            if self.balance >= effective_price:
+                now = timezone.now()
+                with transaction.atomic():
+                    self.tokens = self.max_tokens
+                    PaymentHistory.objects.create(
+                        user=self.user,
+                        payment_type='refill',
+                        currency='USDT',
+                        amount=effective_price,
+                        payment_method='Auto-Refill',
+                        transaction_id=f"AUTO_REFILL_{self.user.id}_{now.strftime('%Y%m%d%H%M%S')}",
+                        status='successful',
+                        payment_note='Auto-refilled tokens due to low balance',
+                    )
+            else:
+                # Insufficient balance: disable auto_refill_tokens and record failed attempt
+                with transaction.atomic():
+                    self.auto_refill_tokens = False
+                    PaymentHistory.objects.create(
+                        user=self.user,
+                        payment_type='refill',
+                        currency='USDT',
+                        amount=effective_price,
+                        payment_method='Auto-Refill',
+                        transaction_id=f"AUTO_REFILL_FAILED_{self.user.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}",
+                        status='cancelled',
+                        payment_note='Auto-refill failed: insufficient balance',
+                        remark='Auto-refill disabled due to insufficient balance'
+                    )
+
+        super().save(*args, **kwargs)
 
 class PaymentHistory(models.Model):
     PAYMENT_TYPE_CHOICES = [
@@ -59,6 +95,7 @@ class PaymentHistory(models.Model):
         ('subscription', 'Subscription'),
         ('withdraw', 'Withdraw'),
         ('bonus', 'Bonus'),
+        ('refill', 'Token Refill'),
     ]
 
     STATUS_CHOICES = [
@@ -66,7 +103,6 @@ class PaymentHistory(models.Model):
         ('pending', 'Pending'),
         ('cancelled', 'Cancelled'),
     ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_history')
     payment_id = models.AutoField(primary_key=True)
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES)
@@ -97,7 +133,6 @@ class PaymentHistory(models.Model):
         verbose_name = 'Payment History'
         verbose_name_plural = 'Payment Histories'
 
-
 @receiver(pre_save, sender=PaymentHistory)
 def pre_save_payment(sender, instance, **kwargs):
     if instance.pk:  # If updating an existing instance
@@ -105,7 +140,6 @@ def pre_save_payment(sender, instance, **kwargs):
         instance._old_status = old_instance.status
     else:
         instance._old_status = None  # For new instances
-
 
 @receiver(post_save, sender=PaymentHistory)
 def post_save_payment(sender, instance, created, **kwargs):
@@ -117,7 +151,7 @@ def post_save_payment(sender, instance, created, **kwargs):
             return
         if instance.payment_type in ['deposit', 'bonus']:
             profile.balance += amount
-        elif instance.payment_type in ['subscription', 'withdraw']:
+        elif instance.payment_type in ['subscription', 'withdraw', 'refill']:
             if profile.balance < amount:
                 instance.status = 'cancelled'
                 instance.remark = 'Insufficient balance'
@@ -125,7 +159,6 @@ def post_save_payment(sender, instance, created, **kwargs):
                 return
             profile.balance -= amount
         profile.save()
-
 
 # New model for subscription settings
 class SubscriptionSettings(models.Model):
