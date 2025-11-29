@@ -1,9 +1,9 @@
 django==5.1.7
-apscheduler
-numpy
-pandas
-pytz
-matplotlib
-mplfinance
-yahooquery
-yfinance
+apscheduler==3.11.0
+numpy==2.3.4
+pandas==2.3.3
+pytz==2025.2
+matplotlib==3.10.7
+mplfinance==0.12.10b0
+yahooquery==2.4.1
+yfinance==0.2.66
