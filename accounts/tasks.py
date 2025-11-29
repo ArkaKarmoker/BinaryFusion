@@ -3,6 +3,7 @@ from apscheduler.triggers.cron import CronTrigger
 from django.utils import timezone
 from django.db import transaction
 from .models import Profile, PaymentHistory, SubscriptionSettings  # Import additional models
+from decimal import Decimal
 
 def check_expired_subscriptions():
     """
@@ -16,7 +17,7 @@ def check_expired_subscriptions():
         subscription_end_date__lt=now
     )
     subscription_settings = SubscriptionSettings.objects.first()
-    effective_price = subscription_settings.effective_price if subscription_settings else 5.00  # Fallback price
+    effective_price = subscription_settings.effective_price if subscription_settings else Decimal('5.00')  # Fallback price
 
     for profile in expired_profiles:
         with transaction.atomic():  # Ensure atomic updates

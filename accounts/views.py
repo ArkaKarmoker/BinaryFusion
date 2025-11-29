@@ -11,6 +11,7 @@ from django.utils import timezone
 from datetime import timedelta
 import pytz
 from django.db.models import Count
+from decimal import Decimal
 
 def register(request):
     if request.method == 'POST':
@@ -76,8 +77,8 @@ def dashboard(request):
         regular_price = subscription_settings.price
         is_discounted = subscription_settings.is_discounted
     else:
-        effective_price = 5.00  # Default effective price
-        regular_price = 5.00    # Default regular price
+        effective_price = Decimal('5.00')  # Default effective price
+        regular_price = Decimal('5.00')    # Default regular price
         is_discounted = False    # Default discount status
 
     if request.method == 'POST':
@@ -195,7 +196,7 @@ def dashboard(request):
                 messages.error(request, 'You are already subscribed to Premium with active tokens.', extra_tags='subscription')
             else:
                 # Get subscription price
-                subscription_price = subscription_settings.effective_price if subscription_settings else 5.00
+                subscription_price = subscription_settings.effective_price if subscription_settings else Decimal('5.00')
                 # Check balance
                 if profile.balance < subscription_price:
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -251,7 +252,7 @@ def dashboard(request):
                 messages.error(request, 'Your tokens are already full. No need to renew now.', extra_tags='subscription')
             else:
                 # Get subscription price
-                subscription_price = subscription_settings.effective_price if subscription_settings else 5.00
+                subscription_price = subscription_settings.effective_price if subscription_settings else Decimal('5.00')
                 # Check balance
                 if profile.balance < subscription_price:
                     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
