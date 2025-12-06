@@ -21,62 +21,62 @@
         .light-mode {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-  
+ 
         .dark-mode {
             background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
         }
-  
+ 
         .card {
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
-  
+ 
         .light-mode .card {
             background: white;
             color: #2d3748;
         }
-  
+ 
         .dark-mode .card {
             background: #2d3748;
             color: #f7fafc;
         }
-  
+ 
         .card:hover {
             transform: translateY(-5px);
         }
-  
+ 
         .section-title {
             font-weight: 600;
             border-bottom: 2px solid #4a90e2;
             display: inline-block;
             padding-bottom: 4px;
         }
-  
+ 
         .light-mode .section-title {
             color: #2d3748;
         }
-  
+ 
         .dark-mode .section-title {
             color: #e2e8f0;
         }
-  
+ 
         .input-field {
             transition: all 0.3s ease;
         }
-  
+ 
         .light-mode .input-field {
             background-color: #ffffff;
             color: #2d3748;
             border-color: #e2e8f0;
         }
-  
+ 
         .dark-mode .input-field {
             background-color: #4a5568;
             color: #e2e8f0;
             border-color: #718096;
         }
-  
+ 
         /* Trading activity animation */
         .trading-animation {
             position: fixed;
@@ -88,7 +88,7 @@
             opacity: 0.1;
             pointer-events: none;
         }
-  
+ 
         /* Toggle button styles */
         .theme-toggle {
             position: fixed;
@@ -96,82 +96,76 @@
             right: 20px;
             z-index: 1000;
         }
-  
+ 
         /* Tab system */
         .tab-content {
             display: none;
         }
-  
+ 
         .tab-content.active {
             display: block;
         }
-  
+ 
         .tab-button {
             padding: 0.75rem 1.5rem;
             border-radius: 8px 8px 0 0;
             transition: all 0.3s ease;
         }
-  
+ 
         .light-mode .tab-button {
             background-color: #e2e8f0;
             color: #4a5568;
         }
-  
+ 
         .dark-mode .tab-button {
             background-color: #4a5568;
             color: #e2e8f0;
         }
-  
+ 
         .tab-button.active {
             background-color: #4a90e2;
             color: white;
         }
-
         /* Deposit sub-tab styles */
         .deposit-tab-content {
             display: none;
         }
-
         .deposit-tab-content.active {
             display: block;
         }
-
         .deposit-tab-button {
             padding: 0.75rem 1.5rem;
             border-radius: 8px 8px 0 0;
             transition: all 0.3s ease;
         }
-
         .light-mode .deposit-tab-button {
             background-color: #e2e8f0;
             color: #4a5568;
         }
-
         .dark-mode .deposit-tab-button {
             background-color: #4a5568;
             color: #e2e8f0;
         }
-
         .deposit-tab-button.active {
             background-color: #4a90e2;
             color: white;
         }
-  
+ 
         /* Subscription tiers */
         .subscription-tier {
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
-  
+ 
         .subscription-tier:hover {
             transform: translateY(-5px);
         }
-  
+ 
         .subscription-tier.popular {
             border-color: #4a90e2;
             position: relative;
         }
-  
+ 
         .popular-badge {
             position: absolute;
             top: -12px;
@@ -183,7 +177,7 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
-  
+ 
         /* Switch toggle */
         .switch {
             position: relative;
@@ -191,13 +185,13 @@
             width: 50px;
             height: 24px;
         }
-  
+ 
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-  
+ 
         .slider {
             position: absolute;
             cursor: pointer;
@@ -209,7 +203,7 @@
             transition: .4s;
             border-radius: 24px;
         }
-  
+ 
         .slider:before {
             position: absolute;
             content: "";
@@ -221,11 +215,11 @@
             transition: .4s;
             border-radius: 50%;
         }
-  
+ 
         input:checked + .slider {
             background-color: #4a90e2;
         }
-  
+ 
         input:checked + .slider:before {
             transform: translateX(26px);
         }
@@ -242,19 +236,19 @@
             width: 40px;
             height: 40px;
         }
-  
+ 
         .progress-circle svg {
             width: 100%;
             height: 100%;
             transform: rotate(-90deg);
         }
-  
+ 
         .progress-circle .background {
             fill: none;
             stroke: #e2e8f0;
             stroke-width: 4;
         }
-  
+ 
         .progress-circle .progress {
             fill: none;
             stroke: #4a90e2; /* Default color, will be overridden by JS */
@@ -264,7 +258,7 @@
             stroke-dashoffset: 100;
             transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
         }
-  
+ 
         .progress-circle .icon {
             position: absolute;
             top: 50%;
@@ -278,47 +272,47 @@
             background-color: #2d3748;
             color: #e2e8f0;
         }
-  
+ 
         .dark-mode .dataTables_wrapper .dataTables_length,
         .dark-mode .dataTables_wrapper .dataTables_filter,
         .dark-mode .dataTables_wrapper .dataTables_info,
         .dark-mode .dataTables_wrapper .dataTables_paginate {
             color: #e2e8f0;
         }
-  
+ 
         .dark-mode .dataTables_wrapper .dataTables_length select,
         .dark-mode .dataTables_wrapper .dataTables_filter input {
             background-color: #4a5568;
             color: #e2e8f0;
             border-color: #718096;
         }
-  
+ 
         .dark-mode table.dataTable thead th,
         .dark-mode table.dataTable thead td {
             background-color: #4a5568;
             color: #e2e8f0;
             border-bottom: 1px solid #718096;
         }
-  
+ 
         .dark-mode table.dataTable tbody tr {
             background-color: #2d3748;
             color: #e2e8f0;
         }
-  
+ 
         .dark-mode table.dataTable tbody tr:hover {
             background-color: #4a5568;
         }
-  
+ 
         .dark-mode table.dataTable tbody td {
             border-bottom: 1px solid #718096;
         }
-  
+ 
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
             color: #e2e8f0 !important;
             background: #4a5568 !important;
             border-color: #718096 !important;
         }
-  
+ 
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
             background: #4a90e2 !important;
@@ -1005,7 +999,7 @@
             const body = document.getElementById('body');
             const lightIcon = document.querySelector('.light-icon');
             const darkIcon = document.querySelector('.dark-icon');
-      
+     
             if (body.classList.contains('light-mode')) {
                 body.classList.remove('light-mode');
                 body.classList.add('dark-mode');
@@ -1255,32 +1249,19 @@
                     { className: 'dt-center', targets: '_all' }
                 ]
             });
-            // Initialize DataTable for prediction history with checks
-            if ($('#predictionTable').length) {
-                $('#predictionTable').DataTable({
-                    responsive: true,
-                    order: [[1, 'desc']], // Sort by Date column in descending order
-                    language: {
-                        emptyTable: "No predictions found."
-                    },
-                    columnDefs: [
-                        { className: 'dt-center', targets: '_all' }
-                    ]
-                });
-            }
             // Handle profile form submission via AJAX
             $('#profile-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
                 const messagesContainer = $('#profile-messages');
-          
+         
                 // Get current displayed values
                 const currentFullName = $('#user-fullname').text().trim();
                 const currentUsername = $('#user-username').text().trim();
                 const currentEmail = $('#user-email').text().trim();
                 const currentTelegram = $('#user-telegram').text().trim() === 'Not set' ? '' : $('#user-telegram').text().trim();
                 const currentPhone = $('#user-phone').text().trim() === 'Not set' ? '' : $('#user-phone').text().trim();
-          
+         
                 // Get form input values
                 const formData = form.serializeArray();
                 let firstName = '';
@@ -1297,10 +1278,10 @@
                     if (field.name === 'telegram') telegram = field.value.trim();
                     if (field.name === 'phone') phone = field.value.trim();
                 });
-          
+         
                 // Combine first and last name for comparison
                 const formFullName = `${firstName} ${lastName}`.trim();
-          
+         
                 // Check if any field has changed
                 if (formFullName === currentFullName &&
                     username === currentUsername &&
@@ -1325,12 +1306,12 @@
                     success: function(response) {
                         // Clear previous messages
                         messagesContainer.empty();
-                  
+                 
                         // Parse the response to extract messages
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(response, 'text/html');
                         const newMessages = $(doc).find('#profile-messages .message');
-                  
+                 
                         if (newMessages.length > 0) {
                             // Display messages from the response
                             newMessages.each(function() {
@@ -1340,7 +1321,7 @@
                             // Assume success if no messages are returned and update user information
                             const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>Profile updated successfully.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
                             messagesContainer.append(successMessage);
-                      
+                     
                             // Update user information on the page
                             $('#user-fullname').text(`${firstName} ${lastName}`);
                             $('#user-email').text(email);
@@ -1374,10 +1355,10 @@
                 e.preventDefault();
                 const form = $(this);
                 const messagesContainer = $('#password-messages');
-          
+         
                 // Include CSRF token in AJAX headers
                 const csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-          
+         
                 $.ajax({
                     url: form.attr('action'),
                     type: 'POST',
@@ -1388,22 +1369,22 @@
                     success: function(response) {
                         // Clear previous messages
                         messagesContainer.empty();
-                  
+                 
                         if (response.status === 'success') {
                             // Display success message
                             const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
                             messagesContainer.append(successMessage);
-                      
+                     
                             // Clear password fields
                             form.find('input[type="password"]').val('');
-                      
+                     
                             // Check if logout is required
                             if (response.logout) {
                                 setTimeout(() => {
                                     window.location.href = "{% url 'login' %}";
                                 }, 2000); // Redirect after 2 seconds to allow user to see the message
                             }
-                      
+                     
                             // Auto-dismiss new messages
                             setTimeout(() => {
                                 messagesContainer.find('.message').addClass('fade-out');
@@ -1503,20 +1484,6 @@
                             paymentTable.row.add(newRow).draw();
                             // Clear form fields
                             form.find('input, textarea').val('');
-                            // Re-initialize predictionTable DataTable to ensure it it renders correctly
-                            if ($('#predictionTable').length) {
-                                $('#predictionTable').DataTable().destroy();
-                                $('#predictionTable').DataTable({
-                                    responsive: true,
-                                    order: [[0, 'desc']],
-                                    language: {
-                                        emptyTable: "No predictions found."
-                                    },
-                                    columnDefs: [
-                                        { className: 'dt-center', targets: '_all' }
-                                    ]
-                                });
-                            }
                             // Auto-dismiss messages
                             setTimeout(() => {
                                 messagesContainer.find('.message').addClass('fade-out');
@@ -1664,10 +1631,11 @@
             }
             // Restore default sub-tab for payment-tab if active
             if (activeTab === 'payment-tab') {
-                const nowpaymentsButton = document.querySelector(`#payment-tab .deposit-tab-button[onclick="openDepositTab(event, 'nowpayments-tab')"]`);
-                const nowpaymentsContent = document.getElementById('nowpayments-tab');
-                if (nowpaymentsButton) nowpaymentsButton.classList.add('active');
-                if (nowpaymentsContent) nowpaymentsContent.classList.add('active');
+                const activeDepositTab = sessionStorage.getItem('activeDepositTab') || 'nowpayments-tab';
+                const depositButton = document.querySelector(`#payment-tab .deposit-tab-button[onclick="openDepositTab(event, '${activeDepositTab}')"]`);
+                if (depositButton) {
+                    depositButton.click();
+                }
             }
             // Initialize token bar
             const remainingTokensElement = document.getElementById('remaining-tokens-value');
@@ -1780,6 +1748,7 @@
             // Show the current deposit tab and add active class to the button
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
+            sessionStorage.setItem('activeDepositTab', tabName);
         }
         // Modal Functionality
         function openModal(src) {
