@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse  # Added HttpResponse
 from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm, SettingsForm
 from .models import Profile, PaymentHistory, SubscriptionSettings
 from predictor.models import Prediction
@@ -14,6 +14,12 @@ from django.db.models import Count
 from decimal import Decimal
 import requests  # Added for NOWPayments API
 from django.urls import reverse  # Added for generating return URLs
+
+# Imports for NOWPayments IPN
+import json
+import hmac
+import hashlib
+from django.views.decorators.csrf import csrf_exempt
 
 def register(request):
     if request.method == 'POST':
@@ -437,19 +443,20 @@ def create_nowpayments_deposit(request):
             'Content-Type': 'application/json'
         }
 
-        # 4. Prepare Payload
-        # success_url: redirects user back to dashboard payment tab with success flag
-        dashboard_url = request.build_absolute_uri(reverse('dashboard'))
+        # 4. Prepare Payload with PRODUCTION URLs
+        # Base domain from your host
+        domain = "https://binaryfusion.pythonanywhere.com"
         
         payload = {
             "price_amount": amount,
             "price_currency": "usd",      # The fiat value user entered
             "pay_currency": "usdttrc20",  # The crypto they will pay in (Testnet USDT)
-            "ipn_callback_url": "http://127.0.0.1:8000/accounts/dashboard/",       # Leave empty for simple testing
+            "ipn_callback_url": f"{domain}/accounts/deposit/nowpayments/ipn/",  # Backend listener
             "order_id": str(payment.payment_id), # Link internal ID to their order
             "order_description": f"Deposit by {request.user.username}",
-            "success_url": f"{dashboard_url}?tab=payment-tab&status=success",
-            "cancel_url": f"{dashboard_url}?tab=payment-tab&status=cancel"
+            # Redirect user back to dashboard payment tab on completion
+            "success_url": f"{domain}/accounts/dashboard/?tab=payment-tab&status=success",
+            "cancel_url": f"{domain}/accounts/dashboard/?tab=payment-tab&status=cancel"
         }
 
         # 5. Call API
@@ -477,3 +484,69 @@ def create_nowpayments_deposit(request):
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+@csrf_exempt # Security: CSRF must be disabled because NOWPayments server sends this, not a user
+def nowpayments_ipn(request):
+    """
+    Listener for NOWPayments Instant Payment Notifications (IPN).
+    Updates DB status when blockchain confirms payment.
+    """
+    if request.method == 'POST':
+        # 1. Verify the signature (SECURITY CRITICAL)
+        # PASTE THE FULL IPN SECRET KEY FROM YOUR DASHBOARD SCREENSHOT HERE
+        IPN_SECRET_KEY = 'plPIRuMdLHWUYWMt7OwMoSRriNtRL30F' # <--- UPDATE THIS
+        
+        x_nowpayments_sig = request.headers.get('x-nowpayments-sig')
+        
+        if not x_nowpayments_sig:
+            return HttpResponse("No Signature", status=400)
+
+        # Sort the data and verify signature
+        try:
+            request_data = json.loads(request.body.decode('utf-8'))
+        except json.JSONDecodeError:
+            return HttpResponse("Invalid JSON", status=400)
+            
+        # Create the signature string
+        sorted_params = dict(sorted(request_data.items()))
+        string_to_sign = json.dumps(sorted_params, separators=(',', ':'))
+        
+        calculated_sig = hmac.new(
+            IPN_SECRET_KEY.encode('utf-8'),
+            string_to_sign.encode('utf-8'),
+            hashlib.sha512
+        ).hexdigest()
+
+        if calculated_sig != x_nowpayments_sig:
+            # In Sandbox, signatures might sometimes behave unexpectedly if key is wrong.
+            # But in production, you MUST return 400 if signatures don't match.
+            return HttpResponse("Invalid Signature", status=400)
+
+        # 2. Process the Data
+        payment_status = request_data.get('payment_status')
+        order_id = request_data.get('order_id') # This corresponds to our PaymentHistory ID
+        
+        try:
+            payment = PaymentHistory.objects.get(payment_id=order_id)
+            
+            # Check for "finished" status (Success)
+            # Note: Sandbox might send 'confirmed' or 'finished'
+            if payment_status == 'finished' or payment_status == 'confirmed':
+                if payment.status != 'successful':
+                    payment.status = 'successful'
+                    # The post_save signal in models.py will handle the Balance update automatically
+                    payment.remark = f"Auto-confirmed via IPN. Status: {payment_status}"
+                    payment.save() 
+            
+            # Handle Failure
+            elif payment_status in ['failed', 'expired']:
+                payment.status = 'cancelled'
+                payment.remark = f"Failed via IPN. Status: {payment_status}"
+                payment.save()
+
+            return HttpResponse("OK", status=200)
+
+        except PaymentHistory.DoesNotExist:
+            return HttpResponse("Order not found", status=404)
+    
+    return HttpResponse("Method not allowed", status=405)
