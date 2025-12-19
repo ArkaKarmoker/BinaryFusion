@@ -141,3 +141,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'  # Updated to match new login path
 LOGIN_REDIRECT_URL = '/app/'  # Redirect to app.html after login
 LOGOUT_REDIRECT_URL = '/login/'  # Redirect to login page after logout
+
+# Add these to your settings.py
+NOWPAYMENTS_API_KEY = '6FYMWZX-VTBMRY5-NTZCMJW-PGHV3NZ'
+NOWPAYMENTS_IPN_SECRET = '224hR6qELB8ByjJUbqtn9DN7xrpYxOSH' # From Store Settings tab
+NOWPAYMENTS_API_URL = 'https://api.nowpayments.io/v1/invoice' # Using Invoice for hosted page
+
+NOWPAYMENTS_IPN_SECRET_SANDBOX = 'MMrDx78EfJTPPj4nJ2ZfOfRRjAOe5UuO6'

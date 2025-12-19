@@ -12,6 +12,8 @@ from datetime import timedelta
 import pytz
 from django.db.models import Count
 from decimal import Decimal
+import requests  # Added for NOWPayments API
+from django.urls import reverse  # Added for generating return URLs
 
 def register(request):
     if request.method == 'POST':
@@ -393,3 +395,85 @@ def dashboard(request):
         'regular_price': regular_price,
         'is_discounted': is_discounted
     })
+
+@login_required
+def create_nowpayments_deposit(request):
+    """
+    Handles deposit request via NOWPayments Sandbox API.
+    Creates a pending PaymentHistory record and returns an invoice URL.
+    """
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        payment_note = request.POST.get('payment_note')
+
+        # 1. Basic Validation
+        try:
+            amount = float(amount)
+            if amount < 5: # Minimum deposit constraint
+                return JsonResponse({'status': 'error', 'message': 'Minimum deposit is 5 USDT.'})
+        except (ValueError, TypeError):
+            return JsonResponse({'status': 'error', 'message': 'Invalid amount.'})
+
+        # 2. Create local PaymentHistory record (Pending)
+        # We use a temporary transaction ID initially because we don't have the NP ID yet
+        payment = PaymentHistory.objects.create(
+            user=request.user,
+            payment_type='deposit',
+            currency='USDT',
+            amount=amount,
+            payment_method='NOWPayments',
+            status='pending',
+            payment_note=payment_note,
+            transaction_id=f"TEMP-{int(timezone.now().timestamp())}" 
+        )
+
+        # 3. NOWPayments Sandbox API Config
+        # IMPORTANT: Replace this with your actual Sandbox API Key
+        NP_API_KEY = 'TVP9DGR-J0Y46ZC-PARW344-STM3YW4'  # <--- REPLACE THIS WITH YOUR KEY
+        NP_API_URL = 'https://api-sandbox.nowpayments.io/v1/invoice'
+
+        headers = {
+            'x-api-key': NP_API_KEY,
+            'Content-Type': 'application/json'
+        }
+
+        # 4. Prepare Payload
+        # success_url: redirects user back to dashboard payment tab with success flag
+        dashboard_url = request.build_absolute_uri(reverse('dashboard'))
+        
+        payload = {
+            "price_amount": amount,
+            "price_currency": "usd",      # The fiat value user entered
+            "pay_currency": "usdttrc20",  # The crypto they will pay in (Testnet USDT)
+            "ipn_callback_url": "http://127.0.0.1:8000/accounts/dashboard/",       # Leave empty for simple testing
+            "order_id": str(payment.payment_id), # Link internal ID to their order
+            "order_description": f"Deposit by {request.user.username}",
+            "success_url": f"{dashboard_url}?tab=payment-tab&status=success",
+            "cancel_url": f"{dashboard_url}?tab=payment-tab&status=cancel"
+        }
+
+        # 5. Call API
+        try:
+            response = requests.post(NP_API_URL, json=payload, headers=headers)
+            data = response.json()
+
+            if response.status_code == 200 and 'invoice_url' in data:
+                # Update transaction_id with the actual NOWPayments Invoice ID
+                payment.transaction_id = data['id'] 
+                payment.save()
+                
+                return JsonResponse({
+                    'status': 'success', 
+                    'invoice_url': data['invoice_url']
+                })
+            else:
+                # API Error
+                payment.status = 'cancelled'
+                payment.remark = f"API Error: {data.get('message', 'Unknown')}"
+                payment.save()
+                return JsonResponse({'status': 'error', 'message': 'Gateway Error: ' + str(data.get('message'))})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
