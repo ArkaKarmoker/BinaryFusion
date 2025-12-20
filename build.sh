@@ -1,15 +1,32 @@
 #!/usr/bin/env bash
-# exit on error
+# Exit on error
 set -o errexit
 
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# Convert static asset files
-python manage.py collectstatic --no-input
+# 2. Collect static files
+python manage.py collectstatic --noinput
 
-# Apply database migrations
+# 3. Migrate database
 python manage.py migrate
 
-# Create Superuser
-echo "Creating superuser..."
-python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'password123')"
+# 4. Create Superuser (Hardcoded)
+# Since we don't have an env file, we set the password right here.
+echo "Checking for superuser..."
+python manage.py shell <<EOF
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+# --- HARDCODED ADMIN DETAILS ---
+USERNAME = 'admin'
+EMAIL = 'binaryfusion.trade@outlook.com'
+PASSWORD = 'Arka19052001@Karmoker'  # <--- CHANGE THIS PASSWORD HERE
+# -------------------------------
+
+if not User.objects.filter(username=USERNAME).exists():
+    User.objects.create_superuser(USERNAME, EMAIL, PASSWORD)
+    print(f"Superuser '{USERNAME}' created successfully.")
+else:
+    print(f"Superuser '{USERNAME}' already exists. Skipping.")
+EOF

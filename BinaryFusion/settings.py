@@ -82,13 +82,24 @@ WSGI_APPLICATION = 'BinaryFusion.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'BinaryFusion',       # Your database name
+        'USER': 'postgres.uyfypjkoudtjbeotrfas',           # Your PostgreSQL username
+        'PASSWORD': 'gdeiDDcAF8U-**6',   # Your PostgreSQL password
+        'HOST': 'aws-1-ap-northeast-1.pooler.supabase.com',        # Or the server IP
+        'PORT': '5432',             # Default PostgreSQL port
+        'OPTIONS': {'sslmode': 'require'},  # Added for Supabase compatibility
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -130,7 +141,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # Where collectstatic will put all static files for deployment
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Compression and caching support for static files (Required for Render)
+# # Compression and caching support for static files (Required for Render)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type

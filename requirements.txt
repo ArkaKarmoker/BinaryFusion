@@ -7,6 +7,8 @@ matplotlib==3.10.7
 mplfinance==0.12.10b0
 yahooquery==2.4.1
 yfinance==0.2.66
+# psycopg2==2.9.11
+psycopg2-binary==2.9.11
 # Production additions
-gunicorn
-whitenoise
+gunicorn==23.0.0
+whitenoise==6.11.0
