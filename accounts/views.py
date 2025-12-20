@@ -450,7 +450,7 @@ def create_nowpayments_deposit(request):
         payload = {
             "price_amount": amount,
             "price_currency": "usd",      # The fiat value user entered
-            "pay_currency": "usdttrc20",  # The crypto they will pay in (Testnet USDT)
+            "pay_currency": "usdtbsc",  # The crypto they will pay in (Testnet USDT)
             "ipn_callback_url": f"{domain}/accounts/deposit/nowpayments/ipn/",  # Backend listener
             "order_id": str(payment.payment_id), # Link internal ID to their order
             "order_description": f"Deposit by {request.user.username}",
