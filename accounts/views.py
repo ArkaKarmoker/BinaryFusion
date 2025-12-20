@@ -445,7 +445,7 @@ def create_nowpayments_deposit(request):
 
         # 4. Prepare Payload with PRODUCTION URLs
         # Base domain from your host
-        domain = "https://binaryfusion.onrender.com/"
+        domain = "https://binaryfusion.onrender.com"
         
         payload = {
             "price_amount": amount,
