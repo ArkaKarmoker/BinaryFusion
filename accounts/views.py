@@ -525,6 +525,7 @@ def nowpayments_ipn(request):
         # 2. Process the Data
         payment_status = request_data.get('payment_status')
         order_id = request_data.get('order_id') # This corresponds to our PaymentHistory ID
+        actual_payment_id = request_data.get('payment_id') # <--- Get the actual Payment ID from IPN
         
         try:
             payment = PaymentHistory.objects.get(payment_id=order_id)
@@ -534,6 +535,11 @@ def nowpayments_ipn(request):
             if payment_status == 'finished' or payment_status == 'confirmed':
                 if payment.status != 'successful':
                     payment.status = 'successful'
+                    
+                    # If actual payment ID is available, update the transaction_id
+                    if actual_payment_id:
+                        payment.transaction_id = str(actual_payment_id)
+                    
                     # The post_save signal in models.py will handle the Balance update automatically
                     payment.remark = f"Auto-confirmed via IPN. Status: {payment_status}"
                     payment.save() 
