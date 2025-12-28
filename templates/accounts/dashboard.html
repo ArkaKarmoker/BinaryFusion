@@ -906,7 +906,7 @@
                                 <td class="py-3 px-4">{{ payment.payment_method }}</td>
                                 <td class="py-3 px-4">{{ payment.transaction_id|default_if_none:"-" }}</td>
                                 <td class="py-3 px-4">
-                                    <span class="{% if payment.status == 'successful' %}text-green-500{% elif payment.status == 'pending' %}text-yellow-500{% else %}text-red-500{% endif %}">
+                                    <span class="{% if payment.status == 'successful' %}text-green-500{% elif payment.status == 'pending' or payment.status == 'partially_paid' %}text-yellow-500{% else %}text-red-500{% endif %}">
                                         {{ payment.get_status_display }}
                                     </span>
                                 </td>
