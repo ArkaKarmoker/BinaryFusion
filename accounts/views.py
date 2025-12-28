@@ -543,6 +543,30 @@ def nowpayments_ipn(request):
                     # The post_save signal in models.py will handle the Balance update automatically
                     payment.remark = f"Auto-confirmed via IPN. Status: {payment_status}"
                     payment.save() 
+
+            # Check for "partially_paid" status
+            elif payment_status == 'partially_paid':
+                if payment.status != 'partially_paid':
+                    payment.status = 'partially_paid'
+                    
+                    # If actual payment ID is available, update the transaction_id
+                    if actual_payment_id:
+                        payment.transaction_id = str(actual_payment_id)
+                    
+                    # 1. Capture the original target amount before we wipe it
+                    original_target_amount = payment.amount
+                    
+                    # 2. Get the actual amount received from NOWPayments IPN data
+                    actually_paid = request_data.get('actually_paid', 'Unknown')
+                    pay_currency = request_data.get('pay_currency', '')
+
+                    # 3. Set the amount field to None (Blank in DB/Admin)
+                    payment.amount = None 
+
+                    # 4. Update remark with the detailed comparison
+                    payment.remark = f"Partial Payment: Received {actually_paid} {pay_currency}. Target was {original_target_amount}."
+                    
+                    payment.save()
             
             # Handle Failure
             elif payment_status in ['failed', 'expired']:

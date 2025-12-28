@@ -97,7 +97,7 @@ DATABASES = {
         'PASSWORD': 'gdeiDDcAF8U-**6',   # Your PostgreSQL password
         'HOST': 'aws-1-ap-northeast-1.pooler.supabase.com',        # Or the server IP
         'PORT': '5432',             # Default PostgreSQL port
-        'OPTIONS': {'sslmode': 'require'},  # Added for Supabase compatibility
+        # 'OPTIONS': {'sslmode': 'require'},  # Added for Supabase compatibility
     }
 }
 

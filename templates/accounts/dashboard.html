@@ -822,7 +822,7 @@
                                         <i class="fas fa-external-link-alt mr-2"></i> Pay with NOWPayments
                                     </button>
                                </form>
-                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the TRX (TRON (TRC20)) network only. Deposits will be credited after confirmation.</p>
+                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after confirmation.</p>
                             </div>
                         </div>
                         <!-- Binance Pay Tab -->
@@ -840,7 +840,7 @@
                                     {{ deposit_form.as_p }}
                                     <button type="submit" name="deposit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Deposit</button>
                                 </form>
-                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the TRX (TRON (TRC20)) network only. Deposits will be credited after confirmation.</p>
+                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after admin confirmation.</p>
                             </div>
                         </div>
                     </div>
@@ -891,7 +891,9 @@
                                 <td class="py-3 px-4">{{ payment.get_payment_type_display }}</td>
                                 <td class="py-3 px-4">{{ payment.currency }}</td>
                                 <td class="py-3 px-4">
-                                    {% if payment.amount %}
+                                    {% if payment.status == 'partially_paid' %}
+                                        -
+                                    {% elif payment.amount %}
                                         {% if payment.payment_type == 'deposit' or payment.payment_type == 'bonus' %}
                                             <span class="text-green-500">+{{ payment.amount }}</span>
                                         {% else %}

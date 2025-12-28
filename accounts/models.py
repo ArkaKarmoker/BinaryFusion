@@ -102,6 +102,7 @@ class PaymentHistory(models.Model):
         ('successful', 'Successful'),
         ('pending', 'Pending'),
         ('cancelled', 'Cancelled'),
+        ('partially_paid', 'Partially Paid'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_history')
     payment_id = models.AutoField(primary_key=True)
