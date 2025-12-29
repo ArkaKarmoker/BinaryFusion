@@ -136,6 +136,49 @@
             right: 20px;
             z-index: 1000;
         }
+
+        /* Google Button and Divider Dark Mode Fix */
+        .divider-container {
+            background: transparent;
+        }
+        
+        .light-mode .divider-container .divider-text {
+            background: white;
+            color: #6b7280;
+        }
+        
+        .dark-mode .divider-container .divider-text {
+            background: #2d3748;
+            color: #d1d5db;
+        }
+        
+        .light-mode .google-button {
+            background: white;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+        
+        .light-mode .google-button:hover {
+            background: #f9fafb;
+        }
+        
+        .dark-mode .google-button {
+            background: #4b5563;
+            color: #f3f4f6;
+            border-color: #6b7280;
+        }
+        
+        .dark-mode .google-button:hover {
+            background: #6b7280;
+        }
+        
+        .divider-line {
+            border-color: #d1d5db;
+        }
+        
+        .dark-mode .divider-line {
+            border-color: #6b7280;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
@@ -197,17 +240,17 @@
             </form>
             
             <div class="mt-6">
-                <div class="relative">
+                <div class="relative divider-container">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                        <div class="w-full border-t divider-line"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">Or continue with</span>
+                        <span class="divider-text px-2">Or continue with</span>
                     </div>
                 </div>
                 <div class="mt-6">
                     <a href="{% provider_login_url 'google' %}" 
-                       class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                       class="google-button w-full flex items-center justify-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium transition duration-150 ease-in-out">
                         <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
                         Sign in with Google
                     </a>
