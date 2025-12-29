@@ -192,8 +192,18 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 # Allauth Settings
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+# We allow users to login with EITHER username or email
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+ACCOUNT_EMAIL_VERIFICATION = 'none' # Optional: Skips email verification for dev speed
+
+# We specify which fields are in the signup form and WHICH ARE REQUIRED (*)
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",       # The * marks it as REQUIRED
+    "username*",    # The * marks it as REQUIRED
+    "first_name",   # Optional
+    "last_name",    # Optional
+]
+
 SOCIALACCOUNT_LOGIN_ON_GET = True # Skips the intermediate "Continue to Google" page
 
 # Google Provider Settings
