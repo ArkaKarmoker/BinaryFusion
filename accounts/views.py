@@ -38,7 +38,7 @@ def register(request):
                 user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
                 user.save()
                 # Create a Profile instance for the new user
-                Profile.objects.create(user=user, tokens=10, max_tokens=10)
+                # Profile.objects.create(user=user, tokens=10, max_tokens=10)
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('login')
         else:

@@ -23,4 +23,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("predictor.urls")),
     path("accounts/", include("accounts.urls")),  # Added accounts URLs
+    path("accounts/", include("allauth.urls")),   # Added allauth URLs
 ]

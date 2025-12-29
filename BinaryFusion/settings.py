@@ -28,6 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Security settings for Render.com deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://binaryfusion.onrender.com',
+]
 
 # Application definition
 
@@ -40,6 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'predictor',
     'accounts',
+    'django.contrib.sites',  # Required by allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', # Google Provider
 ]
 
 MIDDLEWARE = [
@@ -51,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Add the account middleware for allauth:
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'BinaryFusion.urls'
@@ -71,6 +82,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Required by allauth templates:
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -164,3 +177,34 @@ NOWPAYMENTS_IPN_SECRET = '224hR6qELB8ByjJUbqtn9DN7xrpYxOSH' # From Store Setting
 NOWPAYMENTS_API_URL = 'https://api.nowpayments.io/v1/invoice' # Using Invoice for hosted page
 
 NOWPAYMENTS_IPN_SECRET_SANDBOX = 'MMrDx78EfJTPPj4nJ2ZfOfRRjAOe5UuO6'
+
+# ==========================================
+# ALLAUTH & GOOGLE LOGIN CONFIGURATION
+# ==========================================
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# Allauth Settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+SOCIALACCOUNT_LOGIN_ON_GET = True # Skips the intermediate "Continue to Google" page
+
+# Google Provider Settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}

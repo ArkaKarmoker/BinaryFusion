@@ -12,3 +12,6 @@ psycopg2-binary==2.9.11
 # Production additions
 gunicorn==23.0.0
 whitenoise==6.11.0
+django-allauth==65.13.1
+PyJWT==2.10.1
+cryptography==46.0.3
