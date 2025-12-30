@@ -218,3 +218,18 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+# ==========================================
+# EMAIL CONFIGURATION (Forgot Password)
+# ==========================================
+
+# 1. DEVELOPMENT: Prints email to Console (Use this for testing)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 2. PRODUCTION: Uses Gmail/SMTP (Uncomment and fill when ready)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'arkakarmoker.business@gmail.com' # Your Gmail Address
+EMAIL_HOST_PASSWORD = 'gzxn yubg eveq qete' # Generate App Password from Google Account Security

@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm # Import built-in form
 from .models import Profile, PaymentHistory  # Add PaymentHistory import
 
 # Input widget attributes
@@ -118,3 +119,11 @@ class SettingsForm(forms.ModelForm):
             'email_notifications': forms.CheckboxInput(),
             'push_notifications': forms.CheckboxInput(),
         }
+
+# --- Add this new form at the end ---
+class EmailValidationPasswordResetForm(PasswordResetForm):
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("This email address is not registered. Please register first.")
+        return email
