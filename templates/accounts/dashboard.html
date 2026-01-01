@@ -5,16 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinaryFusion - Dashboard</title>
-    <!-- Favicon -->
     <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
-    <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables CSS CDN -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <!-- DataTables JS CDN -->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <style>
         /* Consistent with app.html styling */
@@ -110,6 +105,7 @@
             padding: 0.75rem 1.5rem;
             border-radius: 8px 8px 0 0;
             transition: all 0.3s ease;
+            white-space: nowrap; /* Prevent text wrapping inside buttons */
         }
  
         .light-mode .tab-button {
@@ -126,6 +122,7 @@
             background-color: #4a90e2;
             color: white;
         }
+
         /* Deposit sub-tab styles */
         .deposit-tab-content {
             display: none;
@@ -149,6 +146,34 @@
         .deposit-tab-button.active {
             background-color: #4a90e2;
             color: white;
+        }
+
+        /* MOBILE & TABLET RESPONSIVE TABS & LAYOUT OVERRIDES */
+        /* Increased breakpoint to 1023px to include Tablets/iPads */
+        @media (max-width: 1023px) {
+            /* Transform tabs into a grid of buttons */
+            .tab-button, .deposit-tab-button {
+                border-radius: 8px !important; /* Rounded all corners for button look */
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem 0.5rem;
+                font-size: 0.875rem; /* Smaller text */
+                width: 100%;
+            }
+            
+            /* Adjust padding for the dashboard container */
+            #dashboard {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            /* Adjust modal content width */
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
         }
  
         /* Subscription tiers */
@@ -356,22 +381,18 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
-    <!-- Trading Background Animation -->
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
         <span class="light-icon">🌙</span>
         <span class="dark-icon hidden">☀️</span>
     </button>
-    <!-- Modal for Enlarged Image -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="enlargedImage">
     </div>
-    <!-- Modal for Payment Details -->
     <div id="paymentModal" class="modal" onclick="closePaymentModal(event)">
         <span class="close-modal" onclick="closePaymentModal()">&times;</span>
-        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full" onclick="event.stopPropagation();">
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full m-4" onclick="event.stopPropagation();">
             <h2 class="text-xl font-bold mb-4">Payment Details</h2>
             <div class="space-y-2">
                 <p><strong>Payment ID:</strong> <span id="modal-payment-id"></span></p>
@@ -389,10 +410,9 @@
             </div>
         </div>
     </div>
-    <!-- Modal for Subscription Confirmation -->
     <div id="subscriptionModal" class="modal" onclick="closeSubscriptionModal(event)">
         <span class="close-modal" onclick="closeSubscriptionModal()">&times;</span>
-        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full" onclick="event.stopPropagation();">
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full m-4" onclick="event.stopPropagation();">
             <h2 class="text-xl font-bold mb-4">Confirm Subscription Upgrade</h2>
             <p class="mb-4">Are you sure you want to upgrade to the Premium plan? <strong>{{ effective_price }} USDT</strong> will be deducted from your balance.</p>
             <p class="mb-4">Current Balance: <strong><span id="modal-current-balance">{{ balance }} USDT</span></strong></p>
@@ -402,10 +422,9 @@
             </div>
         </div>
     </div>
-    <!-- Modal for Renewal Confirmation -->
     <div id="renewModal" class="modal" onclick="closeRenewModal(event)">
         <span class="close-modal" onclick="closeRenewModal()">&times;</span>
-        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full" onclick="event.stopPropagation();">
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg max-w-lg w-full m-4" onclick="event.stopPropagation();">
             <h2 class="text-xl font-bold mb-4">Confirm Premium Renewal</h2>
             <p class="mb-4">Are you sure you want to renew your Premium plan? <strong>{{ effective_price }} USDT</strong> will be deducted from your balance. This will reset your tokens to 3000/3000 and extend your subscription by 30 days from now.</p>
             <p class="mb-4">Current Balance: <strong><span id="modal-current-balance-renew">{{ balance }} USDT</span></strong></p>
@@ -415,24 +434,23 @@
             </div>
         </div>
     </div>
-    <!-- Header -->
     <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
-        <div class="container mx-auto px-4 flex items-center justify-between">
-            <div>
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
                 <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
                 <p class="text-lg mt-1"><i>User Dashboard</i></p>
             </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white" id="welcome-username">🎉 Welcome, {{ user.username }}</span>
-                <a href="{% url 'app' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base" target="_blank">🔮 Predictor</a>
-                <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base">Logout</a>
+            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
+                <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center" id="welcome-username">🎉 Welcome, {{ user.username }}</span>
+                <div class="flex space-x-4">
+                    <a href="{% url 'app' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank">🔮 Predictor</a>
+                    <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap">Logout</a>
+                </div>
             </div>
         </div>
     </header>
-    <!-- Main Content -->
     <main id="dashboard" class="container mx-auto px-4 py-8 flex-grow">
-        <!-- Dashboard Tabs -->
-        <div class="mb-6 flex space-x-1">
+        <div class="mb-6 grid grid-cols-2 md:grid-cols-3 lg:flex lg:space-x-1 lg:gap-0 gap-2">
             <button class="tab-button active" onclick="openTab(event, 'user-tab')">User Profile</button>
             <button class="tab-button" onclick="openTab(event, 'change-password-tab')">Change Password</button>
             <button class="tab-button" onclick="openTab(event, 'signal-history-tab')">Signal History</button>
@@ -440,10 +458,8 @@
             <button class="tab-button" onclick="openTab(event, 'settings-tab')">Settings</button>
             <button class="tab-button" onclick="openTab(event, 'payment-tab')">Payment</button>
         </div>
-        <!-- User Profile Tab -->
         <div id="user-tab" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- User Information -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">👤 User Information</h2>
                     <div class="space-y-4">
@@ -477,7 +493,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Edit Information -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">✏️ Edit Information</h2>
                     <div id="profile-messages" class="mb-4 space-y-2">
@@ -498,7 +513,6 @@
                         <button type="submit" name="update_profile" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Update Profile</button>
                     </form>
                 </div>
-                <!-- Account Statistics -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">📈 Account Statistics</h2>
                     <div class="space-y-6">
@@ -529,7 +543,6 @@
                 </div>
             </div>
         </div>
-        <!-- Change Password Tab -->
         <div id="change-password-tab" class="tab-content">
             <div class="card p-6">
                 <h2 class="text-xl section-title mb-4">🔒 Change Password</h2>
@@ -563,14 +576,12 @@
                 </form>
             </div>
         </div>
-        <!-- Settings Tab -->
         <div id="settings-tab" class="tab-content">
             <div class="card p-6">
                 <h2 class="text-xl section-title mb-4">⚙️ Settings</h2>
                 <div id="settings-messages" class="mb-4 space-y-2"></div>
                 <form id="settings-form" method="post" action="{% url 'dashboard' %}" class="space-y-8">
                     {% csrf_token %}
-                    <!-- System Settings -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">System Settings</h3>
                         <div class="space-y-4">
@@ -584,7 +595,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Subscription Settings -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Subscription Settings</h3>
                         <div class="space-y-4">
@@ -610,7 +620,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Notification Settings -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Notification Settings</h3>
                         <div class="space-y-4">
@@ -636,18 +645,15 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Save Button -->
                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                         <button type="submit" name="save_settings" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Save Settings</button>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- Subscription Tab -->
         <div id="subscription-tab" class="tab-content">
             <div id="subscription-messages" class="mb-4 space-y-2"></div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Free Tier -->
                 <div class="card p-6 subscription-tier">
                     <div class="text-center">
                         <h3 class="text-xl font-bold">Free</h3>
@@ -678,7 +684,6 @@
                     </div>
                     <button class="mt-6 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-lg" id="free-plan-button">{% if user.profile.subscription == 'free' %}Current Plan{% else %}Previous Plan{% endif %}</button>
                 </div>
-                <!-- Premium Tier -->
                 <div class="card p-6 subscription-tier popular">
                     <div class="popular-badge">POPULAR</div>
                     <div class="text-center">
@@ -721,7 +726,6 @@
                     <button onclick="openSubscriptionModal()" class="mt-6 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200" id="premium-plan-button">Upgrade Now</button>
                     {% endif %}
                 </div>
-                <!-- Subscription Status -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">📊 Subscription Status</h2>
                     <div class="space-y-4">
@@ -755,10 +759,8 @@
                 </div>
             </div>
         </div>
-        <!-- Payment Tab -->
         <div id="payment-tab" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Current Balance -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">💰 Current Balance</h2>
                     <img src="{% static 'images/usdt.png' %}" alt="binance Logo" class="w-14 h-auto mx-auto mb-4 rounded">
@@ -779,7 +781,6 @@
                         <p class="text-sm mb-4">Use your USDT balance to access premium features and predictions.</p>
                     </div>
                 </div>
-                <!-- Deposit USDT -->
                 <div class="card p-6 row-span-2">
                     <h2 class="text-xl section-title mb-4">💸 Deposit USDT</h2>
                     <div class="space-y-4">
@@ -797,16 +798,13 @@
                                 {% endfor %}
                             {% endif %}
                         </div>
-                        <!-- Deposit Method Tabs -->
-                        <div class="mb-6 flex space-x-1">
+                        <div class="mb-6 grid grid-cols-2 lg:flex lg:space-x-1 lg:gap-0 gap-2">
                             <button class="deposit-tab-button active" onclick="openDepositTab(event, 'nowpayments-tab')">NOWPayments</button>
                             <button class="deposit-tab-button" onclick="openDepositTab(event, 'binance-tab')">Binance Pay</button>
                         </div>
-                        <!-- NOWPayments Tab -->
                         <div id="nowpayments-tab" class="deposit-tab-content active">
                             <div class="text-center">
-                                <img src="{% static 'images/nowpayments_logo.png' %}" alt="NOWPayments Logo" class="w-21 h-auto mx-auto mb-4 rounded"> <!-- Assuming a logo image is available -->
-                                <h3 class="text-lg font-medium">Deposit via NOWPayments</h3>
+                                <img src="{% static 'images/nowpayments_logo.png' %}" alt="NOWPayments Logo" class="w-21 h-auto mx-auto mb-4 rounded"> <h3 class="text-lg font-medium">Deposit via NOWPayments</h3>
                                 <p class="text-sm opacity-75 mb-4">Enter the deposit amount and note to proceed with NOWPayments.</p>
                                 <form id="nowpayments-deposit-form" class="space-y-4">
                                     {% csrf_token %}
@@ -825,14 +823,12 @@
                                 <p class="text-sm text-red-500 mt-2">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after confirmation.</p>
                             </div>
                         </div>
-                        <!-- Binance Pay Tab -->
                         <div id="binance-tab" class="deposit-tab-content">
                             <div class="text-center">
                                 <img src="{% static 'images/binance_logo.jpg' %}" alt="Binance Logo" class="w-14 h-auto mx-auto mb-4 rounded">
                                 <h3 class="text-lg font-medium">Send USDT to Binance</h3>
                                 <p class="text-sm opacity-75 mb-4">Scan the QR code using binance mobile app to deposit USDT to your account.</p>
                                 <div class="flex justify-center mb-4">
-                                    <!-- Placeholder for QR code (replace with actual QR code image or generate dynamically) -->
                                     <img src="{% static 'images/binance_qr_code.png' %}" alt="Binance USDT QR Code" class="w-42 h-42 cursor-pointer" onclick="openModal(this.src)">
                                 </div>
                                 <form id="deposit-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
@@ -845,7 +841,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Deposit Instructions -->
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">📋 Deposit Instructions</h2>
                     <div class="space-y-4">
@@ -865,7 +860,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Payment History -->
             <div class="card p-6 mt-8">
                 <h2 class="text-xl section-title mb-4">💲 Payment History</h2>
                 <div class="overflow-x-auto">
@@ -931,14 +925,10 @@
                 </div>
             </div>
         </div>
-        <!-- Signal History Tab -->
         <div id="signal-history-tab" class="tab-content">
             <div class="card p-6">
                 <h2 class="text-xl section-title mb-4">📡 Signal History</h2>
                 <div class="mb-4">
-                <!-- <p class="text-gray-700 dark:text-gray-300">
-                    Total Predictions (All Users): <span class="font-bold">{{ total_predictions_all_users }}</span>
-                </p> -->
                 <p class="dark:text-gray-200">
                     Your Total Predictions: <span class="font-bold">{{ total_predictions_user }}</span>
                 </p>
@@ -990,13 +980,11 @@
             </div>
         </div>
     </main>
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p>© 2025 BinaryFusion. All rights reserved.</p>
         </div>
     </footer>
-    <!-- JavaScript -->
     <script>
         let initialSettings = {};
         // Theme Toggle Functionality (consistent with app.html)
