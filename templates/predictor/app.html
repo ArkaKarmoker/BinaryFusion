@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinaryFusion - Predictor</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
     
-    <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -25,7 +23,8 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
-            max-width: 400px; /* Smaller card size */
+            max-width: 400px; /* Smaller card size for desktop */
+            /* width: 100%; */
         }
         
         .light-mode .card {
@@ -214,6 +213,7 @@
             margin-top: 1rem;
             margin-bottom: 2rem;
             width: 100%;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
 
         /* Modal styles for enlarged image */
@@ -283,56 +283,87 @@
             background-color: #e2e8f0;
             color: #2d3748;
         }
+
+        /* MOBILE & TABLET RESPONSIVE OVERRIDES (Matches Dashboard) */
+        @media (max-width: 1023px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .card {
+                max-width: 100% !important; /* Full width on mobile */
+                width: 100%; /* Full width on mobile constrained by max-width */ 
+            }
+
+            .results-container {
+                flex-direction: column; /* Stack cards on mobile */
+                align-items: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .button-container {
+                flex-direction: column; /* Stack buttons on mobile */
+                align-items: center;
+            }
+            
+            .button-container button {
+                width: 100%; /* Full width buttons on mobile */
+                max-width: 300px;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
-    <!-- Trading Background Animation -->
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
         <span class="light-icon">🌙</span>
         <span class="dark-icon hidden">☀️</span>
     </button>
 
-    <!-- Modal for Enlarged Image -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="enlargedImage">
     </div>
 
-    <!-- Header -->
     <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
-        <div class="container mx-auto px-4 flex items-center justify-between">
-            <div>
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
                 <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
                 <p class="text-lg mt-1"><i>AI Powered Trading Signal</i></p>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
                 {% if user.is_authenticated %}
-                    <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white">🎉 Welcome, {{ user.username }}!</span>
-                    <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base" target="_blank"><i class="fa fa-dashboard"> Dashboard</i></a>
-                    <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base">Logout</a>
+                    <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center">🎉 Welcome, {{ user.username }}!</span>
+                    <div class="flex space-x-4">
+                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank"><i class="fa fa-dashboard"> Dashboard</i></a>
+                        <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap">Logout</a>
+                    </div>
                 {% else %}
-                    <a href="{% url 'login' %}" class="text-blue-500 hover:underline text-base">Login</a>
-                    <a href="{% url 'register' %}" class="text-blue-500 hover:underline text-base">Register</a>
+                    <div class="flex space-x-4">
+                        <a href="{% url 'login' %}" class="text-blue-200 hover:text-white hover:underline text-base">Login</a>
+                        <a href="{% url 'register' %}" class="text-blue-200 hover:text-white hover:underline text-base">Register</a>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 flex-grow">
-        <!-- Form Section -->
         <section class="mb-8">
-            <div class="card p-6 max-w-md mx-auto">
+            <div class="card p-6 max-w-md mx-auto w-full">
                 <h2 class="text-xl section-title mb-4 w-full text-center">Enter Trading Asset</h2>
-                <form id="predict-form" class="flex space-x-4" onsubmit="submitPrediction(event)">
+                <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4" onsubmit="submitPrediction(event)">
                     {% csrf_token %}
                     <input type="text" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
                            class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
                     <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center">
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap">
                         Predict
                         <span id="loading-spinner" class="spinner"></span>
                         <span id="countdown-timer" class="countdown"></span>
@@ -342,31 +373,26 @@
             </div>
         </section>
 
-        <!-- Results Section -->
         <div id="results-wrapper" class="hidden">
             <section id="results-section" class="results-container">
-                <!-- Content will be dynamically inserted here -->
-            </section>
-            <!-- Button Container - now inside results wrapper -->
+                </section>
             <div id="button-container" class="button-container">
-                <button onclick="sendToTelegram()" class="bg-transparent hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                <button onclick="sendToTelegram()" class="bg-transparent hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded w-full sm:w-auto">
                     <i class="fa fa-telegram"> Send to Telegram</i>
                 </button>
-                <button onclick="closeResults()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                <button onclick="closeResults()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 w-full sm:w-auto">
                     <i class="fa fa-close"> Close</i>
                 </button>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p>© 2025 BinaryFusion. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript for Theme Toggling, AJAX, Background Animation, and Modal -->
     <script>
         // Theme Toggle Functionality
         function toggleTheme() {
@@ -612,7 +638,6 @@
             }
 
             return `
-                <!-- Generated Signal Card -->
                 <div class="card p-6">
                     <h2 class="text-2xl section-title mb-4">⚡ Generated Signal</h2>
                     <div class="space-y-3">
@@ -624,14 +649,12 @@
                         <p><span class="font-semibold"><i>Use 1 Step Martingale if loss.</i> <span class="tooltip"><i class="fa fa-info-circle"></i><span class="tooltiptext">1-Step Martingale: Double your position size after a loss to recover the loss with the next trade, then revert to the original size. Use cautiously due to high risk.</span></span></p>
                     </div>
                 </div>
-                <!-- Candlestick Chart Card -->
                 <div class="card p-6">
                     <h3 class="text-xl section-title mb-4">📊 Candlestick Chart (M5)</h3>
                     <div class="graph-container">
                         <img src="data:image/png;base64,${result.candlestick_plot}" alt="Candlestick Chart">
                     </div>
                 </div>
-                <!-- Technical Indicators Card -->
                 <div class="card p-6">
                     <h3 class="text-xl section-title mb-4">⚖ Technical Indicators</h3>
                     ${indicatorContent}
