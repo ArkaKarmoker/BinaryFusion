@@ -341,7 +341,7 @@
                 {% if user.is_authenticated %}
                     <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center">🎉 Welcome, {{ user.username }}!</span>
                     <div class="flex space-x-4">
-                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank"><i class="fa fa-dashboard"> Dashboard</i></a>
+                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank"><i class="fa fa-dashboard"></i> Dashboard</a>
                         <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap">Logout</a>
                     </div>
                 {% else %}
@@ -377,11 +377,20 @@
             <section id="results-section" class="results-container">
                 </section>
             <div id="button-container" class="button-container">
-                <button onclick="sendToTelegram()" class="bg-transparent hover:bg-blue-500 text-white font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded w-full sm:w-auto">
-                    <i class="fa fa-telegram"> Send to Telegram</i>
+                <button onclick="sendToTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                    <i class="fa fa-telegram"></i> Telegram
                 </button>
-                <button onclick="closeResults()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 w-full sm:w-auto">
-                    <i class="fa fa-close"> Close</i>
+
+                <button onclick="copySignal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                    <i class="fa fa-copy"></i> Copy
+                </button>
+
+                <button onclick="shareSignal()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                    <i class="fa fa-share-alt"></i> Share
+                </button>
+
+                <button onclick="closeResults()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                    <i class="fa fa-close"></i> Close
                 </button>
             </div>
         </div>
@@ -394,6 +403,9 @@
     </footer>
 
     <script>
+        // Global variable to store the latest prediction data for sharing
+        let latestPrediction = null;
+
         // Theme Toggle Functionality
         function toggleTheme() {
             const body = document.getElementById('body');
@@ -553,6 +565,9 @@
                 countdownTimer.style.display = 'none';
                 form.querySelector('button').disabled = false;
 
+                // Save data for Telegram sharing
+                latestPrediction = data;
+
                 // Update results section
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = renderResults(data);
@@ -575,6 +590,7 @@
                 spinner.style.display = 'none';
                 countdownTimer.style.display = 'none';
                 form.querySelector('button').disabled = false;
+                latestPrediction = null; // Reset data on error
                 
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = `
@@ -661,16 +677,91 @@
                 </div>`;
         }
 
-        // Send to Telegram (inactive for now)
+        // Send to Telegram Logic
         function sendToTelegram() {
-            // Placeholder for Telegram functionality
-            alert('Send to Telegram functionality is not implemented yet.');
+            if (!latestPrediction || latestPrediction.error) {
+                alert('No valid signal to share. Please generate a prediction first.');
+                return;
+            }
+
+            // Construct the message
+            const message = `📊 *BinaryFusion Signal* 📊\n\n` +
+                            `💰 Asset: ${latestPrediction.symbol}\n` +
+                            `🚀 Signal: ${latestPrediction.direction}\n` +
+                            `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `⏳ Timeframe: M5\n` +
+                            `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
+                            `⚠️ Note: Use 1 Step Martingale if loss.`;
+
+            // Encode the message for URL
+            const encodedMessage = encodeURIComponent(message);
+            // URL to share text via Telegram app (opens chat picker)
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodedMessage}`;
+
+            // Open in new tab/window (triggers app on mobile)
+            window.open(telegramUrl, '_blank');
+        }
+
+        // Copy Signal Logic
+        function copySignal() {
+            if (!latestPrediction || latestPrediction.error) {
+                alert('No valid signal to copy. Please generate a prediction first.');
+                return;
+            }
+
+            // Construct the message (same format as Telegram)
+            const message = `📊 *BinaryFusion Signal* 📊\n\n` +
+                            `💰 Asset: ${latestPrediction.symbol}\n` +
+                            `🚀 Signal: ${latestPrediction.direction}\n` +
+                            `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `⏳ Timeframe: M5\n` +
+                            `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
+                            `⚠️ Note: Use 1 Step Martingale if loss.`;
+
+            // Use Clipboard API
+            navigator.clipboard.writeText(message).then(() => {
+                alert('Signal copied to clipboard! 📋');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy text.');
+            });
+        }
+
+        // Share Signal Logic (Web Share API)
+        function shareSignal() {
+            if (!latestPrediction || latestPrediction.error) {
+                alert('No valid signal to share. Please generate a prediction first.');
+                return;
+            }
+
+            // Construct the message
+            const message = `📊 *BinaryFusion Signal* 📊\n\n` +
+                            `💰 Asset: ${latestPrediction.symbol}\n` +
+                            `🚀 Signal: ${latestPrediction.direction}\n` +
+                            `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `⏳ Timeframe: M5\n` +
+                            `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
+                            `⚠️ Note: Use 1 Step Martingale if loss.`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'BinaryFusion Signal',
+                    text: message,
+                    url: window.location.href
+                })
+                .then(() => console.log('Successful share'))
+                .catch((error) => console.log('Error sharing', error));
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert('Web Share API is not supported on this browser. Please use the "Copy" button instead.');
+            }
         }
 
         // Close Results and Refresh Page
         function closeResults() {
             document.getElementById('results-wrapper').classList.add('hidden');
             document.getElementById('symbol').value = ''; // Clear the input field
+            latestPrediction = null; // Clear saved data
         }
     </script>
 </body>
