@@ -746,8 +746,9 @@
             if (navigator.share) {
                 navigator.share({
                     title: 'BinaryFusion Signal',
-                    text: message,
-                    url: window.location.href
+                    // combine text and URL into the text field to prevent duplication in Messenger
+                    text: message + "\n\n" + window.location.href,
+                    // url: window.location.href // Removed URL param to fix double-posting bug
                 })
                 .then(() => console.log('Successful share'))
                 .catch((error) => console.log('Error sharing', error));
