@@ -216,6 +216,64 @@
             flex-wrap: wrap; /* Allow wrapping on small screens */
         }
 
+        /* Feedback Buttons Custom Styles */
+        .feedback-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem; /* px-6 py-2 */
+            border-radius: 9999px; /* rounded-full */
+            border-width: 1px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            transition-property: all;
+            transition-duration: 200ms;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .feedback-btn:focus {
+            outline: none;
+        }
+
+        /* Light Mode Colors for Feedback Buttons */
+        .light-mode .feedback-btn {
+            background-color: #ffffff;
+            color: #374151; /* text-gray-700 */
+            border-color: #e5e7eb; /* border-gray-200 */
+        }
+        
+        .light-mode .feedback-btn.like:hover {
+            background-color: #f0fdf4; /* hover:bg-green-50 */
+            color: #16a34a; /* hover:text-green-600 */
+            border-color: #bbf7d0;
+        }
+        
+        .light-mode .feedback-btn.dislike:hover {
+            background-color: #fef2f2; /* hover:bg-red-50 */
+            color: #dc2626; /* hover:text-red-600 */
+            border-color: #fecaca;
+        }
+
+        /* Dark Mode Colors for Feedback Buttons */
+        .dark-mode .feedback-btn {
+            background-color: #4a5568; /* gray-700 */
+            color: #e2e8f0; /* gray-200 */
+            border-color: #718096; /* border-gray-600 */
+        }
+
+        .dark-mode .feedback-btn.like:hover {
+             background-color: #2f855a; /* Dark Green */
+             color: white;
+             border-color: #2f855a;
+        }
+        
+        .dark-mode .feedback-btn.dislike:hover {
+             background-color: #c53030; /* Dark Red */
+             color: white;
+             border-color: #c53030;
+        }
+
         /* Modal styles for enlarged image */
         .modal {
             display: none;
@@ -375,17 +433,27 @@
 
         <div id="results-wrapper" class="hidden">
             <section id="results-section" class="results-container">
-                </section>
+            </section>
+
+            <div id="feedback-container" class="flex justify-center items-center gap-4 mt-4 mb-2 w-full">
+                <button class="feedback-btn like">
+                    <i class="fa fa-thumbs-up"></i> <span>Like</span>
+                </button>
+                <button class="feedback-btn dislike">
+                    <i class="fa fa-thumbs-down"></i> <span>Dislike</span>
+                </button>
+            </div>
+
             <div id="button-container" class="button-container">
-                <button onclick="sendToTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-telegram" onclick="sendToTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
                     <i class="fa fa-telegram"></i> Telegram
                 </button>
 
-                <button onclick="copySignal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-copy" onclick="copySignal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
                     <i class="fa fa-copy"></i> Copy
                 </button>
 
-                <button onclick="shareSignal()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-share" onclick="shareSignal()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
                     <i class="fa fa-share-alt"></i> Share
                 </button>
 
@@ -524,6 +592,12 @@
             const resultsWrapper = document.getElementById('results-wrapper');
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
+            // Grab elements to hide/show
+            const feedbackContainer = document.getElementById('feedback-container');
+            const btnTelegram = document.getElementById('btn-telegram');
+            const btnCopy = document.getElementById('btn-copy');
+            const btnShare = document.getElementById('btn-share');
+
             // Show spinner, countdown, and disable button
             spinner.style.display = 'inline-block';
             countdownTimer.style.display = 'inline-block';
@@ -568,6 +642,20 @@
                 // Save data for Telegram sharing
                 latestPrediction = data;
 
+                // Logic to hide buttons if error exists in response
+                if (data.error) {
+                    feedbackContainer.style.display = 'none';
+                    btnTelegram.style.display = 'none';
+                    btnCopy.style.display = 'none';
+                    btnShare.style.display = 'none';
+                } else {
+                    // Reset display if success (remove inline style to revert to CSS classes)
+                    feedbackContainer.style.display = '';
+                    btnTelegram.style.display = '';
+                    btnCopy.style.display = '';
+                    btnShare.style.display = '';
+                }
+
                 // Update results section
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = renderResults(data);
@@ -592,6 +680,12 @@
                 form.querySelector('button').disabled = false;
                 latestPrediction = null; // Reset data on error
                 
+                // Logic to hide buttons on catch error
+                feedbackContainer.style.display = 'none';
+                btnTelegram.style.display = 'none';
+                btnCopy.style.display = 'none';
+                btnShare.style.display = 'none';
+
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = `
                     <div class="card p-6 error-message">
