@@ -12,6 +12,16 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <style>
+        /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus {
+            outline: none !important;
+        }
+        /* ---------------------------------------------------- */
+        
         /* Consistent with app.html styling */
         .light-mode {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
