@@ -79,7 +79,7 @@ def submit_feedback(request):
         try:
             data = json.loads(request.body)
             prediction_id = data.get('prediction_id')
-            vote = data.get('vote')  # Expected 'LIKE' or 'DISLIKE'
+            vote = data.get('vote')  # Expected 'LIKE', 'DISLIKE', or 'CLEAR'
 
             if not prediction_id or not vote:
                 return JsonResponse({'error': 'Missing data'}, status=400)
@@ -87,12 +87,20 @@ def submit_feedback(request):
             # Get the prediction and ensure it belongs to the logged-in user
             prediction = Prediction.objects.get(id=prediction_id, user=request.user)
             
-            # Update feedback
-            prediction.feedback = vote
+            # Update feedback logic to handle CLEAR
+            if vote == 'CLEAR':
+                prediction.feedback = None
+                action = 'cleared'
+            elif vote in ['LIKE', 'DISLIKE']:
+                prediction.feedback = vote
+                action = vote
+            else:
+                return JsonResponse({'error': 'Invalid vote option'}, status=400)
+
             prediction.save()
             
-            logger.info(f"Feedback '{vote}' received for prediction {prediction_id}")
-            return JsonResponse({'status': 'success', 'vote': vote})
+            logger.info(f"Feedback '{action}' received for prediction {prediction_id}")
+            return JsonResponse({'status': 'success', 'vote': action})
             
         except Prediction.DoesNotExist:
             logger.warning(f"Prediction not found or unauthorized access attempt. ID: {prediction_id}")

@@ -243,17 +243,9 @@
             border-color: #e5e7eb; /* border-gray-200 */
         }
         
-        .light-mode .feedback-btn.like:hover {
-            background-color: #f0fdf4; /* hover:bg-green-50 */
-            color: #16a34a; /* hover:text-green-600 */
-            border-color: #bbf7d0;
-        }
-        
-        .light-mode .feedback-btn.dislike:hover {
-            background-color: #fef2f2; /* hover:bg-red-50 */
-            color: #dc2626; /* hover:text-red-600 */
-            border-color: #fecaca;
-        }
+        /* HOVER EFFECTS REMOVED AS REQUESTED */
+        /* .light-mode .feedback-btn.like:hover { ... } */
+        /* .light-mode .feedback-btn.dislike:hover { ... } */
 
         /* Dark Mode Colors for Feedback Buttons */
         .dark-mode .feedback-btn {
@@ -262,17 +254,9 @@
             border-color: #718096; /* border-gray-600 */
         }
 
-        .dark-mode .feedback-btn.like:hover {
-             background-color: #2f855a; /* Dark Green */
-             color: white;
-             border-color: #2f855a;
-        }
-        
-        .dark-mode .feedback-btn.dislike:hover {
-             background-color: #c53030; /* Dark Red */
-             color: white;
-             border-color: #c53030;
-        }
+        /* HOVER EFFECTS REMOVED AS REQUESTED */
+        /* .dark-mode .feedback-btn.like:hover { ... } */
+        /* .dark-mode .feedback-btn.dislike:hover { ... } */
 
         /* --- NEW ACTIVE STATE STYLES FOR FEEDBACK BUTTONS --- */
         /* These ensure the selected button highlights correctly in both modes */
@@ -743,15 +727,31 @@
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
             const likeBtn = document.querySelector('.feedback-btn.like');
             const dislikeBtn = document.querySelector('.feedback-btn.dislike');
+            
+            // Variable to hold the final vote to send (LIKE, DISLIKE, or CLEAR)
+            let finalVote = voteType;
 
-            // Visual Feedback (Immediate UI update)
-            // Use the specific classes we defined in CSS to ensure override
+            // Visual Feedback (Immediate UI update) with Toggle Logic
             if (voteType === 'LIKE') {
-                likeBtn.classList.add('active-like');
-                dislikeBtn.classList.remove('active-dislike');
-            } else {
-                dislikeBtn.classList.add('active-dislike');
-                likeBtn.classList.remove('active-like');
+                if (likeBtn.classList.contains('active-like')) {
+                    // If already selected, UNSELECT it (Toggle OFF)
+                    likeBtn.classList.remove('active-like');
+                    finalVote = 'CLEAR'; // Send a different signal to database to clear vote
+                } else {
+                    // Select LIKE, deselect DISLIKE
+                    likeBtn.classList.add('active-like');
+                    dislikeBtn.classList.remove('active-dislike');
+                }
+            } else if (voteType === 'DISLIKE') {
+                if (dislikeBtn.classList.contains('active-dislike')) {
+                    // If already selected, UNSELECT it (Toggle OFF)
+                    dislikeBtn.classList.remove('active-dislike');
+                    finalVote = 'CLEAR'; // Send a different signal to database to clear vote
+                } else {
+                    // Select DISLIKE, deselect LIKE
+                    dislikeBtn.classList.add('active-dislike');
+                    likeBtn.classList.remove('active-like');
+                }
             }
 
             // Send AJAX request
@@ -763,7 +763,7 @@
                 },
                 body: JSON.stringify({
                     prediction_id: latestPrediction.prediction_id,
-                    vote: voteType
+                    vote: finalVote // Sends 'LIKE', 'DISLIKE' or 'CLEAR'
                 })
             })
             .then(response => response.json())
