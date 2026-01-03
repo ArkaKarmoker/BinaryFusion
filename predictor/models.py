@@ -20,6 +20,13 @@ class Prediction(models.Model):
     impact_time = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Added feedback field for Like/Dislike feature
+    FEEDBACK_CHOICES = [
+        ('LIKE', 'Like'),
+        ('DISLIKE', 'Dislike'),
+    ]
+    feedback = models.CharField(max_length=10, choices=FEEDBACK_CHOICES, null=True, blank=True)
+
     def save(self, *args, **kwargs):
         if self.pk:  # If updating an existing instance, just save without token check/deduction
             super().save(*args, **kwargs)

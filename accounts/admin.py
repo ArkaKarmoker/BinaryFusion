@@ -70,12 +70,23 @@ class PaymentHistoryAdmin(admin.ModelAdmin):
 
 # Define a custom admin for Prediction
 class PredictionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'asset', 'timeframe', 'direction', 'impact_time', 'created_at')
-    list_filter = ('user', 'asset', 'direction', 'created_at')
+    # Added feedback_emoji to the list display
+    list_display = ('user', 'asset', 'timeframe', 'direction', 'impact_time', 'feedback_emoji', 'created_at')
+    # Added feedback to filters
+    list_filter = ('user', 'asset', 'direction', 'feedback', 'created_at')
     search_fields = ('user__username', 'asset')
     readonly_fields = ('created_at', 'impact_time')
     list_per_page = 10
     ordering = ['-created_at']
+
+    def feedback_emoji(self, obj):
+        if obj.feedback == 'LIKE':
+            return '👍'
+        elif obj.feedback == 'DISLIKE':
+            return '👎'
+        return '-'
+    
+    feedback_emoji.short_description = 'Feedback'
 
 # New admin for SubscriptionSettings
 class SubscriptionSettingsAdmin(admin.ModelAdmin):

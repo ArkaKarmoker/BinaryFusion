@@ -274,6 +274,34 @@
              border-color: #c53030;
         }
 
+        /* --- NEW ACTIVE STATE STYLES FOR FEEDBACK BUTTONS --- */
+        /* These ensure the selected button highlights correctly in both modes */
+        
+        .light-mode .feedback-btn.active-like {
+            background-color: #dcfce7; /* bg-green-100 */
+            color: #16a34a; /* text-green-600 */
+            border-color: #22c55e; /* border-green-500 */
+        }
+        
+        .light-mode .feedback-btn.active-dislike {
+            background-color: #fee2e2; /* bg-red-100 */
+            color: #dc2626; /* text-red-600 */
+            border-color: #ef4444; /* border-red-500 */
+        }
+
+        .dark-mode .feedback-btn.active-like {
+            background-color: #2f855a; /* Dark Green */
+            color: white;
+            border-color: #48bb78;
+        }
+
+        .dark-mode .feedback-btn.active-dislike {
+            background-color: #c53030; /* Dark Red */
+            color: white;
+            border-color: #f56565;
+        }
+        /* ---------------------------------------------------- */
+
         /* Modal styles for enlarged image */
         .modal {
             display: none;
@@ -436,10 +464,10 @@
             </section>
 
             <div id="feedback-container" class="flex justify-center items-center gap-4 mt-4 mb-2 w-full">
-                <button class="feedback-btn like">
+                <button class="feedback-btn like" onclick="sendFeedback('LIKE')">
                     <i class="fa fa-thumbs-up"></i> <span>Like</span>
                 </button>
-                <button class="feedback-btn dislike">
+                <button class="feedback-btn dislike" onclick="sendFeedback('DISLIKE')">
                     <i class="fa fa-thumbs-down"></i> <span>Dislike</span>
                 </button>
             </div>
@@ -604,6 +632,14 @@
             form.querySelector('button').disabled = true;
             resultsWrapper.classList.add('hidden'); // Hide previous results
 
+            // --- ADDED: RESET FEEDBACK BUTTON STYLES ON NEW SEARCH ---
+            const likeBtn = document.querySelector('.feedback-btn.like');
+            const dislikeBtn = document.querySelector('.feedback-btn.dislike');
+            // Remove the new specific active classes
+            likeBtn.classList.remove('active-like');
+            dislikeBtn.classList.remove('active-dislike');
+            // ---------------------------------------------------------
+
             // Start countdown from 5 seconds
             let timeLeft = 5;
             countdownTimer.textContent = `${timeLeft}s`;
@@ -695,6 +731,54 @@
                 resultsWrapper.classList.remove('hidden'); // Show error and buttons
             });
         }
+
+        // --- ADDED: FEEDBACK LOGIC FUNCTION ---
+        function sendFeedback(voteType) {
+            // Check if we have a valid prediction ID from the global variable
+            if (!latestPrediction || !latestPrediction.prediction_id) {
+                alert('No active prediction to vote on.');
+                return;
+            }
+
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            const likeBtn = document.querySelector('.feedback-btn.like');
+            const dislikeBtn = document.querySelector('.feedback-btn.dislike');
+
+            // Visual Feedback (Immediate UI update)
+            // Use the specific classes we defined in CSS to ensure override
+            if (voteType === 'LIKE') {
+                likeBtn.classList.add('active-like');
+                dislikeBtn.classList.remove('active-dislike');
+            } else {
+                dislikeBtn.classList.add('active-dislike');
+                likeBtn.classList.remove('active-like');
+            }
+
+            // Send AJAX request
+            fetch('/submit-feedback/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    prediction_id: latestPrediction.prediction_id,
+                    vote: voteType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Feedback saved:', data.vote);
+                } else {
+                    console.error('Error saving feedback:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Network error:', error);
+            });
+        }
+        // --------------------------------------
 
         // Function to render results dynamically
         function renderResults(result) {

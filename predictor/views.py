@@ -43,6 +43,10 @@ def app(request):
                 
                 result['current_tokens'] = request.user.profile.tokens
                 
+                # --- ADDED: Pass the prediction ID to the frontend for feedback ---
+                result['prediction_id'] = prediction.id
+                # ------------------------------------------------------------------
+                
                 return JsonResponse(result)
             except Exception as e:
                 logger.error(f"Prediction error: {str(e)}")
@@ -67,3 +71,34 @@ def symbol_suggestions(request):
                 return JsonResponse({'error': str(e)})
         return JsonResponse({'suggestions': []})
     return JsonResponse({'error': 'Invalid request method'})
+
+@csrf_exempt
+@login_required(login_url='login')
+def submit_feedback(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            prediction_id = data.get('prediction_id')
+            vote = data.get('vote')  # Expected 'LIKE' or 'DISLIKE'
+
+            if not prediction_id or not vote:
+                return JsonResponse({'error': 'Missing data'}, status=400)
+
+            # Get the prediction and ensure it belongs to the logged-in user
+            prediction = Prediction.objects.get(id=prediction_id, user=request.user)
+            
+            # Update feedback
+            prediction.feedback = vote
+            prediction.save()
+            
+            logger.info(f"Feedback '{vote}' received for prediction {prediction_id}")
+            return JsonResponse({'status': 'success', 'vote': vote})
+            
+        except Prediction.DoesNotExist:
+            logger.warning(f"Prediction not found or unauthorized access attempt. ID: {prediction_id}")
+            return JsonResponse({'error': 'Prediction not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Feedback error: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=500)
+            
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
