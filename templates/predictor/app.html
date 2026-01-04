@@ -440,7 +440,7 @@
                 <h2 class="text-xl section-title mb-4 w-full text-center">Enter Trading Asset</h2>
                 <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4" onsubmit="submitPrediction(event)">
                     {% csrf_token %}
-                    <input type="text" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
+                    <input type="search" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
                            class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
                     <button type="submit"
                             class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap">
