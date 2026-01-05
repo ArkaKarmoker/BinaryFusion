@@ -6,13 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - BinaryFusion</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
 
-    <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus {
+            outline: none !important;
+        }
+        /* ---------------------------------------------------- */
+        
         /* Custom styles matching app.html */
         .light-mode {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -182,37 +190,42 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
-    <!-- Trading Background Animation -->
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
         <span class="light-icon">🌙</span>
         <span class="dark-icon hidden">☀️</span>
     </button>
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
-            <p class="text-lg mt-1">Login to Access Asset Price Predictor</p>
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
+                <p class="text-lg mt-1"><i>Login to Access Asset Price Predictor</i></p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
+                <a href="/" class="inline-block bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100 transition text-base font-semibold shadow-md whitespace-nowrap">
+                    <i class="fa fa-arrow-left mr-1"></i> Go to home page
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
         <div class="login-card p-8 w-full max-w-md">
             {% if messages %}
                 <div class="mb-6">
                     {% for message in messages %}
-                        <p class="message {% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm font-medium">
-                            {{ message }}
-                        </p>
+                        <div class="message {% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm font-medium flex justify-between items-center transition-opacity duration-500 ease-in-out" role="alert">
+                            <span>{{ message }}</span>
+                            <button onclick="dismissMessage(this.parentElement)" class="ml-3 focus:outline-none hover:opacity-75">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}
             
-            <!-- <h2 class="text-xl section-title mb-6">🔒 Account Login</h2> -->
             <div class="flex justify-center">
                 <h2 class="text-xl section-title mb-6">🔒 Account Login</h2>
             </div>
@@ -228,9 +241,15 @@
                 
                 <div>
                     <label for="password" class="block text-sm font-medium mb-1">Password</label>
-                    <input id="password" name="password" type="password" 
-                           class="input-field w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           placeholder="Enter your password" required>
+                    <div class="relative">
+                        <input id="password" name="password" type="password" 
+                               class="input-field w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" 
+                               placeholder="Enter your password" required>
+                        <button type="button" onclick="togglePassword()"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
+                            <i id="eyeIcon" class="fa fa-eye text-lg"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="flex justify-end">
@@ -271,15 +290,39 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p>© 2025 BinaryFusion. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript for Theme Toggling and Background Animation -->
     <script>
+        // --- FIX FOR FORM RESUBMISSION ON RELOAD ---
+        // This prevents the "Confirm Form Resubmission" popup by replacing 
+        // the history state immediately after the page loads.
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Message Dismissal Logic
+        function dismissMessage(element) {
+            // Get the container (the parent div with class mb-6)
+            const container = element.parentElement;
+
+            // Add opacity 0 to trigger css transition on the message itself
+            element.style.opacity = '0';
+            
+            // Wait for transition to finish then remove element
+            setTimeout(() => {
+                element.remove();
+                
+                // Check if the container has no more children (messages)
+                if (container.children.length === 0) {
+                    container.remove(); // Remove the container to eliminate extra spacing
+                }
+            }, 500); // 500ms matches the duration-500 tailwind class
+        }
+
         // Theme Toggle Functionality
         function toggleTheme() {
             const body = document.getElementById('body');
@@ -301,6 +344,22 @@
             }
         }
 
+        // Toggle Password Visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
         // Load saved theme preference
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
@@ -317,6 +376,14 @@
 
             // Initialize trading animation
             initTradingAnimation();
+
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.message');
+            if (messages.length > 0) {
+                setTimeout(() => {
+                    messages.forEach(msg => dismissMessage(msg));
+                }, 5000); // 5000ms = 5 seconds
+            }
         });
 
         // Trading Background Animation
