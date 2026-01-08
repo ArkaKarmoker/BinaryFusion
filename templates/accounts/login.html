@@ -233,14 +233,14 @@
             <form method="POST" action="{% url 'login' %}" class="space-y-4">
                 {% csrf_token %}
                 <div>
-                    <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                    <label for="username" class="block text-sm font-medium mb-1"><i class="fa fa-user"></i> Username</label>
                     <input id="username" name="username" type="text" 
                            class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Enter your username" required>
                 </div>
                 
                 <div>
-                    <label for="password" class="block text-sm font-medium mb-1">Password</label>
+                    <label for="password" class="block text-sm font-medium mb-1"><i class="fa fa-lock"></i> Password</label>
                     <div class="relative">
                         <input id="password" name="password" type="password" 
                                class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" 

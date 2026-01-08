@@ -6,13 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - BinaryFusion</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
     
-    <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus {
+            outline: none !important;
+        }
+        /* ---------------------------------------------------- */
+
         /* Custom styles matching app.html */
         .light-mode {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -58,27 +66,28 @@
             color: #e2e8f0;
         }
         
-        .input-field {
+        /* Input Styling applied to Django Form Fields */
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem; /* Matches rounded-lg */
+            border: 1px solid;
             transition: all 0.3s ease;
         }
-        
-        .light-mode .input-field {
+
+        .light-mode .form-group input {
             background-color: #ffffff;
             color: #2d3748;
             border-color: #e2e8f0;
         }
         
-        .dark-mode .input-field {
+        .dark-mode .form-group input {
             background-color: #4a5568;
             color: #e2e8f0;
             border-color: #718096;
         }
-        
-        /* .input-field:focus {
-            ring-color: #4a90e2;
-        } */
 
-        .input-field:focus {
+        .form-group input:focus {
             outline: none;
             box-shadow: 0 0 0 2px #4a90e2;
         }
@@ -144,29 +153,11 @@
         
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             font-size: 0.875rem;
             font-weight: 500;
         }
         
-        .form-group input {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            border: 1px solid;
-        }
-        
-        .light-mode .form-group input {
-            background-color: #ffffff;
-            border-color: #e2e8f0;
-        }
-        
-        .dark-mode .form-group input {
-            background-color: #4a5568;
-            border-color: #718096;
-            color: #e2e8f0;
-        }
-
         /* Google Button and Divider Dark Mode Fix */
         .divider-container {
             background: transparent;
@@ -212,32 +203,38 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
-    <!-- Trading Background Animation -->
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
         <span class="light-icon">🌙</span>
         <span class="dark-icon hidden">☀️</span>
     </button>
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
-            <p class="text-lg mt-1">Create Your Account</p>
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
+                <p class="text-lg mt-1"><i>Create Your Account</i></p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
+                <a href="/" class="inline-block bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100 transition text-base font-semibold shadow-md whitespace-nowrap">
+                    <i class="fa fa-arrow-left mr-1"></i> Go to home page
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
         <div class="register-card p-8 w-full max-w-md">
             {% if messages %}
                 <div class="mb-6">
                     {% for message in messages %}
-                        <p class="message {% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm font-medium">
-                            {{ message }}
-                        </p>
+                        <div class="message {% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm font-medium flex justify-between items-center transition-opacity duration-500 ease-in-out" role="alert">
+                            <span>{{ message }}</span>
+                            <button onclick="dismissMessage(this.parentElement)" class="ml-3 focus:outline-none hover:opacity-75">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -256,15 +253,29 @@
                                 <i class="fa fa-user"></i> Username
                             {% elif field.name == 'email' %}
                                 <i class="fa fa-envelope"></i> Email
-                            {% elif field.name == 'password1' %}
-                                <i class="fa fa-lock"></i> Password
-                            {% elif field.name == 'password2' %}
-                                <i class="fa fa-check-circle"></i> Confirm Password
+                            {% elif field.name == 'first_name' %}
+                                <i class="fa fa-id-card"></i> First Name
+                            {% elif field.name == 'last_name' %}
+                                <i class="fa fa-id-card"></i> Last Name
+                            {% elif 'password' in field.name %}
+                                <i class="fa fa-lock"></i> {{ field.label }}
                             {% else %}
-                                {{ field.label }}
+                                <i class="fa fa-pencil-square-o"></i> {{ field.label }}
                             {% endif %}
                         </label>
-                        {{ field }}
+                        
+                        <div class="relative">
+                            {{ field }}
+                            
+                            {% if 'password' in field.name %}
+                            <button type="button" onclick="togglePassword('{{ field.auto_id }}', this)"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
+                                    style="top: 50%; transform: translateY(-50%);">
+                                <i class="fa fa-eye text-lg"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+
                         {% if field.errors %}
                             <div class="text-red-500 text-xs mt-1">
                                 {{ field.errors|join:", " }}
@@ -279,7 +290,7 @@
                 {% endfor %}
                 
                 <button type="submit" 
-                        class="register-button w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                        class="register-button w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 mt-2">
                     <i class="fa fa-user-plus"></i> Register
                 </button>
             </form>
@@ -312,15 +323,46 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p>© 2025 BinaryFusion. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript for Theme Toggling and Background Animation -->
     <script>
+        // --- FIX FOR FORM RESUBMISSION ON RELOAD ---
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Message Dismissal Logic
+        function dismissMessage(element) {
+            const container = element.parentElement;
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.remove();
+                if (container.children.length === 0) {
+                    container.remove();
+                }
+            }, 500);
+        }
+
+        // Toggle Password Visibility (Handles multiple fields via ID)
+        function togglePassword(fieldId, btnElement) {
+            const passwordInput = document.getElementById(fieldId);
+            const eyeIcon = btnElement.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
         // Theme Toggle Functionality
         function toggleTheme() {
             const body = document.getElementById('body');
@@ -358,6 +400,14 @@
 
             // Initialize trading animation
             initTradingAnimation();
+
+            // Auto-dismiss messages after 5 seconds
+            const messages = document.querySelectorAll('.message');
+            if (messages.length > 0) {
+                setTimeout(() => {
+                    messages.forEach(msg => dismissMessage(msg));
+                }, 5000);
+            }
         });
 
         // Trading Background Animation
