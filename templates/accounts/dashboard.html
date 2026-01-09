@@ -300,8 +300,18 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 1rem;
-            color: white;
+            /* Removed fixed color: white to handle light/dark mode */
         }
+        
+        /* Specific icon colors for light and dark modes */
+        .light-mode .progress-circle .icon {
+            color: #4a90e2; /* Blue to be visible on white card */
+        }
+        
+        .dark-mode .progress-circle .icon {
+            color: white; /* White to be visible on dark card */
+        }
+
         /* DataTable Dark Mode Styling */
         .dark-mode .dataTable {
             background-color: #2d3748;
@@ -572,15 +582,24 @@
                     {% csrf_token %}
                     <div>
                         <label for="current_password" class="block text-sm font-medium mb-1">Current Password</label>
-                        <input type="password" name="current_password" id="current_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter current password" required>
+                        <div class="relative">
+                            <input type="password" name="current_password" id="current_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" placeholder="Enter current password" required>
+                            <i class="fas fa-eye absolute right-3 top-3 cursor-pointer text-gray-500" onclick="togglePasswordVisibility('current_password', this)"></i>
+                        </div>
                     </div>
                     <div>
                         <label for="new_password" class="block text-sm font-medium mb-1">New Password</label>
-                        <input type="password" name="new_password" id="new_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter new password" required>
+                        <div class="relative">
+                            <input type="password" name="new_password" id="new_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" placeholder="Enter new password" required>
+                            <i class="fas fa-eye absolute right-3 top-3 cursor-pointer text-gray-500" onclick="togglePasswordVisibility('new_password', this)"></i>
+                        </div>
                     </div>
                     <div>
                         <label for="confirm_new_password" class="block text-sm font-medium mb-1">Confirm New Password</label>
-                        <input type="password" name="confirm_new_password" id="confirm_new_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Confirm new password" required>
+                        <div class="relative">
+                            <input type="password" name="confirm_new_password" id="confirm_new_password" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" placeholder="Confirm new password" required>
+                            <i class="fas fa-eye absolute right-3 top-3 cursor-pointer text-gray-500" onclick="togglePasswordVisibility('confirm_new_password', this)"></i>
+                        </div>
                     </div>
                     <button type="submit" name="change_password" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Save</button>
                 </form>
@@ -760,9 +779,9 @@
                         </div>
                         <div>
                             {% if user.profile.subscription == 'premium' %}
-                            <button onclick="openRenewModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
+                            <button id="status-card-button" onclick="openRenewModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
                             {% else %}
-                            <button onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Subscribe to Premium</button>
+                            <button id="status-card-button" onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Subscribe to Premium</button>
                             {% endif %}
                         </div>
                     </div>
@@ -1084,6 +1103,12 @@
                         document.querySelector('#premium-plan-button').outerHTML = '<button class="mt-6 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-lg" id="premium-plan-button">Current Plan</button>';
                         // Update free plan button to "Previous Plan"
                         document.querySelector('#free-plan-button').textContent = 'Previous Plan';
+                        // Update subscription status card button text and function
+                        const statusBtn = document.getElementById('status-card-button');
+                        if (statusBtn) {
+                            statusBtn.textContent = 'Renew Subscription';
+                            statusBtn.setAttribute('onclick', 'openRenewModal()');
+                        }
                         // Update subscription status in user profile tab
                         document.getElementById('subscription-status-user').textContent = response.subscription;
                         document.getElementById('subscription-expiry-user').textContent = 'Expires on: ' + response.subscription_end_date;
@@ -1324,7 +1349,7 @@
                             // Assume success if no messages are returned and update user information
                             const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>Profile updated successfully.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
                             messagesContainer.append(successMessage);
-                     
+                      
                             // Update user information on the page
                             $('#user-fullname').text(`${firstName} ${lastName}`);
                             $('#user-email').text(email);
@@ -1377,17 +1402,17 @@
                             // Display success message
                             const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
                             messagesContainer.append(successMessage);
-                     
+                      
                             // Clear password fields
                             form.find('input[type="password"]').val('');
-                     
+                      
                             // Check if logout is required
                             if (response.logout) {
                                 setTimeout(() => {
                                     window.location.href = "{% url 'login' %}";
                                 }, 2000); // Redirect after 2 seconds to allow user to see the message
                             }
-                     
+                      
                             // Auto-dismiss new messages
                             setTimeout(() => {
                                 messagesContainer.find('.message').addClass('fade-out');
@@ -1482,7 +1507,7 @@
                                 response.payment.payment_method, // Payment method
                                 response.payment.transaction_id || '-', // Transaction ID
                                 '<span class="text-yellow-500">' + response.payment.status + '</span>', // Status with styling
-                                '<a href="#" class="text-blue-500 hover:underline">View</a>' // Details link
+                                '<a href="#" class="text-blue-500 hover:underline view-details" data-payment-id="' + response.payment.payment_id + '" data-user="{{ user.username }}" data-payment-type="' + response.payment.payment_type + '" data-currency="' + response.payment.currency + '" data-amount="' + amountDisplay.replace(/<[^>]*>/g, '') + '" data-payment-method="' + response.payment.payment_method + '" data-transaction-id="' + (response.payment.transaction_id || '-') + '" data-status="' + response.payment.status + '" data-payment-note="' + (paymentNote || '-') + '" data-remark="-" data-created-at="' + response.payment.created_at + '" data-last-updated="' + response.payment.created_at + '">View</a>' // Details link
                             ];
                             paymentTable.row.add(newRow).draw();
                             // Clear form fields
@@ -1606,26 +1631,30 @@
                     }
                 });
             });
-            // Add event listeners for view details links
-            document.querySelectorAll('.view-details').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const data = this.dataset;
-                    document.getElementById('modal-payment-id').textContent = data.paymentId;
-                    document.getElementById('modal-user').textContent = data.user;
-                    document.getElementById('modal-payment-type').textContent = data.paymentType;
-                    document.getElementById('modal-currency').textContent = data.currency;
-                    document.getElementById('modal-amount').textContent = data.amount;
-                    document.getElementById('modal-payment-method').textContent = data.paymentMethod;
-                    document.getElementById('modal-transaction-id').textContent = data.transactionId;
-                    document.getElementById('modal-status').textContent = data.status;
-                    document.getElementById('modal-payment-note').textContent = data.paymentNote;
-                    document.getElementById('modal-remark').textContent = data.remark;
-                    document.getElementById('modal-created-at').textContent = data.createdAt;
-                    document.getElementById('modal-last-updated').textContent = data.lastUpdated;
-                    document.getElementById('paymentModal').style.display = 'flex';
-                });
+            
+            // --- FIX START: Use Event Delegation for View Details Links ---
+            // This replaces the old loop that only bound to existing elements.
+            // Using jQuery's .on() method bound to the document ensures that even rows added 
+            // dynamically (via AJAX) will trigger the click event.
+            $(document).on('click', '.view-details', function(e) {
+                e.preventDefault();
+                const data = this.dataset;
+                document.getElementById('modal-payment-id').textContent = data.paymentId;
+                document.getElementById('modal-user').textContent = data.user;
+                document.getElementById('modal-payment-type').textContent = data.paymentType;
+                document.getElementById('modal-currency').textContent = data.currency;
+                document.getElementById('modal-amount').textContent = data.amount;
+                document.getElementById('modal-payment-method').textContent = data.paymentMethod;
+                document.getElementById('modal-transaction-id').textContent = data.transactionId;
+                document.getElementById('modal-status').textContent = data.status;
+                document.getElementById('modal-payment-note').textContent = data.paymentNote;
+                document.getElementById('modal-remark').textContent = data.remark;
+                document.getElementById('modal-created-at').textContent = data.createdAt;
+                document.getElementById('modal-last-updated').textContent = data.lastUpdated;
+                document.getElementById('paymentModal').style.display = 'flex';
             });
+            // --- FIX END ---
+
             // Restore active tab from localStorage
             const activeTab = sessionStorage.getItem('activeTab') || 'user-tab';
             const tabButton = document.querySelector(`.tab-button[onclick="openTab(event, '${activeTab}')"]`);
@@ -1839,6 +1868,19 @@
         function closePaymentModal(event) {
             if (event) event.stopPropagation();
             document.getElementById('paymentModal').style.display = 'none';
+        }
+        // Password Visibility Toggle
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         }
     </script>
 </body>
