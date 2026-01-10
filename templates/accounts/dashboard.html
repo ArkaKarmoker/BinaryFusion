@@ -1488,28 +1488,24 @@
                             // Display success message
                             const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
                             messagesContainer.append(successMessage);
-                            // Determine amount display for new row
-                            let amountDisplay = '-';
-                            if (response.payment.amount) {
-                                if (response.payment.payment_type === 'Deposit' || response.payment.payment_type === 'Bonus') {
-                                    amountDisplay = '<span class="text-green-500">+' + response.payment.amount + '</span>';
-                                } else {
-                                    amountDisplay = '<span class="text-red-500">-' + response.payment.amount + '</span>';
-                                }
-                            }
-                            // Add new payment to DataTable
-                            const newRow = [
-                                response.payment.created_at, // Date from server response
-                                response.payment.payment_id, // Actual payment_id
-                                response.payment.payment_type, // Display name for payment_type
-                                response.payment.currency, // Currency
-                                amountDisplay, // Amount with styling or '-'
-                                response.payment.payment_method, // Payment method
-                                response.payment.transaction_id || '-', // Transaction ID
-                                '<span class="text-yellow-500">' + response.payment.status + '</span>', // Status with styling
-                                '<a href="#" class="text-blue-500 hover:underline view-details" data-payment-id="' + response.payment.payment_id + '" data-user="{{ user.username }}" data-payment-type="' + response.payment.payment_type + '" data-currency="' + response.payment.currency + '" data-amount="' + amountDisplay.replace(/<[^>]*>/g, '') + '" data-payment-method="' + response.payment.payment_method + '" data-transaction-id="' + (response.payment.transaction_id || '-') + '" data-status="' + response.payment.status + '" data-payment-note="' + (paymentNote || '-') + '" data-remark="-" data-created-at="' + response.payment.created_at + '" data-last-updated="' + response.payment.created_at + '">View</a>' // Details link
-                            ];
-                            paymentTable.row.add(newRow).draw();
+                            
+                            // Reload payment table data from server (Realtime fetch)
+                            $.get(window.location.href, function(html) {
+                                // Parse the new HTML
+                                var parser = new DOMParser();
+                                var doc = parser.parseFromString(html, 'text/html');
+                                // Get new rows
+                                var newRows = $(doc).find('#paymentTable tbody tr');
+                                
+                                // Get DataTable instance
+                                var table = $('#paymentTable').DataTable();
+                                
+                                // Clear and add new rows
+                                table.clear();
+                                table.rows.add(newRows);
+                                table.draw(); // Redraw table
+                            });
+
                             // Clear form fields
                             form.find('input, textarea').val('');
                             // Auto-dismiss messages
