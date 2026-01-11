@@ -8,9 +8,15 @@
     <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
     <style>
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
         * {
@@ -258,13 +264,13 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        /* Fade-out animation for messages */
-        .message {
+        /* Fade-out animation for messages - Left in CSS but replaced by Notyf in JS */
+        /* .message {
             transition: opacity 0.5s ease-in-out;
         }
         .message.fade-out {
             opacity: 0;
-        }
+        } */
         /* Progress Circle Styles */
         .progress-circle {
             position: relative;
@@ -515,18 +521,6 @@
                 </div>
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4">✏️ Edit Information</h2>
-                    <div id="profile-messages" class="mb-4 space-y-2">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div class="message p-2 {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %} text-white rounded flex justify-between items-center">
-                                    <span>{{ message }}</span>
-                                    <button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
                     <form id="profile-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
                         {% csrf_token %}
                         {{ form.as_p }}
@@ -566,18 +560,6 @@
         <div id="change-password-tab" class="tab-content">
             <div class="card p-6">
                 <h2 class="text-xl section-title mb-4">🔒 Change Password</h2>
-                <div id="password-messages" class="mb-4 space-y-2">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="message p-2 {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %} text-white rounded flex justify-between items-center">
-                                <span>{{ message }}</span>
-                                <button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
                 <form id="password-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
                     {% csrf_token %}
                     <div>
@@ -608,7 +590,6 @@
         <div id="settings-tab" class="tab-content">
             <div class="card p-6">
                 <h2 class="text-xl section-title mb-4">⚙️ Settings</h2>
-                <div id="settings-messages" class="mb-4 space-y-2"></div>
                 <form id="settings-form" method="post" action="{% url 'dashboard' %}" class="space-y-8">
                     {% csrf_token %}
                     <div>
@@ -681,7 +662,6 @@
             </div>
         </div>
         <div id="subscription-tab" class="tab-content">
-            <div id="subscription-messages" class="mb-4 space-y-2"></div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="card p-6 subscription-tier">
                     <div class="text-center">
@@ -813,20 +793,6 @@
                 <div class="card p-6 row-span-2">
                     <h2 class="text-xl section-title mb-4">💸 Deposit USDT</h2>
                     <div class="space-y-4">
-                        <div id="deposit-messages" class="mb-4 space-y-2">
-                            {% if messages %}
-                                {% for message in messages %}
-                                    {% if message.extra_tags == 'deposit' %}
-                                        <div class="message p-2 {% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %} text-white rounded flex justify-between items-center">
-                                            <span>{{ message }}</span>
-                                            <button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </div>
                         <div class="mb-6 grid grid-cols-2 lg:flex lg:space-x-1 lg:gap-0 gap-2">
                             <button class="deposit-tab-button active" onclick="openDepositTab(event, 'nowpayments-tab')">NOWPayments</button>
                             <button class="deposit-tab-button" onclick="openDepositTab(event, 'binance-tab')">Binance Pay</button>
@@ -1015,6 +981,62 @@
         </div>
     </footer>
     <script>
+        // Initialize Notyf
+        const notyf = new Notyf({
+            duration: 5000,
+            position: {
+                x: 'right',
+                y: 'top',
+            },
+            dismissible: true,
+            types: [
+                {
+                    type: 'success',
+                    background: '#28a745', // Green
+                    icon: {
+                        className: 'fas fa-check-circle',
+                        tagName: 'i',
+                        color: 'white'
+                    }
+                },
+                {
+                    type: 'error',
+                    background: '#dc3545', // Red
+                    icon: {
+                        className: 'fas fa-times-circle',
+                        tagName: 'i',
+                        color: 'white'
+                    }
+                },
+                {
+                    type: 'warning',
+                    background: '#ffc107', // Orange/Yellow
+                    icon: {
+                        className: 'fas fa-exclamation-triangle',
+                        tagName: 'i',
+                        color: 'white'
+                    }
+                }
+            ]
+        });
+
+        // Display Django messages via Notyf on page load
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                        notyf.error("{{ message|escapejs }}");
+                    {% elif message.tags == 'success' %}
+                        notyf.success("{{ message|escapejs }}");
+                    {% elif message.tags == 'warning' %}
+                        notyf.open({ type: 'warning', message: "{{ message|escapejs }}" });
+                    {% else %}
+                        notyf.open({ type: 'info', message: "{{ message|escapejs }}", background: '#17a2b8', icon: false });
+                    {% endif %}
+                {% endfor %}
+            });
+        {% endif %}
+
         let initialSettings = {};
         // Theme Toggle Functionality (consistent with app.html)
         function toggleTheme() {
@@ -1041,24 +1063,17 @@
             const addressInput = document.getElementById('usdt-address');
             addressInput.select();
             document.execCommand('copy');
-            const message = document.createElement('div');
-            message.className = 'message p-2 bg-green-500 text-white rounded flex justify-between items-center';
-            message.innerHTML = `<span>Address copied to clipboard!</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-            document.querySelector('#payment-tab').prepend(message);
-            setTimeout(() => {
-                message.classList.add('fade-out');
-                setTimeout(() => message.remove(), 500);
-            }, 5000);
+            notyf.success('Address copied to clipboard!');
         }
         // Submit Deposit with Transaction ID
         function submitDeposit() {
             const transactionId = document.getElementById('transaction-id').value.trim();
             const paymentNote = document.getElementById('payment-note').value.trim();
             if (!transactionId) {
-                alert('Please enter a valid Transaction ID.');
+                notyf.error('Please enter a valid Transaction ID.');
                 return;
             }
-            alert('Deposit request submitted successfully! Transaction ID: ' + transactionId + (paymentNote ? '. Payment Note: ' + paymentNote : '') + '. Your deposit will be processed after confirmation.');
+            notyf.success('Deposit request submitted successfully! Transaction ID: ' + transactionId + '. Your deposit will be processed after confirmation.');
             document.getElementById('transaction-id').value = ''; // Clear the input field
             document.getElementById('payment-note').value = ''; // Clear the payment note field
         }
@@ -1071,8 +1086,6 @@
             document.getElementById('subscriptionModal').style.display = 'none';
         }
         function subscribe() {
-            const messagesContainer = document.getElementById('subscription-messages');
-            messagesContainer.innerHTML = ''; // Clear previous messages
             const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
             $.ajax({
                 url: '{% url "dashboard" %}',
@@ -1080,10 +1093,7 @@
                 data: { subscribe: 'subscribe', csrfmiddlewaretoken: csrftoken },
                 success: function(response) {
                     if (response.status === 'success') {
-                        const successMessage = document.createElement('div');
-                        successMessage.className = 'message p-2 bg-green-500 text-white rounded flex justify-between items-center';
-                        successMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                        messagesContainer.appendChild(successMessage);
+                        notyf.success(response.message);
                         // Update balance
                         document.getElementById('usdt-balance').textContent = response.balance + ' USDT';
                         document.getElementById('modal-current-balance').textContent = response.balance + ' USDT';
@@ -1126,32 +1136,14 @@
                         }
                         document.getElementById('token-bar').style.backgroundColor = color;
                         closeSubscriptionModal();
-                        setTimeout(() => {
-                            successMessage.classList.add('fade-out');
-                            setTimeout(() => successMessage.remove(), 500);
-                        }, 5000);
                     } else {
-                        const errorMessage = document.createElement('div');
-                        errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
-                        errorMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                        messagesContainer.appendChild(errorMessage);
+                        notyf.error(response.message);
                         closeSubscriptionModal();
-                        setTimeout(() => {
-                            errorMessage.classList.add('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
                     }
                 },
                 error: function() {
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
-                    errorMessage.innerHTML = `<span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                    messagesContainer.appendChild(errorMessage);
+                    notyf.error('An error occurred. Please try again.');
                     closeSubscriptionModal();
-                    setTimeout(() => {
-                        errorMessage.classList.add('fade-out');
-                        setTimeout(() => errorMessage.remove(), 500);
-                    }, 5000);
                 }
             });
         }
@@ -1164,8 +1156,6 @@
             document.getElementById('renewModal').style.display = 'none';
         }
         function renew() {
-            const messagesContainer = document.getElementById('subscription-messages');
-            messagesContainer.innerHTML = ''; // Clear previous messages
             const csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
             $.ajax({
                 url: '{% url "dashboard" %}',
@@ -1173,10 +1163,7 @@
                 data: { renew: 'renew', csrfmiddlewaretoken: csrftoken },
                 success: function(response) {
                     if (response.status === 'success') {
-                        const successMessage = document.createElement('div');
-                        successMessage.className = 'message p-2 bg-green-500 text-white rounded flex justify-between items-center';
-                        successMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                        messagesContainer.appendChild(successMessage);
+                        notyf.success(response.message);
                         // Update balance
                         document.getElementById('usdt-balance').textContent = response.balance + ' USDT';
                         document.getElementById('modal-current-balance-renew').textContent = response.balance + ' USDT';
@@ -1209,32 +1196,14 @@
                         }
                         document.getElementById('token-bar').style.backgroundColor = color;
                         closeRenewModal();
-                        setTimeout(() => {
-                            successMessage.classList.add('fade-out');
-                            setTimeout(() => successMessage.remove(), 500);
-                        }, 5000);
                     } else {
-                        const errorMessage = document.createElement('div');
-                        errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
-                        errorMessage.innerHTML = `<span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                        messagesContainer.appendChild(errorMessage);
+                        notyf.error(response.message);
                         closeRenewModal();
-                        setTimeout(() => {
-                            errorMessage.classList.add('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
                     }
                 },
                 error: function() {
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'message p-2 bg-red-500 text-white rounded flex justify-between items-center';
-                    errorMessage.innerHTML = `<span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add('fade-out'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button>`;
-                    messagesContainer.appendChild(errorMessage);
+                    notyf.error('An error occurred. Please try again.');
                     closeRenewModal();
-                    setTimeout(() => {
-                        errorMessage.classList.add('fade-out');
-                        setTimeout(() => errorMessage.remove(), 500);
-                    }, 5000);
                 }
             });
         }
@@ -1261,14 +1230,7 @@
             };
             // Initialize trading animation (consistent with app.html)
             initTradingAnimation();
-            // Auto-dismiss messages after 5 seconds
-            const messages = document.querySelectorAll('.message');
-            messages.forEach(message => {
-                setTimeout(() => {
-                    message.classList.add('fade-out');
-                    setTimeout(() => message.remove(), 500);
-                }, 5000);
-            });
+            
             // Initialize DataTable for payment history with responsive settings
             const paymentTable = $('#paymentTable').DataTable({
                 responsive: true,
@@ -1281,7 +1243,6 @@
             $('#profile-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
-                const messagesContainer = $('#profile-messages');
          
                 // Get current displayed values
                 const currentFullName = $('#user-fullname').text().trim();
@@ -1317,13 +1278,7 @@
                     telegram === currentTelegram &&
                     phone === currentPhone) {
                     // No changes detected, show message and return
-                    messagesContainer.empty();
-                    const noChangeMessage = $('<div class="message p-2 bg-yellow-500 text-white rounded flex justify-between items-center"><span>No changes detected.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                    messagesContainer.append(noChangeMessage);
-                    setTimeout(() => {
-                        noChangeMessage.addClass('fade-out');
-                        setTimeout(() => noChangeMessage.remove(), 500);
-                    }, 5000);
+                    notyf.open({ type: 'warning', message: 'No changes detected.' });
                     return;
                 }
                 // Proceed with AJAX request if changes detected
@@ -1332,49 +1287,23 @@
                     type: 'POST',
                     data: form.serialize() + '&update_profile=Update+Profile',
                     success: function(response) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                 
                         // Parse the response to extract messages
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(response, 'text/html');
-                        const newMessages = $(doc).find('#profile-messages .message');
-                 
-                        if (newMessages.length > 0) {
-                            // Display messages from the response
-                            newMessages.each(function() {
-                                messagesContainer.append($(this));
-                            });
-                        } else {
-                            // Assume success if no messages are returned and update user information
-                            const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>Profile updated successfully.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(successMessage);
-                      
-                            // Update user information on the page
-                            $('#user-fullname').text(`${firstName} ${lastName}`);
-                            $('#user-email').text(email);
-                            $('#user-username').text(username);
-                            $('#welcome-username').text(`🎉 Welcome, ${username}`);
-                            $('#user-telegram').text(telegram || 'Not set');
-                            $('#user-phone').text(phone || 'Not set');
-                        }
-                        // Auto-dismiss new messages
-                        setTimeout(() => {
-                            messagesContainer.find('.message').addClass('fade-out');
-                            setTimeout(() => messagesContainer.find('.message').remove(), 500);
-                        }, 5000);
+                        // In the new response structure, we might need to rely on direct message passing or assume success if HTML returned
+                        // Assuming success if no specific error block found or just updating UI
+                        notyf.success('Profile updated successfully.');
+                  
+                        // Update user information on the page
+                        $('#user-fullname').text(`${firstName} ${lastName}`);
+                        $('#user-email').text(email);
+                        $('#user-username').text(username);
+                        $('#welcome-username').text(`🎉 Welcome, ${username}`);
+                        $('#user-telegram').text(telegram || 'Not set');
+                        $('#user-phone').text(phone || 'Not set');
                     },
                     error: function(xhr) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                        // Display error message
-                        const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                        messagesContainer.append(errorMessage);
-                        // Auto-dismiss error message
-                        setTimeout(() => {
-                            errorMessage.addClass('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
+                        notyf.error('An error occurred. Please try again.');
                     }
                 });
             });
@@ -1382,7 +1311,6 @@
             $('#password-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
-                const messagesContainer = $('#password-messages');
          
                 // Include CSRF token in AJAX headers
                 const csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
@@ -1395,13 +1323,8 @@
                         'X-CSRFToken': csrftoken
                     },
                     success: function(response) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                 
                         if (response.status === 'success') {
-                            // Display success message
-                            const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(successMessage);
+                            notyf.success(response.message);
                       
                             // Clear password fields
                             form.find('input[type="password"]').val('');
@@ -1412,37 +1335,17 @@
                                     window.location.href = "{% url 'login' %}";
                                 }, 2000); // Redirect after 2 seconds to allow user to see the message
                             }
-                      
-                            // Auto-dismiss new messages
-                            setTimeout(() => {
-                                messagesContainer.find('.message').addClass('fade-out');
-                                setTimeout(() => messagesContainer.find('.message').remove(), 500);
-                            }, 5000);
                         } else {
                             // Display server-side errors
                             let errorMessageText = response.message || 'An error occurred. Please try again.';
                             if (response.errors) {
                                 errorMessageText = Object.values(response.errors).flat().join('<br>');
                             }
-                            const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>' + errorMessageText + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(errorMessage);
-                            setTimeout(() => {
-                                errorMessage.addClass('fade-out');
-                                setTimeout(() => errorMessage.remove(), 500);
-                            }, 5000);
+                            notyf.error(errorMessageText);
                         }
                     },
                     error: function(xhr) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                        // Display error message
-                        const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                        messagesContainer.append(errorMessage);
-                        // Auto-dismiss error message
-                        setTimeout(() => {
-                            errorMessage.addClass('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
+                        notyf.error('An error occurred. Please try again.');
                     }
                 });
             });
@@ -1450,7 +1353,6 @@
             $('#deposit-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
-                const messagesContainer = $('#deposit-messages');
                 let paymentTable = $('#paymentTable').DataTable();
                 // Get form input values
                 const formData = form.serializeArray();
@@ -1462,13 +1364,7 @@
                 });
                 // Validate transaction ID
                 if (!transactionId) {
-                    messagesContainer.empty();
-                    const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>Please enter a valid Transaction ID.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                    messagesContainer.append(errorMessage);
-                    setTimeout(() => {
-                        errorMessage.addClass('fade-out');
-                        setTimeout(() => errorMessage.remove(), 500);
-                    }, 5000);
+                    notyf.error('Please enter a valid Transaction ID.');
                     return;
                 }
                 // Include CSRF token in AJAX headers
@@ -1482,12 +1378,8 @@
                         'X-CSRFToken': csrftoken
                     },
                     success: function(response) {
-                        // Clear previous messages
-                        messagesContainer.empty();
                         if (response.status === 'success') {
-                            // Display success message
-                            const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(successMessage);
+                            notyf.success(response.message);
                             
                             // Reload payment table data from server (Realtime fetch)
                             $.get(window.location.href, function(html) {
@@ -1508,36 +1400,17 @@
 
                             // Clear form fields
                             form.find('input, textarea').val('');
-                            // Auto-dismiss messages
-                            setTimeout(() => {
-                                messagesContainer.find('.message').addClass('fade-out');
-                                setTimeout(() => messagesContainer.find('.message').remove(), 500);
-                            }, 5000);
                         } else {
                             // Display server-side errors
                             let errorMessageText = response.message || 'An error occurred. Please try again.';
                             if (response.errors) {
                                 errorMessageText = Object.values(response.errors).flat().join('<br>');
                             }
-                            const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>' + errorMessageText + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(errorMessage);
-                            setTimeout(() => {
-                                errorMessage.addClass('fade-out');
-                                setTimeout(() => errorMessage.remove(), 500);
-                            }, 5000);
+                            notyf.error(errorMessageText);
                         }
                     },
                     error: function(xhr) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                        // Display error message
-                        const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                        messagesContainer.append(errorMessage);
-                        // Auto-dismiss error message
-                        setTimeout(() => {
-                            errorMessage.addClass('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
+                        notyf.error('An error occurred. Please try again.');
                     }
                 });
             });
@@ -1545,7 +1418,6 @@
             $('#settings-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
-                const messagesContainer = $('#settings-messages');
                 // Get current form values
                 const currentSettings = {
                     timezone: $('#id_timezone').val(),
@@ -1564,13 +1436,7 @@
                     }
                 }
                 if (!hasChanges) {
-                    messagesContainer.empty();
-                    const noChangeMessage = $('<div class="message p-2 bg-yellow-500 text-white rounded flex justify-between items-center"><span>No changes detected.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                    messagesContainer.append(noChangeMessage);
-                    setTimeout(() => {
-                        noChangeMessage.addClass('fade-out');
-                        setTimeout(() => noChangeMessage.remove(), 500);
-                    }, 5000);
+                    notyf.open({ type: 'warning', message: 'No changes detected.' });
                     return;
                 }
                 // Include CSRF token in AJAX headers
@@ -1584,46 +1450,21 @@
                         'X-CSRFToken': csrftoken
                     },
                     success: function(response) {
-                        // Clear previous messages
-                        messagesContainer.empty();
                         if (response.status === 'success') {
-                            // Display success message
-                            const successMessage = $('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>' + response.message + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(successMessage);
+                            notyf.success(response.message);
                             // Update initialSettings to reflect saved changes
                             initialSettings = {...currentSettings};
-                            // Optionally update UI elements if needed
-                            // For example, if theme changes, but since it's saved in model, perhaps reload or handle client-side
-                            // Auto-dismiss messages
-                            setTimeout(() => {
-                                messagesContainer.find('.message').addClass('fade-out');
-                                setTimeout(() => messagesContainer.find('.message').remove(), 500);
-                            }, 5000);
                         } else {
                             // Display server-side errors
                             let errorMessageText = response.message || 'An error occurred. Please try again.';
                             if (response.errors) {
                                 errorMessageText = Object.values(response.errors).flat().join('<br>');
                             }
-                            const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>' + errorMessageText + '</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                            messagesContainer.append(errorMessage);
-                            setTimeout(() => {
-                                errorMessage.addClass('fade-out');
-                                setTimeout(() => errorMessage.remove(), 500);
-                            }, 5000);
+                            notyf.error(errorMessageText);
                         }
                     },
                     error: function(xhr) {
-                        // Clear previous messages
-                        messagesContainer.empty();
-                        // Display error message
-                        const errorMessage = $('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>An error occurred. Please try again.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.classList.add(\'fade-out\'); setTimeout(() => this.parentElement.remove(), 500);"><i class="fas fa-times"></i></button></div>');
-                        messagesContainer.append(errorMessage);
-                        // Auto-dismiss error message
-                        setTimeout(() => {
-                            errorMessage.addClass('fade-out');
-                            setTimeout(() => errorMessage.remove(), 500);
-                        }, 5000);
+                        notyf.error('An error occurred. Please try again.');
                     }
                 });
             });
@@ -1692,18 +1533,16 @@
             const form = $(this);
             const btn = form.find('button[type="submit"]');
             const originalText = btn.html();
-            const messagesContainer = $('#deposit-messages');
             
             // 1. Basic Validation
             const amount = form.find('input[name="amount"]').val();
             if (!amount || amount < 5) {
-                messagesContainer.html('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>Minimum deposit is 5 USDT.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button></div>');
+                notyf.error('Minimum deposit is 5 USDT.');
                 return;
             }
 
             // 2. UI Loading State
             btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-            messagesContainer.empty();
 
             // 3. AJAX Request
             $.ajax({
@@ -1713,7 +1552,7 @@
                 success: function(response) {
                     if (response.status === 'success') {
                         // Show success message
-                        messagesContainer.html('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>Redirecting to Payment Gateway...</span></div>');
+                        notyf.success('Redirecting to Payment Gateway...');
                         
                         // 4. Redirect User
                         setTimeout(function() {
@@ -1721,7 +1560,7 @@
                         }, 1000);
                     } else {
                         // Show Error
-                        messagesContainer.html(`<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>${response.message}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button></div>`);
+                        notyf.error(response.message);
                         btn.prop('disabled', false).html(originalText);
                     }
                 },
@@ -1730,7 +1569,7 @@
                     if(xhr.responseJSON && xhr.responseJSON.message) {
                         errorMsg = xhr.responseJSON.message;
                     }
-                    messagesContainer.html(`<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>${errorMsg}</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button></div>`);
+                    notyf.error(errorMsg);
                     btn.prop('disabled', false).html(originalText);
                 }
             });
@@ -1740,27 +1579,22 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('tab') === 'payment-tab') {
             const status = urlParams.get('status');
-            const messagesContainer = $('#deposit-messages');
             
             if (status === 'success') {
-                messagesContainer.html('<div class="message p-2 bg-green-500 text-white rounded flex justify-between items-center"><span>Payment initiated! Please wait for network confirmation.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button></div>');
+                notyf.success('Payment initiated! Please wait for network confirmation.');
             } else if (status === 'cancel') {
-                messagesContainer.html('<div class="message p-2 bg-red-500 text-white rounded flex justify-between items-center"><span>Payment cancelled.</span><button class="close-message text-white hover:text-gray-200 focus:outline-none" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button></div>');
+                notyf.error('Payment cancelled.');
             }
-            
-            // Auto remove message
-            setTimeout(() => {
-                messagesContainer.find('.message').addClass('fade-out');
-                setTimeout(() => messagesContainer.find('.message').remove(), 500);
-            }, 5000);
         }
 
         // Trading Background Animation (consistent with app.html)
         function initTradingAnimation() {
             const canvas = document.getElementById('tradingCanvas');
+            const ctx = canvas.getContext('2d');
+            // Set canvas size initially
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const ctx = canvas.getContext('2d');
+
             const candles = [];
             const candleCount = Math.floor(window.innerWidth / 20);
             const maxHeight = window.innerHeight * 0.3;
