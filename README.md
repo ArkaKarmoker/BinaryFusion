@@ -1,4 +1,4 @@
 # BinaryFusion
 AI Powered Trading Signal
 
-<img width="1755" height="960" alt="image" src="https://github.com/user-attachments/assets/dc4c609c-7981-42b6-9fee-cd8ed65628e2" />
+<img width="1755" height="1069" alt="image" src="https://github.com/user-attachments/assets/c407d9ef-24fe-4a4f-b393-7d47c6b1c176" />
