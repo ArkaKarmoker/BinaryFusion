@@ -6,11 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinaryFusion - Predictor</title>
 
-    <!-- <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg"> -->
     <link rel="icon" type="image/jpg" href="{% static 'images/favicon2.png' %}">
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
     <style>
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
         * {
@@ -404,8 +408,8 @@
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
     <button class="theme-toggle bg-gray-200 dark:bg-gray-700 p-2 rounded-full" onclick="toggleTheme()">
-        <span class="light-icon">🌙</span>
-        <span class="dark-icon hidden">☀️</span>
+        <span class="light-icon"><i class="fa fa-moon"></i></span>
+        <span class="dark-icon hidden"><i class="fa fa-sun"></i></span>
     </button>
 
     <div id="imageModal" class="modal" onclick="closeModal()">
@@ -424,7 +428,7 @@
                     <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center">🎉 Welcome, {{ user.username }}!</span>
                     <div class="flex space-x-4">
                         <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank"><i class="fa fa-dashboard"></i> Dashboard</a>
-                        <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap">Logout</a>
+                        <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap"><i class="fa fa-right-from-bracket"></i> Logout</a>
                     </div>
                 {% else %}
                     <div class="flex space-x-4">
@@ -445,8 +449,8 @@
                     <input type="search" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
                            class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
                     <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap gap-2">
-                        <i class="fa fa-rocket"></i> Predict
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap">
+                        <i class="fa fa-rocket mr-2"></i> Predict
                         <span id="loading-spinner" class="spinner"></span>
                         <span id="countdown-timer" class="countdown"></span>
                     </button>
@@ -470,7 +474,7 @@
 
             <div id="button-container" class="button-container">
                 <button id="btn-telegram" onclick="sendToTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
-                    <i class="fa fa-telegram"></i> Telegram
+                    <i class="fab fa-telegram"></i> Telegram
                 </button>
 
                 <button id="btn-copy" onclick="copySignal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
@@ -497,6 +501,35 @@
     <script>
         // Global variable to store the latest prediction data for sharing
         let latestPrediction = null;
+
+        // Initialize Notyf (Same as dashboard.html)
+        const notyf = new Notyf({
+            duration: 5000,
+            position: { x: 'right', y: 'top' },
+            dismissible: true,
+            types: [
+                {
+                    type: 'success',
+                    background: '#28a745',
+                    icon: { className: 'fa fa-check-circle', tagName: 'i', color: 'white' }
+                },
+                {
+                    type: 'error',
+                    background: '#dc3545',
+                    icon: { className: 'fa fa-times-circle', tagName: 'i', color: 'white' }
+                },
+                {
+                    type: 'warning',
+                    background: '#17a2b8',
+                    icon: { className: 'fa fa-info-circle', tagName: 'i', color: 'white' }
+                },
+                {
+                    type: 'info',
+                    background: '#ffc107',
+                    icon: { className: 'fas fa-exclamation-triangle', tagName: 'i', color: 'white' }
+                }
+            ]
+        });
 
         // Theme Toggle Functionality
         function toggleTheme() {
@@ -732,7 +765,7 @@
         function sendFeedback(voteType) {
             // Check if we have a valid prediction ID from the global variable
             if (!latestPrediction || !latestPrediction.prediction_id) {
-                alert('No active prediction to vote on.');
+                notyf.error('No active prediction to vote on.');
                 return;
             }
 
@@ -782,12 +815,24 @@
             .then(data => {
                 if (data.status === 'success') {
                     console.log('Feedback saved:', data.vote);
+                    if (data.vote === 'LIKE') {
+                        notyf.success('Prediction Liked! 👍');
+                    } else if (data.vote === 'DISLIKE') {
+                        notyf.success('Prediction Disliked! 👎');
+                    } else {
+                        notyf.open({ 
+                            type: 'info', 
+                            message: 'Feedback Cleared.' 
+                        });
+                    }
                 } else {
                     console.error('Error saving feedback:', data.error);
+                    notyf.error('Error saving feedback.');
                 }
             })
             .catch(error => {
                 console.error('Network error:', error);
+                notyf.error('Connection error.');
             });
         }
         // --------------------------------------
@@ -870,7 +915,7 @@
         // Send to Telegram Logic
         function sendToTelegram() {
             if (!latestPrediction || latestPrediction.error) {
-                alert('No valid signal to share. Please generate a prediction first.');
+                notyf.error('No valid signal to share. Please generate a prediction first.');
                 return;
             }
 
@@ -895,7 +940,7 @@
         // Copy Signal Logic
         function copySignal() {
             if (!latestPrediction || latestPrediction.error) {
-                alert('No valid signal to copy. Please generate a prediction first.');
+                notyf.error('No valid signal to copy. Please generate a prediction first.');
                 return;
             }
 
@@ -910,17 +955,17 @@
 
             // Use Clipboard API
             navigator.clipboard.writeText(message).then(() => {
-                alert('Signal copied to clipboard! 📋');
+                notyf.success('Signal copied! 📋');
             }).catch(err => {
                 console.error('Failed to copy: ', err);
-                alert('Failed to copy text.');
+                notyf.error('Failed to copy text.');
             });
         }
 
         // Share Signal Logic (Web Share API)
         function shareSignal() {
             if (!latestPrediction || latestPrediction.error) {
-                alert('No valid signal to share. Please generate a prediction first.');
+                notyf.error('No valid signal to share. Please generate a prediction first.');
                 return;
             }
 
@@ -944,7 +989,10 @@
                 .catch((error) => console.log('Error sharing', error));
             } else {
                 // Fallback for browsers that don't support Web Share API
-                alert('Web Share API is not supported on this browser. Please use the "Copy" button instead.');
+                notyf.open({ 
+                    type: 'warning', 
+                    message: 'Web Share API not supported. Please use Copy.' 
+                });
             }
         }
 
