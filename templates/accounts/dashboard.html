@@ -366,6 +366,40 @@
                 padding-right: 100px;
             }
         }
+
+        /* --- Custom Modal Styles from Code 1 --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            /* Added fixed larger width for desktop, responsive for mobile */
+            width: 500px;
+            height: auto;
+            border: 4px solid white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
@@ -375,6 +409,11 @@
         <span class="dark-icon hidden">☀️</span>
     </button>
     
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="enlargedImage">
+    </div>
+
     <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="text-center md:text-left">
@@ -1246,7 +1285,7 @@
                         // In the new response structure, we might need to rely on direct message passing or assume success if HTML returned
                         // Assuming success if no specific error block found or just updating UI
                         notyf.success('Profile updated successfully.');
-                  
+                      
                         // Update user information on the page
                         $('#user-fullname').text(`${firstName} ${lastName}`);
                         $('#user-email').text(email);
@@ -1648,19 +1687,16 @@
             sessionStorage.setItem('activeDepositTab', tabName);
         }
         
-        // --- SweetAlert2 Replacement for Image Modal (QR Code) ---
+        // --- Updated Custom Modal Functionality from Code 1 ---
         function openModal(src) {
-            const isDark = document.body.classList.contains('dark-mode');
-            Swal.fire({
-                imageUrl: src,
-                imageAlt: 'QR Code',
-                showCloseButton: true,
-                showConfirmButton: false,
-                background: isDark ? '#1f2937' : '#fff',
-                width: 'auto',
-                padding: '2rem',
-                backdrop: `rgba(0,0,0,0.8)`
-            });
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('enlargedImage');
+            modal.style.display = 'flex';
+            modalImg.src = src;
+        }
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
         }
         
         // Password Visibility Toggle
