@@ -427,7 +427,7 @@
                 {% if user.is_authenticated %}
                     <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center">🎉 Welcome, {{ user.username }}!</span>
                     <div class="flex space-x-4">
-                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap" target="_blank"><i class="fa fa-dashboard"></i> Dashboard</a>
+                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap"><i class="fa fa-dashboard"></i> Dashboard</a>
                         <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap"><i class="fa fa-right-from-bracket"></i> Logout</a>
                     </div>
                 {% else %}
