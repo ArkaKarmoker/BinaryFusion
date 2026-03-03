@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from yahooquery import search
 import json
 import logging
-from .models import Prediction
+from .models import Prediction, EconomicCalendar # Added EconomicCalendar import
 from django.utils import timezone
 
 # Set up logging
@@ -110,3 +110,17 @@ def submit_feedback(request):
             return JsonResponse({'error': str(e)}, status=500)
             
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+# --- NEW VIEW: Get Calendar Data ---
+@login_required(login_url='login')
+def get_calendar_data(request):
+    """API endpoint for the frontend DataTable"""
+    try:
+        calendar_entry = EconomicCalendar.objects.first()
+        if calendar_entry and calendar_entry.data:
+            return JsonResponse(calendar_entry.data)
+        else:
+            # Return empty structure if no data yet
+            return JsonResponse({"events": []})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

@@ -3,7 +3,9 @@ from apscheduler.triggers.cron import CronTrigger
 from django.utils import timezone
 from django.db import transaction
 from .models import Profile, PaymentHistory, SubscriptionSettings  # Import additional models
+from predictor.models import EconomicCalendar  # Import the new model
 from decimal import Decimal
+import requests  # Required for API calls
 
 def check_expired_subscriptions():
     """
@@ -62,6 +64,33 @@ def check_expired_subscriptions():
                 profile.save()
     print(f"Checked subscriptions at {now}. Downgraded {expired_profiles.count()} users.")  # For logging/debug
 
+# --- New Task: Update Economic Calendar ---
+def update_economic_calendar():
+    """
+    Fetches economic calendar data from the external API and saves it to the DB.
+    """
+    url = "https://forex-calender-api.onrender.com/calendar"
+    print("Starting Economic Calendar update...")
+    
+    try:
+        # High timeout because the Render free tier sleeps
+        response = requests.get(url, timeout=120)
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Save to Database (we only keep one record and update it)
+            # Using ID 1 to ensure singleton pattern
+            EconomicCalendar.objects.update_or_create(
+                id=1, 
+                defaults={'data': data}
+            )
+            print(f"Economic Calendar updated successfully. Events: {data.get('count', 0)}")
+        else:
+            print(f"Failed to fetch calendar: {response.status_code}")
+            
+    except Exception as e:
+        print(f"Error updating economic calendar: {e}")
+
 def start_scheduler():
     scheduler = BackgroundScheduler()
 
@@ -75,8 +104,18 @@ def start_scheduler():
         id='check_subscriptions',  # Unique ID for the job
         replace_existing=True      # Overwrite if already exists (handles restarts)
     )
+
+    # --- NEW JOB: Update Calendar Daily ---
+    # Runs at 01:00 AM every day
+    scheduler.add_job(
+        update_economic_calendar,
+        trigger=CronTrigger(hour=21, minute=30),
+        id='update_calendar',
+        replace_existing=True
+    )
+
     scheduler.start()
-    print("Scheduler started for daily subscription checks.")
+    print("Scheduler started for subscriptions and calendar.")
 
 """
 Drawbacks/Notes: In dev, if you restart the server, 

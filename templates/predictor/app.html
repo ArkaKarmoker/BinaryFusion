@@ -9,11 +9,14 @@
     <link rel="icon" type="image/jpg" href="{% static 'images/favicon2.png' %}">
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <style>
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
@@ -41,6 +44,16 @@
             transition: transform 0.2s;
             max-width: 400px; /* Smaller card size for desktop */
             /* width: 100%; */
+        }
+
+        /* --- UPDATED CLASS: Matches width of 3 result cards + gaps --- */
+        .calendar-card {
+            width: 100%;
+            /* Dynamically calculate: (3 cards * 400px) + (2 gaps * 1.5rem) */
+            /* max-width: calc((400px * 3) + (1.5rem * 2)) !important; */
+            max-width: calc((277.61px + 400px + 400px) + (1.5rem * 2)) !important;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .light-mode .card {
@@ -370,6 +383,103 @@
             color: #2d3748;
         }
 
+        /* DataTables overrides for theme compatibility */
+        .dataTables_wrapper .dataTables_length, 
+        .dataTables_wrapper .dataTables_filter, 
+        .dataTables_wrapper .dataTables_info, 
+        .dataTables_wrapper .dataTables_processing, 
+        .dataTables_wrapper .dataTables_paginate {
+            color: inherit !important;
+            margin-bottom: 10px;
+        }
+        
+        .light-mode .dataTables_wrapper .dataTables_length select,
+        .light-mode .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #e2e8f0;
+            background-color: white;
+            color: #2d3748;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .dark-mode .dataTables_wrapper .dataTables_length select,
+        .dark-mode .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #718096;
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+        }
+        
+        /* Table Border Removal/Customization */
+        table.dataTable.no-footer {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .dark-mode table.dataTable.no-footer {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- DATATABLES DARK MODE FIX --- */
+        /* These styles force correct colors when .dark-mode class is active */
+        
+        /* 1. Ensure Table Header (Thead) is Dark Gray with Light Text */
+        .dark-mode #calendarTable thead th {
+            background-color: #4a5568 !important; /* Tailwind gray-700 */
+            color: #e2e8f0 !important; /* Tailwind gray-200 */
+            border-bottom-color: #718096;
+        }
+
+        /* 2. Ensure Table Body (Tbody) Text is Light */
+        .dark-mode #calendarTable tbody {
+            color: #e2e8f0 !important;
+        }
+
+        /* 3. Ensure Row Borders are visible but subtle */
+        .dark-mode #calendarTable tbody td {
+            border-bottom: 1px solid #4a5568;
+        }
+
+        /* 4. Fix Pagination Buttons (Previous/Next/Numbers) */
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #e2e8f0 !important; /* Default text color */
+        }
+
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: #4a5568 !important; /* Active background */
+            color: white !important;
+            border: 1px solid #718096 !important;
+        }
+
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #718096 !important; /* Hover background */
+            color: white !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+            color: #718096 !important; /* Disabled text color */
+        }
+        
+        /* 5. Fix Info Text (Showing 1 to X of Y entries) */
+        .dark-mode .dataTables_info {
+            color: #e2e8f0 !important;
+        }
+        /* -------------------------------- */
+
+        /* --- FIX FOR TABLE SCROLLING --- */
+        /* Forces table to keep width on small screens, triggering the scrollbar */
+        #calendarTable th, #calendarTable td {
+            white-space: nowrap;
+        }
+        /* ------------------------------- */
+
         /* MOBILE & TABLET RESPONSIVE OVERRIDES (Matches Dashboard) */
         @media (max-width: 1023px) {
             .container {
@@ -490,6 +600,28 @@
                 </button>
             </div>
         </div>
+
+        <div class="card calendar-card p-6 mt-6 w-full overflow-hidden">
+            <h3 class="text-xl section-title mb-4"><i class="fa fa-calendar-alt"></i> Upcoming Economic Events</h3>
+            <div class="overflow-x-auto">
+                <table id="calendarTable" class="w-full text-sm text-left">
+                    <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-300">
+                        <tr>
+                            <th class="px-4 py-3">Date</th>
+                            <th class="px-4 py-3">Time</th>
+                            <th class="px-4 py-3">Cur</th>
+                            <th class="px-4 py-3">Event</th>
+                            <th class="px-4 py-3">Impact</th>
+                            <th class="px-4 py-3">Prev</th>
+                            <th class="px-4 py-3">Actual</th>
+                            <th class="px-4 py-3">Fcst</th>
+                        </tr>
+                    </thead>
+                    <tbody class="dark:text-gray-300">
+                        </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <footer class="bg-gray-800 text-white py-4 mt-auto">
@@ -550,6 +682,104 @@
                 darkIcon.classList.add('hidden');
                 localStorage.setItem('theme', 'light');
             }
+            updateTableTheme(); // Update DataTable text colors
+        }
+
+        // Initialize Calendar Table
+        function initCalendarTable() {
+            if ($('#calendarTable').length) {
+                const table = $('#calendarTable').DataTable({
+                    ajax: {
+                        url: "{% url 'calendar_data' %}",
+                        dataSrc: function(json) {
+                            if (!json.events) return [];
+                            const now = new Date();
+                            // Filter logic: Keep only future or current events
+                            return json.events.filter(function(event) {
+                                if (!event.utc_datetime) return false;
+                                // Convert string "YYYY-MM-DD HH:MM:SS" to UTC Date Object
+                                const eventDate = new Date(event.utc_datetime.replace(' ', 'T') + 'Z');
+                                // Return true if event date is greater than or equal to now (current user system time)
+                                return eventDate >= now;
+                            });
+                        }
+                    },
+                    columns: [
+                        { 
+                            data: 'utc_datetime',
+                            render: function(data, type, row) {
+                                if (!data) return '-';
+                                // Create Date object from UTC string (assuming format "YYYY-MM-DD HH:MM:SS")
+                                // Replacing space with T and appending Z forces JS to treat it as UTC
+                                const dateObj = new Date(data.replace(' ', 'T') + 'Z');
+                                
+                                // Return formatted string for display
+                                if (type === 'display' || type === 'filter') {
+                                    return dateObj.toLocaleDateString('en-GB', {
+                                        weekday: 'long', 
+                                        day: 'numeric', 
+                                        month: 'long'
+                                    }); // e.g., "Sunday, 18 January"
+                                }
+                                // Return original UTC string for sorting/ordering to keep chronological order
+                                return data;
+                            }
+                        },
+                        { 
+                            data: 'utc_datetime',
+                            render: function(data, type, row) {
+                                if (!data) return '-';
+                                const dateObj = new Date(data.replace(' ', 'T') + 'Z');
+                                
+                                if (type === 'display' || type === 'filter') {
+                                    return dateObj.toLocaleTimeString('en-US', {
+                                        hour: 'numeric',
+                                        minute: '2-digit',
+                                        hour12: true
+                                    }); // e.g., "02:30 PM"
+                                }
+                                return data;
+                            }
+                        },
+                        { data: 'currency' },
+                        { data: 'title' },
+                        { 
+                            data: 'impact',
+                            render: function(data) {
+                                let color = 'gray';
+                                if(data.includes('High')) color = '#ef4444'; // Red-500
+                                if(data.includes('Medium')) color = '#f59e0b'; // Amber-500
+                                if(data.includes('Low')) color = '#10b981'; // Emerald-500
+                                
+                                return `<span class="px-2 py-1 rounded text-xs text-white" style="background-color: ${color};">${data}</span>`;
+                            }
+                        },
+                        { data: 'previous' },
+                        { data: 'actual' },
+                        { data: 'forecast' }
+                    ],
+                    order: [[0, 'asc'], [1, 'asc']],
+                    pageLength: 5,
+                    lengthMenu: [5, 10, 25],
+                    responsive: false, // Changed from true to false
+                    autoWidth: false, // Added to prevent fixed width issues
+                    language: {
+                        emptyTable: "No upcoming events found."
+                    }
+                });
+                updateTableTheme();
+            }
+        }
+
+        function updateTableTheme() {
+            const isDark = document.body.classList.contains('dark-mode');
+            if(isDark) {
+                $('#calendarTable').addClass('text-gray-200');
+                $('.dataTables_wrapper').addClass('text-gray-200');
+            } else {
+                $('#calendarTable').removeClass('text-gray-200');
+                $('.dataTables_wrapper').removeClass('text-gray-200');
+            }
         }
 
         // Load saved theme preference
@@ -568,14 +798,20 @@
 
             // Initialize trading animation
             initTradingAnimation();
+
+            // Initialize Calendar
+            initCalendarTable();
         });
 
         // Trading Background Animation
         function initTradingAnimation() {
             const canvas = document.getElementById('tradingCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // --- Updated Size Handling ---
+            // Set internal resolution matches window size
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const ctx = canvas.getContext('2d');
 
             const candles = [];
             const candleCount = Math.floor(window.innerWidth / 20); // Space candles 20px apart

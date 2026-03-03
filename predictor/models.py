@@ -44,3 +44,15 @@ class Prediction(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+# --- Added Economic Calendar Model ---
+class EconomicCalendar(models.Model):
+    updated_at = models.DateTimeField(auto_now=True)
+    data = models.JSONField(default=dict)  # Stores the full API response
+
+    def __str__(self):
+        return f"Calendar Data (Last Updated: {self.updated_at})"
+
+    class Meta:
+        verbose_name = "Economic Calendar"
+        verbose_name_plural = "Economic Calendar"
