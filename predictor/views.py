@@ -124,3 +124,9 @@ def get_calendar_data(request):
             return JsonResponse({"events": []})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+def landing_page(request):
+    if request.user.is_authenticated:
+        return redirect('app') # Optional: Auto-redirect logged in users to the dashboard
+    return render(request, 'predictor/index.html')
