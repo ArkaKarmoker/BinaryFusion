@@ -33,12 +33,16 @@ class EditProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Username'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Email'}))
     
+    # Hidden field to handle profile picture removal via JavaScript
+    clear_image = forms.BooleanField(required=False, widget=forms.HiddenInput())
+    
     class Meta:
         model = Profile
-        fields = ['telegram', 'phone']
+        fields = ['telegram', 'phone', 'image']
         widgets = {
             'telegram': forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Telegram'}),
             'phone': forms.TextInput(attrs={**INPUT_FIELD_ATTRS, 'placeholder': 'Phone'}),
+            'image': forms.FileInput(attrs={**INPUT_FIELD_ATTRS, 'class': 'hidden', 'id': 'imageInput', 'accept': 'image/*'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -64,6 +68,11 @@ class EditProfileForm(forms.ModelForm):
 
     def save(self, commit=True):
         profile = super().save(commit=False)
+        
+        # If the clear_image hidden field is checked, remove the photo
+        if self.cleaned_data.get('clear_image'):
+            profile.image = None
+            
         if commit:
             # Update User model fields
             self.user.first_name = self.cleaned_data['first_name']

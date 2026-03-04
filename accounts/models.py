@@ -42,9 +42,18 @@ class Profile(models.Model):
     auto_refill_tokens = models.BooleanField(default=False)
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
+    
+    # --- New Profile Picture Field ---
+    image = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+    def get_initial(self):
+        """Returns the first letter of first_name if available, otherwise username."""
+        if self.user.first_name:
+            return self.user.first_name[0].upper()
+        return self.user.username[0].upper()
 
     def save(self, *args, **kwargs):
         # Ensure max_tokens is set based on subscription type

@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings # Added for media serving
+from django.conf.urls.static import static # Added for media serving
 
 from predictor import views
 
@@ -25,3 +27,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),  # Added accounts URLs
     path("accounts/", include("allauth.urls")),   # Added allauth URLs
 ]
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

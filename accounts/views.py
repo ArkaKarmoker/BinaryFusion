@@ -91,7 +91,8 @@ def dashboard(request):
 
     if request.method == 'POST':
         if 'update_profile' in request.POST:
-            form = EditProfileForm(request.POST, instance=profile, user=request.user)
+            # Updated to include request.FILES for profile picture uploads
+            form = EditProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
             if form.is_valid():
                 form.save()
                 # Update the user object
@@ -111,7 +112,10 @@ def dashboard(request):
                             'username': user.username,
                             'email': user.email,
                             'date_joined': user.date_joined.strftime('%B %d, %Y'),
-                            'last_login': user.last_login.strftime('%B %d, %Y') if user.last_login else 'N/A'
+                            'last_login': user.last_login.strftime('%B %d, %Y') if user.last_login else 'N/A',
+                            # Added profile image and initial for dynamic UI updates
+                            'profile_image': profile.image.url if profile.image else None,
+                            'initial': profile.get_initial()
                         }
                     })
                 messages.success(request, 'Profile updated successfully.')

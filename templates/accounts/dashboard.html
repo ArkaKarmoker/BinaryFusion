@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinaryFusion - Dashboard</title>
-    <!-- <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg"> -->
     <link rel="icon" type="image/jpg" href="{% static 'images/favicon2.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
@@ -19,6 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <style>
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
@@ -89,6 +90,41 @@
             background-color: #4a5568;
             color: #e2e8f0;
             border-color: #718096;
+        }
+
+        /* Photo Action Button styling */
+        .photo-action-btn {
+            transition: all 0.3s ease;
+            border-width: 1px;
+        }
+        .light-mode .photo-action-btn {
+            background-color: #eff6ff; 
+            color: #2563eb; 
+            border-color: #bfdbfe; 
+        }
+        .light-mode .photo-action-btn:hover {
+            background-color: #dbeafe; 
+        }
+        .dark-mode .photo-action-btn {
+            background-color: #4a5568; 
+            color: #90cdf4; 
+            border-color: #718096; 
+        }
+        .dark-mode .photo-action-btn:hover {
+            background-color: #2d3748; 
+        }
+
+        /* Cropper Modal styling to support dark mode */
+        .cropper-modal-box {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .light-mode .cropper-modal-box {
+            background-color: #ffffff;
+            color: #2d3748;
+        }
+        .dark-mode .cropper-modal-box {
+            background-color: #2d3748;
+            color: #f7fafc;
         }
  
         /* Trading activity animation */
@@ -402,6 +438,17 @@
             font-weight: bold;
             cursor: pointer;
         }
+        
+        /* Cropper container to ensure it stays within modal bounds */
+        .cropper-container-wrapper {
+            width: 100%;
+            max-height: 60vh;
+            background-color: #eee;
+            transition: background-color 0.3s;
+        }
+        .dark-mode .cropper-container-wrapper {
+            background-color: #1a202c;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
@@ -414,6 +461,19 @@
     <div id="imageModal" class="modal" onclick="closeModal()">
         <span class="close-modal">&times;</span>
         <img class="modal-content" id="enlargedImage">
+    </div>
+    
+    <div id="cropperModal" class="modal">
+        <div class="cropper-modal-box p-4 rounded-lg shadow-lg" style="width: 500px; max-width: 95%;">
+            <h3 class="text-xl font-bold mb-4">Crop Profile Photo</h3>
+            <div class="cropper-container-wrapper mb-4 rounded-lg overflow-hidden flex justify-center items-center">
+                <img id="cropper-image" src="" style="max-width: 100%; display: block;">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded transition font-medium" onclick="closeCropperModal()">Cancel</button>
+                <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium" id="btn-crop-confirm">Crop & Save</button>
+            </div>
+        </div>
     </div>
 
     <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
@@ -444,6 +504,14 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4"><i class="fa fa-user"></i> User Information</h2>
+                    
+                    <div class="flex justify-center mb-6 relative">
+                        <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}" id="user-avatar-img" class="{% if not user.profile.image %}hidden{% endif %} w-24 h-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-md cursor-pointer hover:opacity-80 transition duration-200 object-cover" onclick="openModal(this.src)">
+                        <div id="user-avatar-initial" class="{% if user.profile.image %}hidden{% endif %} w-24 h-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center bg-blue-600 text-white text-4xl font-bold uppercase select-none cursor-default">
+                            {{ user.first_name|default:user.username|slice:":1"|upper }}
+                        </div>
+                    </div>
+
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-medium opacity-75">Full Name</p>
@@ -477,9 +545,81 @@
                 </div>
                 <div class="card p-6">
                     <h2 class="text-xl section-title mb-4"><i class="fa fa-pen-to-square"></i> Edit Information</h2>
-                    <form id="profile-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Profile Photo</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="file" id="cropper-input" accept="image/*" class="hidden">
+                            <button type="button" id="btn-upload-photo" class="photo-action-btn px-3 py-1.5 rounded-lg text-sm font-medium">
+                                {% if user.profile.image %}
+                                    <i class="fa fa-camera"></i> Update Photo
+                                {% else %}
+                                    <i class="fa fa-plus"></i> Add Photo
+                                {% endif %}
+                            </button>
+                            <button type="button" id="btn-remove-photo" class="{% if not user.profile.image %}hidden{% endif %} text-red-500 hover:text-red-700 transition text-sm font-medium">
+                                <i class="fa fa-trash"></i> Remove
+                            </button>
+                        </div>
+                        <p id="photo-update-warning" class="hidden text-xs text-orange-500 mt-2"><i class="fa fa-info-circle"></i> Click 'Update Profile' below to save your new profile photo.</p>
+                    </div>
+
+                    <form id="profile-form" method="post" action="{% url 'dashboard' %}" class="space-y-4" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium mb-1">First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium mb-1">Last Name</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium mb-1">Username</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium mb-1">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.telegram.id_for_label }}" class="block text-sm font-medium mb-1">Telegram</label>
+                            {{ form.telegram }}
+                            {% if form.telegram.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.telegram.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium mb-1">Phone</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-red-500 text-xs mt-1">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="hidden">
+                            {{ form.image }}
+                            <input type="checkbox" name="clear_image" id="id_clear_image" {% if form.clear_image.value %}checked{% endif %}>
+                        </div>
+
                         <button type="submit" name="update_profile" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Update Profile</button>
                     </form>
                 </div>
@@ -994,6 +1134,9 @@
         {% endif %}
 
         let initialSettings = {};
+        let cropper = null;
+        let croppedImageBlob = null;
+
         // Theme Toggle Functionality (consistent with app.html)
         function toggleTheme() {
             const body = document.getElementById('body');
@@ -1201,6 +1344,86 @@
                 }
             });
         }
+        
+        // --- Photo Cropper Logic ---
+        function openCropperModal() {
+            document.getElementById('cropperModal').style.display = 'flex';
+        }
+
+        function closeCropperModal() {
+            document.getElementById('cropperModal').style.display = 'none';
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            $('#cropper-input').val(''); // Reset file input
+        }
+
+        $('#btn-upload-photo').on('click', function() {
+            $('#cropper-input').click();
+        });
+
+        $('#cropper-input').on('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    $('#cropper-image').attr('src', event.target.result);
+                    openCropperModal();
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(document.getElementById('cropper-image'), {
+                        aspectRatio: 1, // Enforce square cropping
+                        viewMode: 1,
+                        background: false
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $('#btn-crop-confirm').on('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                }).toBlob(function(blob) {
+                    croppedImageBlob = blob;
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Update preview in User Information
+                    $('#user-avatar-img').attr('src', url).removeClass('hidden');
+                    $('#user-avatar-initial').addClass('hidden');
+                    
+                    // Update buttons in Edit Profile
+                    $('#btn-upload-photo').html('<i class="fa fa-camera"></i> Update Photo');
+                    $('#btn-remove-photo').removeClass('hidden');
+                    $('#photo-update-warning').removeClass('hidden');
+                    
+                    // Uncheck clear image
+                    $('#id_clear_image').prop('checked', false);
+                    
+                    closeCropperModal();
+                }, 'image/png');
+            }
+        });
+
+        $('#btn-remove-photo').on('click', function() {
+            croppedImageBlob = null;
+            $('#id_clear_image').prop('checked', true);
+            
+            // Revert UI to initial avatar
+            $('#user-avatar-img').addClass('hidden').attr('src', '');
+            $('#user-avatar-initial').removeClass('hidden');
+            
+            // Update Buttons
+            $('#btn-upload-photo').html('<i class="fa fa-plus"></i> Add Photo');
+            $('#btn-remove-photo').addClass('hidden');
+            $('#photo-update-warning').removeClass('hidden');
+        });
+        
         // Load saved theme preference and initialize credit progress
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
@@ -1233,7 +1456,8 @@
                     { className: 'dt-center', targets: '_all' }
                 ]
             });
-            // Handle profile form submission via AJAX
+            
+            // Handle profile form submission via AJAX with FormData Support
             $('#profile-form').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
@@ -1246,14 +1470,14 @@
                 const currentPhone = $('#user-phone').text().trim() === 'Not set' ? '' : $('#user-phone').text().trim();
          
                 // Get form input values
-                const formData = form.serializeArray();
+                const formDataValues = form.serializeArray();
                 let firstName = '';
                 let lastName = '';
                 let email = '';
                 let username = '';
                 let telegram = '';
                 let phone = '';
-                formData.forEach(field => {
+                formDataValues.forEach(field => {
                     if (field.name === 'first_name') firstName = field.value.trim();
                     if (field.name === 'last_name') lastName = field.value.trim();
                     if (field.name === 'email') email = field.value.trim();
@@ -1264,43 +1488,84 @@
          
                 // Combine first and last name for comparison
                 const formFullName = `${firstName} ${lastName}`.trim();
+                const hasImageChanged = !$('#photo-update-warning').hasClass('hidden');
          
                 // Check if any field has changed
                 if (formFullName === currentFullName &&
                     username === currentUsername &&
                     email === currentEmail &&
                     telegram === currentTelegram &&
-                    phone === currentPhone) {
+                    phone === currentPhone && 
+                    !hasImageChanged) {
                     // No changes detected, show message and return
                     notyf.open({ type: 'warning', message: 'No changes detected.' });
                     return;
                 }
+                
+                // Build FormData payload to support sending images
+                const formData = new FormData(form[0]);
+                formData.append('update_profile', 'Update Profile');
+                
+                if (croppedImageBlob) {
+                    formData.delete('image'); // Remove standard image input
+                    formData.append('image', croppedImageBlob, 'profile_photo.png');
+                }
+
                 // Proceed with AJAX request if changes detected
                 $.ajax({
                     url: form.attr('action'),
                     type: 'POST',
-                    data: form.serialize() + '&update_profile=Update+Profile',
+                    data: formData,
+                    processData: false, // Required for FormData
+                    contentType: false, // Required for FormData
                     success: function(response) {
-                        // Parse the response to extract messages
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(response, 'text/html');
-                        // In the new response structure, we might need to rely on direct message passing or assume success if HTML returned
-                        // Assuming success if no specific error block found or just updating UI
-                        notyf.success('Profile updated successfully.');
-                      
-                        // Update user information on the page
-                        $('#user-fullname').text(`${firstName} ${lastName}`);
-                        $('#user-email').text(email);
-                        $('#user-username').text(username);
-                        $('#welcome-username').text(`🎉 Welcome, ${username}`);
-                        $('#user-telegram').text(telegram || 'Not set');
-                        $('#user-phone').text(phone || 'Not set');
+                        if (response.status === 'success' || typeof response === 'object') {
+                            notyf.success(response.message || 'Profile updated successfully.');
+                            
+                            // Reset image state
+                            $('#photo-update-warning').addClass('hidden');
+                            croppedImageBlob = null;
+                            
+                            // Update user information on the page
+                            if(response.user) {
+                                $('#user-fullname').text(`${response.user.first_name} ${response.user.last_name}`);
+                                $('#user-email').text(response.user.email);
+                                $('#user-username').text(response.user.username);
+                                $('#welcome-username').text(`🎉 Welcome, ${response.user.username}`);
+                                
+                                // Sync Image Avatar with Backend URL Response
+                                if(response.user.profile_image) {
+                                    $('#user-avatar-img').attr('src', response.user.profile_image).removeClass('hidden');
+                                    $('#user-avatar-initial').addClass('hidden');
+                                    $('#btn-upload-photo').html('<i class="fa fa-camera"></i> Update Photo');
+                                    $('#btn-remove-photo').removeClass('hidden');
+                                } else {
+                                    $('#user-avatar-img').addClass('hidden').attr('src', '');
+                                    $('#user-avatar-initial').removeClass('hidden').text(response.user.initial);
+                                    $('#btn-upload-photo').html('<i class="fa fa-plus"></i> Add Photo');
+                                    $('#btn-remove-photo').addClass('hidden');
+                                }
+                            } else {
+                                // Fallback mapping
+                                $('#user-fullname').text(`${firstName} ${lastName}`);
+                                $('#user-email').text(email);
+                                $('#user-username').text(username);
+                                $('#welcome-username').text(`🎉 Welcome, ${username}`);
+                            }
+                            $('#user-telegram').text(telegram || 'Not set');
+                            $('#user-phone').text(phone || 'Not set');
+                        } else {
+                             notyf.success('Profile updated successfully.');
+                             $('#photo-update-warning').addClass('hidden');
+                             croppedImageBlob = null;
+                        }
                     },
                     error: function(xhr) {
                         notyf.error('An error occurred. Please try again.');
                     }
                 });
             });
+            
             // Handle password form submission via AJAX
             $('#password-form').on('submit', function(e) {
                 e.preventDefault();
@@ -1343,6 +1608,7 @@
                     }
                 });
             });
+            
             // Handle deposit form submission via AJAX
             $('#deposit-form').on('submit', function(e) {
                 e.preventDefault();
@@ -1408,6 +1674,7 @@
                     }
                 });
             });
+            
             // Handle settings form submission via AJAX
             $('#settings-form').on('submit', function(e) {
                 e.preventDefault();
