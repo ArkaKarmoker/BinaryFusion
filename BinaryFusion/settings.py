@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google', # Google Provider
     'django_cleanup.apps.CleanupConfig',
+    'tinymce',  # <--- ADDED: django-tinymce for rich text editing
 ]
 
 MIDDLEWARE = [
@@ -238,3 +239,15 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'arkakarmoker.business@gmail.com' # Your Gmail Address
 EMAIL_HOST_PASSWORD = 'gzxn yubg eveq qete' # Generate App Password from Google Account Security
+
+# ==========================================
+# TINYMCE CONFIGURATION
+# ==========================================
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "400px",
+    "width": "100%",
+    "menubar": "file edit view insert format tools table help",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount spellchecker",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment code",
+    "custom_undo_redo_levels": 10,
+}

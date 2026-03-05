@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import transaction
+from tinymce.models import HTMLField  # <--- ADDED: Import HTMLField for rich text editing
 
 TIMEZONE_CHOICES = [
     ('UTC', 'UTC'),
@@ -217,3 +218,17 @@ class SubscriptionSettings(models.Model):
     class Meta:
         verbose_name = "Subscription Settings"
         verbose_name_plural = "Subscription Settings"
+
+# --- ADDED: New model for dynamic site content (Deposit Instructions) ---
+class SiteContent(models.Model):
+    deposit_instructions = HTMLField(
+        default="<p>Please follow these instructions to make a deposit.</p>",
+        help_text="Edit the deposit instructions shown to users on the dashboard."
+    )
+
+    def __str__(self):
+        return "Site Content Settings"
+
+    class Meta:
+        verbose_name = "Site Content Setting"
+        verbose_name_plural = "Site Content Settings"

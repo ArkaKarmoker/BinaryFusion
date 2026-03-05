@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Profile, PaymentHistory, SubscriptionSettings
+from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent # <--- ADDED: SiteContent
 from predictor.models import Prediction, EconomicCalendar
 from django.utils.safestring import mark_safe 
 from django.urls import path, reverse
@@ -98,6 +98,14 @@ class SubscriptionSettingsAdmin(admin.ModelAdmin):
     list_display = ('price', 'discounted_price', 'is_discounted')
     fields = ('price', 'discounted_price', 'is_discounted')
 
+    def has_add_permission(self, request):
+        # Allow only one instance to be created
+        if self.model.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+# --- ADDED: Admin for Site Content (Deposit Instructions) ---
+class SiteContentAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Allow only one instance to be created
         if self.model.objects.exists():
@@ -289,3 +297,6 @@ admin.site.register(SubscriptionSettings, SubscriptionSettingsAdmin)
 
 # Register the Economic Calendar
 admin.site.register(EconomicCalendar, EconomicCalendarAdmin)
+
+# --- ADDED: Register the new SiteContent model ---
+admin.site.register(SiteContent, SiteContentAdmin)

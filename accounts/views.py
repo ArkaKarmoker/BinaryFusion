@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse  # Added HttpResponse
 from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm, SettingsForm
-from .models import Profile, PaymentHistory, SubscriptionSettings
+from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent # <--- ADDED: SiteContent
 from predictor.models import Prediction
 from django.utils import timezone
 from datetime import timedelta
@@ -88,6 +88,10 @@ def dashboard(request):
         effective_price = Decimal('5.00')  # Default effective price
         regular_price = Decimal('5.00')    # Default regular price
         is_discounted = False    # Default discount status
+        
+    # --- ADDED: Fetch dynamic deposit instructions ---
+    site_content = SiteContent.objects.first()
+    deposit_instructions = site_content.deposit_instructions if site_content else "<p>Please follow these instructions to make a deposit.</p>"
 
     if request.method == 'POST':
         if 'update_profile' in request.POST:
@@ -403,7 +407,8 @@ def dashboard(request):
         'max_tokens': profile.max_tokens,
         'effective_price': effective_price,
         'regular_price': regular_price,
-        'is_discounted': is_discounted
+        'is_discounted': is_discounted,
+        'deposit_instructions': deposit_instructions # <--- ADDED: Passed to template
     })
 
 @login_required

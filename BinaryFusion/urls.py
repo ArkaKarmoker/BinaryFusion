@@ -21,11 +21,17 @@ from django.conf.urls.static import static # Added for media serving
 
 from predictor import views
 
+# --- ADDED: Custom Admin Panel Titles ---
+admin.site.site_header = "BinaryFusion Administration"
+admin.site.site_title = "BinaryFusion Admin Portal"
+admin.site.index_title = "Welcome to BinaryFusion Admin Portal"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("predictor.urls")),
     path("accounts/", include("accounts.urls")),  # Added accounts URLs
     path("accounts/", include("allauth.urls")),   # Added allauth URLs
+    path("tinymce/", include("tinymce.urls")),    # <--- ADDED: TinyMCE URLs for the rich text editor
 ]
 
 # Serve media files during development

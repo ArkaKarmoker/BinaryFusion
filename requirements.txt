@@ -16,3 +16,4 @@ django-allauth==65.13.1
 PyJWT==2.10.1
 cryptography==46.0.3
 django-cleanup==9.0.0
+django-tinymce==5.0.0
