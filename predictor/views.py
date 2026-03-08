@@ -127,6 +127,6 @@ def get_calendar_data(request):
 
 
 def landing_page(request):
-    if request.user.is_authenticated:
-        return redirect('app') # Optional: Auto-redirect logged in users to the dashboard
+    # if request.user.is_authenticated:
+    #     return redirect('app') # Optional: Auto-redirect logged in users to the dashboard
     return render(request, 'predictor/index.html')

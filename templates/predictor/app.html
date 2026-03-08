@@ -556,8 +556,33 @@
                 <h2 class="text-xl section-title mb-4 w-full text-center">Enter Trading Asset</h2>
                 <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4" onsubmit="submitPrediction(event)">
                     {% csrf_token %}
-                    <input type="search" id="symbol" name="symbol" placeholder="e.g., EURUSD=X or BTC-USD" required
+                    <input type="search" id="symbol" name="symbol" list="popular-assets" placeholder="e.g., EURUSD=X or BTC-USD" required
                            class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                    
+                    <datalist id="popular-assets">
+                        <option value="EURUSD=X">EUR/USD (Euro / US Dollar)</option>
+                        <option value="GBPUSD=X">GBP/USD (British Pound / US Dollar)</option>
+                        <option value="USDJPY=X">USD/JPY (US Dollar / Japanese Yen)</option>
+                        <option value="AUDUSD=X">AUD/USD (Australian Dollar / US Dollar)</option>
+                        <option value="USDCAD=X">USD/CAD (US Dollar / Canadian Dollar)</option>
+                        <option value="USDCHF=X">USD/CHF (US Dollar / Swiss Franc)</option>
+                        <option value="NZDUSD=X">NZD/USD (New Zealand Dollar / US Dollar)</option>
+                        <option value="EURJPY=X">EUR/JPY (Euro / Japanese Yen)</option>
+                        <option value="GBPJPY=X">GBP/JPY (British Pound / Japanese Yen)</option>
+                        <option value="BTC-USD">BTC/USD (Bitcoin)</option>
+                        <option value="ETH-USD">ETH/USD (Ethereum)</option>
+                        <option value="SOL-USD">SOL/USD (Solana)</option>
+                        <option value="BNB-USD">BNB/USD (Binance Coin)</option>
+                        <option value="XRP-USD">XRP/USD (Ripple)</option>
+                        <option value="ADA-USD">ADA/USD (Cardano)</option>
+                        <option value="^GSPC">S&P 500 (US Stock Index)</option>
+                        <option value="^DJI">Dow Jones Industrial Average</option>
+                        <option value="^IXIC">NASDAQ Composite</option>
+                        <option value="^FTSE">FTSE 100 (UK Index)</option>
+                        <option value="GC=F">Gold Futures</option>
+                        <option value="CL=F">Crude Oil Futures</option>
+                    </datalist>
+
                     <button type="submit"
                             class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap">
                         <i class="fa fa-rocket mr-2"></i> Predict

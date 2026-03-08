@@ -26,9 +26,27 @@
         /* Mobile Menu Animation */
         #mobile-menu { transition: all 0.3s ease-in-out; transform: translateY(-20px); opacity: 0; pointer-events: none; }
         #mobile-menu.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+
+        /* Maintenance Banner Pulse */
+        .pulse-text { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="hero-gradient">
+
+    <!-- Maintenance Banner Disclaimer -->
+    <div class="relative z-[100] bg-amber-500/10 border-b border-amber-500/20 backdrop-blur-md px-4 py-2.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-center space-x-3 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 pulse-text"></i>
+            <p class="text-xs md:text-sm font-medium text-amber-200/90 tracking-wide">
+                <span class="font-bold uppercase mr-1">Academic Project:</span> 
+                This platform is currently under construction. Some features are limited. 
+                <span class="text-red-500 font-bold border-b border-red-500/30">Do not attempt any real payments.</span>
+            </p>
+        </div>
+    </div>
+    <!-- Maintenance Banner Disclaimer End-->
+
     <canvas id="tradingCanvas"></canvas>
 
     <nav class="relative z-50 px-6 py-6 max-w-7xl mx-auto">
@@ -40,13 +58,17 @@
             
             <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
                 <a href="#features" class="hover:text-white transition">Algorithm</a>
+                <a href="#mobile-app" class="hover:text-white transition">App</a>
                 <a href="#pricing" class="hover:text-white transition">Pricing</a>
                 <a href="/app/" class="hover:text-white transition">Live Signals</a>
             </div>
 
             <div class="hidden md:flex items-center space-x-4">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="px-5 py-2 glass rounded-full text-sm font-semibold hover:bg-white/10 transition">Dashboard</a>
+                    <a href="{% url 'app' %}" class="px-5 py-2 bg-blue-600 rounded-full text-sm font-semibold hover:bg-blue-500 transition accent-glow">
+                        <i class="fa-brands fa-sketch mr-1"></i> Predict
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="px-5 py-2 glass rounded-full text-sm font-semibold hover:bg-white/10 transition"><i class="fa-solid fa-user mr-1"></i> Dashboard</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="text-sm font-semibold hover:text-blue-400">Login</a>
                     <a href="{% url 'register' %}" class="px-5 py-2 bg-blue-600 rounded-full text-sm font-semibold hover:bg-blue-500 transition accent-glow">Join Now</a>
@@ -61,11 +83,13 @@
         <div id="mobile-menu" class="absolute top-full left-6 right-6 mt-4 glass p-6 rounded-2xl md:hidden">
             <div class="flex flex-col space-y-6 text-center font-medium">
                 <a href="#features" class="text-gray-300 hover:text-white transition" onclick="toggleMenu()">Algorithm</a>
+                <a href="#mobile-app" class="text-gray-300 hover:text-white transition" onclick="toggleMenu()">App</a>
                 <a href="#pricing" class="text-gray-300 hover:text-white transition" onclick="toggleMenu()">Pricing</a>
-                <a href="/app/" class="text-gray-300 hover:text-white transition">Live Signals</a>
+                <a href="/app/" class="text-gray-300 hover:text-white transition" onclick="toggleMenu()">Live Signals</a>
                 <hr class="border-white/10">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="px-5 py-3 glass rounded-xl text-blue-400 font-bold">Dashboard</a>
+                    <a href="{% url 'app' %}" class="px-5 py-3 bg-blue-600 rounded-xl font-bold"><i class="fa-brands fa-sketch mr-1"></i> Predict</a>
+                    <a href="{% url 'dashboard' %}" class="px-5 py-3 glass rounded-xl text-blue-400 font-bold"><i class="fa-solid fa-user mr-1"></i> Dashboard</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="text-gray-300 font-semibold">Login</a>
                     <a href="{% url 'register' %}" class="px-5 py-3 bg-blue-600 rounded-xl font-bold">Join Now</a>
@@ -148,6 +172,64 @@
                     </p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section id="mobile-app" class="py-24 px-6 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16">
+            
+            <div class="lg:w-1/2 text-center lg:text-left z-10">
+                <span class="px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                    Exclusive Android Release
+                </span>
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white leading-tight">
+                    Take the Market <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">Anywhere You Go.</span>
+                </h2>
+                <p class="text-gray-400 text-lg mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    Get instant push notifications for high-accuracy signals and monitor live charts seamlessly. Download our official APK to start trading on the move.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="https://github.com/ArkaKarmoker/BinaryFusion-Android/releases/download/v1.0.0/BinaryFusion.apk" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-500 transition border border-white/10 hover-card shadow-lg shadow-emerald-900/20">
+                        <i class="fa-brands fa-android text-3xl mr-3 text-white"></i>
+                        <div class="text-left">
+                            <div class="text-[10px] text-emerald-200 uppercase tracking-wider leading-none">Download Official</div>
+                            <div class="text-sm font-bold leading-tight text-white">Android APK</div>
+                        </div>
+                    </a>
+                    <div class="w-full sm:w-auto px-6 py-3 glass rounded-xl flex items-center justify-center opacity-50 cursor-not-allowed border border-white/10">
+                        <i class="fa-brands fa-google-play text-2xl mr-3 text-gray-400"></i>
+                        <div class="text-left">
+                            <div class="text-[10px] text-gray-400 uppercase tracking-wider leading-none">Play Store</div>
+                            <div class="text-sm font-bold leading-tight text-gray-400">Coming Soon</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center justify-center lg:justify-start space-x-3 text-gray-500">
+                    <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                    <p class="text-xs tracking-wide">
+                        Verified safe. Hosted on <a href="https://github.com/ArkaKarmoker/BinaryFusion-Android" class="text-emerald-400 hover:underline">GitHub</a> for transparency and security.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lg:w-1/2 flex justify-center relative z-10 w-full">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md aspect-square bg-gradient-to-tr from-purple-600/30 to-blue-600/30 rounded-full blur-[80px] -z-10"></div>
+                
+                <div class="relative w-[260px] sm:w-[300px] aspect-[1080/2400] bg-black rounded-2xl border-[3px] border-gray-600 shadow-2xl shadow-purple-900/30 overflow-hidden ring-1 ring-white/10">
+                    
+                    <img src="{% static 'images/app_ss.png' %}" alt="BinaryFusion Mobile App" class="w-full h-full object-cover rounded-[10px] opacity-95">
+                    
+                    <div class="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-black/20 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#0a0a0a] rounded-full flex items-center justify-center z-20 shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]">
+                        <div class="w-1.5 h-1.5 bg-blue-900/50 rounded-full blur-[0.5px]"></div>
+                    </div>
+
+                    <div class="absolute top-[22%] -right-[3px] w-[2px] h-14 bg-gray-500 rounded-l-md opacity-80"></div>
+                    <div class="absolute top-[34%] -right-[3px] w-[2px] h-8 bg-gray-500 rounded-l-md opacity-80"></div>
+                </div>
+            </div>
+            
         </div>
     </section>
 
@@ -271,7 +353,7 @@
                         <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
                         <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition"><i class="fa-brands fa-discord"></i></a>
                     </div>
-                    <p class="text-gray-400 text-xs">Email: support@binaryfusion.io</p>
+                    <p class="text-gray-400 text-xs">Email: support@binaryfusion.trade</p>
                 </div>
             </div>
 
@@ -285,7 +367,7 @@
             </div>
             
             <div class="mt-8 text-center text-[10px] text-gray-600 leading-relaxed uppercase tracking-widest max-w-3xl mx-auto">
-                Disclaimer: BinaryFusion is a data analytics tool. We do not provide financial advice. Trading involves high risk and may not be suitable for all investors.
+                Disclaimer: BinaryFusion is a data analytics tool developed as a university project. We do not provide financial advice. Trading involves high risk.
             </div>
         </div>
     </footer>
