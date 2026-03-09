@@ -1156,6 +1156,9 @@
                         <p><span class="font-semibold">💰 Asset:</span> ${result.symbol}</p>
                         <p><span class="font-semibold">🚀 Signal:</span> ${result.direction}</p>
                         <p><span class="font-semibold">🎯 Accuracy:</span> ${result.accuracy}%</p>
+                        <p><span class="font-semibold">📍 Entry Price:</span> ${result.entry_price ? result.entry_price.toFixed(5) : 'N/A'}</p>
+                        <p><span class="font-semibold">🛑 Stop Loss:</span> ${result.stop_loss ? result.stop_loss.toFixed(5) : 'N/A'}</p>
+                        <p><span class="font-semibold">✅ Take Profit:</span> ${result.take_profit ? result.take_profit.toFixed(5) : 'N/A'}</p>
                         <p><span class="font-semibold">⏳ Timeframe:</span> M5</p>
                         <p><span class="font-semibold">⏰ Impact Time:</span> ${result.impact_time}</p>
                         <p><span class="font-semibold"><i>Use 1 Step Martingale if loss.</i> <span class="tooltip"><i class="fa fa-info-circle"></i><span class="tooltiptext">1-Step Martingale: Double your position size after a loss to recover the loss with the next trade, then revert to the original size. Use cautiously due to high risk.</span></span></p>
@@ -1185,6 +1188,9 @@
                             `💰 Asset: ${latestPrediction.symbol}\n` +
                             `🚀 Signal: ${latestPrediction.direction}\n` +
                             `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `📍 Entry Price: ${latestPrediction.entry_price ? latestPrediction.entry_price.toFixed(5) : 'N/A'}\n` +
+                            `🛑 Stop Loss: ${latestPrediction.stop_loss ? latestPrediction.stop_loss.toFixed(5) : 'N/A'}\n` +
+                            `✅ Take Profit: ${latestPrediction.take_profit ? latestPrediction.take_profit.toFixed(5) : 'N/A'}\n` +
                             `⏳ Timeframe: M5\n` +
                             `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
                             `⚠️ Note: Use 1 Step Martingale if loss.`;
@@ -1210,6 +1216,9 @@
                             `💰 Asset: ${latestPrediction.symbol}\n` +
                             `🚀 Signal: ${latestPrediction.direction}\n` +
                             `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `📍 Entry Price: ${latestPrediction.entry_price ? latestPrediction.entry_price.toFixed(5) : 'N/A'}\n` +
+                            `🛑 Stop Loss: ${latestPrediction.stop_loss ? latestPrediction.stop_loss.toFixed(5) : 'N/A'}\n` +
+                            `✅ Take Profit: ${latestPrediction.take_profit ? latestPrediction.take_profit.toFixed(5) : 'N/A'}\n` +
                             `⏳ Timeframe: M5\n` +
                             `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
                             `⚠️ Note: Use 1 Step Martingale if loss.`;
@@ -1235,6 +1244,9 @@
                             `💰 Asset: ${latestPrediction.symbol}\n` +
                             `🚀 Signal: ${latestPrediction.direction}\n` +
                             `🎯 Accuracy: ${latestPrediction.accuracy}%\n` +
+                            `📍 Entry Price: ${latestPrediction.entry_price ? latestPrediction.entry_price.toFixed(5) : 'N/A'}\n` +
+                            `🛑 Stop Loss: ${latestPrediction.stop_loss ? latestPrediction.stop_loss.toFixed(5) : 'N/A'}\n` +
+                            `✅ Take Profit: ${latestPrediction.take_profit ? latestPrediction.take_profit.toFixed(5) : 'N/A'}\n` +
                             `⏳ Timeframe: M5\n` +
                             `⏰ Impact Time: ${latestPrediction.impact_time}\n\n` +
                             `⚠️ Note: Use 1 Step Martingale if loss.`;

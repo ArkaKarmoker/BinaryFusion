@@ -40,6 +40,10 @@ STOCHASTIC_THRESHOLD = 50  # Added for Strategy 1
 ATR_PERIOD = 14  # ATR period for volatility measurement
 ICHIMOKU_PARAMS = {"tenkan_period": 9, "kijun_period": 26, "senkou_b_period": 52}  # Ichimoku Cloud parameters
 
+# Risk Management Settings (ATR Multipliers)
+ATR_SL_MULTIPLIER = 1.5  # Stop Loss multiplier (1.5x ATR)
+ATR_TP_MULTIPLIER = 2.0  # Take Profit multiplier (2.0x ATR for positive Risk:Reward)
+
 # Constants you might be using
 MAX_RETRIES = 3  # Number of retries before giving up
 RETRY_DELAY = 5  # Seconds to wait between retries
@@ -277,7 +281,10 @@ def generate_signal(df):
             "direction": "No clear prediction available",
             "accuracy": "N/A",
             "indicator_signals": {},
-            "indicator_values": {}
+            "indicator_values": {},
+            "entry_price": None,
+            "stop_loss": None,
+            "take_profit": None
         }
 
     # Initialize signals and accuracies
@@ -392,21 +399,38 @@ def generate_signal(df):
     print(f"ATR: {latest_atr:.5f} (Threshold: {atr_threshold:.5f}) -> Signal: {signals['ATR']} (Accuracy: {accuracies['ATR']}%)")
     print(f"Ichimoku - Tenkan: {latest_tenkan:.5f}, Kijun: {latest_kijun:.5f}, Senkou A: {latest_senkou_a:.5f}, Senkou B: {latest_senkou_b:.5f}, Chikou: {latest_chikou if latest_chikou is not None else 'None'} -> Signal: {signals['Ichimoku Cloud']} (Accuracy: {accuracies['Ichimoku Cloud']}%)")
 
-    # Voting System
+    # Voting System & SL/TP Calculations
     bullish_count = sum(1 for signal in signals.values() if 'Bullish' in signal)
     bearish_count = sum(1 for signal in signals.values() if 'Bearish' in signal)
     total_signals = len(signals)
 
     print(f"\nVoting Summary: Bullish: {bullish_count}, Bearish: {bearish_count}, Total: {total_signals}")
 
+    stop_loss = None
+    take_profit = None
+
     if bullish_count > bearish_count:
         final_direction = "🟢 UP 📈"
         accuracy = int(sum(acc for sig, acc in accuracies.items() if 'Bullish' in signals[sig]) / bullish_count) if bullish_count > 0 else 50
+        
+        # Calculate Long SL & TP
+        stop_loss = latest_price - (latest_atr * ATR_SL_MULTIPLIER)
+        take_profit = latest_price + (latest_atr * ATR_TP_MULTIPLIER)
+        
         print(f"Final Signal: {final_direction} (Accuracy: {accuracy}%)")
+        print(f"Entry Price: {latest_price:.5f} | Stop Loss: {stop_loss:.5f} | Take Profit: {take_profit:.5f}")
+        
     elif bearish_count > bullish_count:
         final_direction = "🔴 DOWN 📉"
         accuracy = int(sum(acc for sig, acc in accuracies.items() if 'Bearish' in signals[sig]) / bearish_count) if bearish_count > 0 else 50
+        
+        # Calculate Short SL & TP
+        stop_loss = latest_price + (latest_atr * ATR_SL_MULTIPLIER)
+        take_profit = latest_price - (latest_atr * ATR_TP_MULTIPLIER)
+        
         print(f"Final Signal: {final_direction} (Accuracy: {accuracy}%)")
+        print(f"Entry Price: {latest_price:.5f} | Stop Loss: {stop_loss:.5f} | Take Profit: {take_profit:.5f}")
+        
     else:
         final_direction = "No clear prediction available"
         accuracy = "N/A"
@@ -439,7 +463,10 @@ def generate_signal(df):
         "direction": final_direction,
         "accuracy": accuracy,
         "indicator_signals": signals,
-        "indicator_values": indicator_values
+        "indicator_values": indicator_values,
+        "entry_price": latest_price,
+        "stop_loss": stop_loss,
+        "take_profit": take_profit
     }
 
 def fetch_data(symbol):
@@ -608,6 +635,9 @@ def predict(symbol, current_time=None, timezone=LOCAL_TIMEZONE):
             "symbol": symbol,
             "direction": signal_data["direction"],
             "accuracy": signal_data["accuracy"],
+            "entry_price": signal_data.get("entry_price"),
+            "stop_loss": signal_data.get("stop_loss"),
+            "take_profit": signal_data.get("take_profit"),
             "impact_time": impact_time,
             "label_dist": label_dist,
             "candlestick_plot": candlestick_plot,
