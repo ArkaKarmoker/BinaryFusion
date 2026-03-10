@@ -21,6 +21,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
         
+        /* --- FIX FOR HORIZONTAL SCROLLING --- */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body { 
             font-family: 'Fira Code', monospace; 
             /* Fira Code is generally well-proportioned, but you can add font-size here if needed */
@@ -50,6 +56,9 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
             max-width: 400px; /* Smaller card size for desktop */
+            /* Add wrapping to prevent wider font characters from breaking containers */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
             /* width: 100%; */
         }
 
