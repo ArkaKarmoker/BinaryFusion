@@ -6,7 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from yahooquery import search
 import json
 import logging
-from .models import Prediction, EconomicCalendar # Added EconomicCalendar import
+from .models import Prediction, EconomicCalendar
+from accounts.models import SubscriptionSettings
 from django.utils import timezone
 
 # Set up logging
@@ -129,4 +130,11 @@ def get_calendar_data(request):
 def landing_page(request):
     # if request.user.is_authenticated:
     #     return redirect('app') # Optional: Auto-redirect logged in users to the dashboard
-    return render(request, 'predictor/index.html')
+    
+    # --- ADDED: Fetch Subscription Settings to pass to template ---
+    sub_settings = SubscriptionSettings.objects.first()
+    
+    context = {
+        'sub_settings': sub_settings,
+    }
+    return render(request, 'predictor/index.html', context)
