@@ -233,6 +233,82 @@
                 padding-right: 1rem;
             }
         }
+
+        /* DESKTOP PILL TABS OVERRIDES (Matching the image style) */
+        @media (min-width: 1024px) {
+            .tab-container {
+                display: flex !important;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -ms-overflow-style: none; /* IE and Edge */
+                scrollbar-width: none; /* Firefox */
+                padding: 0.35rem;
+                border-radius: 100px; /* Pill shape container */
+                gap: 0.25rem;
+                width: max-content;
+                max-width: 100%;
+            }
+            .tab-container::-webkit-scrollbar {
+                display: none; /* Chrome, Safari and Opera */
+            }
+
+            .light-mode .tab-container {
+                background-color: #f1f5f9;
+                border: 1px solid #e2e8f0;
+            }
+            
+            .dark-mode .tab-container {
+                background-color: #1a202c;
+                border: 1px solid #2d3748;
+            }
+
+            .tab-container .tab-button,
+            .tab-container .deposit-tab-button {
+                border-radius: 100px !important;
+                background-color: transparent !important;
+                border: 1px solid transparent !important;
+                padding: 0.5rem 1.25rem !important;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                margin: 0 !important;
+            }
+
+            /* Inactive text */
+            .light-mode .tab-container .tab-button:not(.active),
+            .light-mode .tab-container .deposit-tab-button:not(.active) {
+                color: #64748b !important;
+            }
+            .light-mode .tab-container .tab-button:not(.active):hover,
+            .light-mode .tab-container .deposit-tab-button:not(.active):hover {
+                color: #334155 !important;
+                background-color: rgba(0,0,0,0.05) !important;
+            }
+
+            .dark-mode .tab-container .tab-button:not(.active),
+            .dark-mode .tab-container .deposit-tab-button:not(.active) {
+                color: #94a3b8 !important;
+            }
+            .dark-mode .tab-container .tab-button:not(.active):hover,
+            .dark-mode .tab-container .deposit-tab-button:not(.active):hover {
+                color: #cbd5e1 !important;
+                background-color: rgba(255,255,255,0.05) !important;
+            }
+
+            /* Active tab - Matches webapp accent (#4a90e2) with border style from image */
+            .light-mode .tab-container .tab-button.active,
+            .light-mode .tab-container .deposit-tab-button.active {
+                background-color: rgba(74, 144, 226, 0.1) !important;
+                border: 1px solid #4a90e2 !important;
+                color: #4a90e2 !important;
+            }
+
+            .dark-mode .tab-container .tab-button.active,
+            .dark-mode .tab-container .deposit-tab-button.active {
+                background-color: rgba(74, 144, 226, 0.2) !important;
+                border: 1px solid #4a90e2 !important;
+                color: #ffffff !important;
+            }
+        }
  
         /* Subscription tiers */
         .subscription-tier {
@@ -496,7 +572,7 @@
     {% include 'includes/header.html' with header_subtitle="User Dashboard" header_type="dashboard" %}
     
     <main id="dashboard" class="container mx-auto px-4 py-8 flex-grow">
-        <div class="mb-6 grid grid-cols-2 md:grid-cols-4 lg:flex lg:space-x-1 lg:gap-0 gap-2">
+        <div class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-2 tab-container">
             <button class="tab-button active" onclick="openTab(event, 'user-tab')">User Profile</button>
             <button class="tab-button" onclick="openTab(event, 'change-password-tab')">Change Password</button>
             <button class="tab-button" onclick="openTab(event, 'signal-history-tab')">Signal History</button>
@@ -969,7 +1045,7 @@
                 <div class="card p-6 row-span-2">
                     <h2 class="text-xl section-title mb-4"><i class="fa fa-money-bill-transfer"></i> Deposit USDT</h2>
                     <div class="space-y-4">
-                        <div class="mb-6 grid grid-cols-2 lg:flex lg:space-x-1 lg:gap-0 gap-2">
+                        <div class="mb-6 grid grid-cols-2 gap-2 tab-container">
                             <button class="deposit-tab-button active" onclick="openDepositTab(event, 'nowpayments-tab')">NOWPayments</button>
                             <button class="deposit-tab-button" onclick="openDepositTab(event, 'binance-tab')">Binance Pay</button>
                         </div>
