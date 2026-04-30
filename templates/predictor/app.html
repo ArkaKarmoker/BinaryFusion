@@ -544,28 +544,7 @@
         <img class="modal-content" id="enlargedImage">
     </div>
 
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-center md:text-left">
-                <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
-                <p class="text-lg mt-1"><i>AI Powered Trading Signal</i></p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
-                {% if user.is_authenticated %}
-                    <span class="text-base font-medium light-mode:text-gray-800 dark-mode:text-white text-center">🎉 Welcome, {{ user.username }}!</span>
-                    <div class="flex space-x-4">
-                        <a href="{% url 'dashboard' %}" class="inline-block bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-base whitespace-nowrap"><i class="fa-solid fa-user"></i> Dashboard</a>
-                        <a href="{% url 'logout' %}" class="inline-block bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition text-base whitespace-nowrap"><i class="fa fa-right-from-bracket"></i> Logout</a>
-                    </div>
-                {% else %}
-                    <div class="flex space-x-4">
-                        <a href="{% url 'login' %}" class="text-blue-200 hover:text-white hover:underline text-base">Login</a>
-                        <a href="{% url 'register' %}" class="text-blue-200 hover:text-white hover:underline text-base">Register</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </header>
+    {% include 'includes/header.html' with header_subtitle="AI Powered Trading Signal" header_type="app" %}
 
     <main class="container mx-auto px-4 py-8 flex-grow">
         <section class="mb-8">
@@ -666,11 +645,7 @@
         </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-4 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <p>© <script>document.write(new Date().getFullYear())</script> BinaryFusion. All rights reserved.</p>
-        </div>
-    </footer>
+    {% include 'includes/footer.html' %}
 
     <script>
         // Global variable to store the latest prediction data for sharing

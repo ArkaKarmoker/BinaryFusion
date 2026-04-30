@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent # <--- ADDED: SiteContent
+from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent, SupportTicket # <--- ADDED: SupportTicket
 from predictor.models import Prediction, EconomicCalendar
 from django.utils.safestring import mark_safe 
 from django.urls import path, reverse
@@ -280,6 +280,26 @@ class EconomicCalendarAdmin(admin.ModelAdmin):
             self.message_user(request, f"Error triggering update: {e}", messages.ERROR)
         return HttpResponseRedirect("../")
 
+# --- ADDED: Custom Admin for Support Tickets ---
+class SupportTicketAdmin(admin.ModelAdmin):
+    list_display = ('ticket_number', 'user', 'issue_type', 'status', 'created_at', 'last_updated')
+    list_filter = ('status', 'issue_type', 'created_at')
+    search_fields = ('ticket_number', 'user__username', 'user__email', 'description', 'admin_response')
+    list_editable = ('status',)
+    
+    # Modified readonly_fields to use the display_description method instead of raw description
+    readonly_fields = ('ticket_number', 'user', 'issue_type', 'display_description', 'created_at', 'last_updated')
+
+    # Custom method to render description HTML safely in admin
+    def display_description(self, obj):
+        return mark_safe(obj.description)
+    display_description.short_description = 'Description'
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj: # Editing an existing object
+            return self.readonly_fields
+        return ('ticket_number', 'created_at', 'last_updated')
+
 # Unregister the default UserAdmin
 admin.site.unregister(User)
 
@@ -298,5 +318,8 @@ admin.site.register(SubscriptionSettings, SubscriptionSettingsAdmin)
 # Register the Economic Calendar
 admin.site.register(EconomicCalendar, EconomicCalendarAdmin)
 
-# --- ADDED: Register the new SiteContent model ---
+# Register the new SiteContent model
 admin.site.register(SiteContent, SiteContentAdmin)
+
+# --- ADDED: Register the SupportTicket model ---
+admin.site.register(SupportTicket, SupportTicketAdmin)

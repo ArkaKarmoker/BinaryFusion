@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse  # Added HttpResponse
-from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm, SettingsForm
-from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent # <--- ADDED: SiteContent
+from .forms import RegistrationForm, EditProfileForm, ChangePasswordForm, DepositForm, SettingsForm, SupportTicketForm # <--- ADDED: SupportTicketForm
+from .models import Profile, PaymentHistory, SubscriptionSettings, SiteContent, SupportTicket # <--- ADDED: SupportTicket
 from predictor.models import Prediction
 from django.utils import timezone
 from datetime import timedelta
@@ -77,6 +77,7 @@ def dashboard(request):
     change_password_form = ChangePasswordForm()
     deposit_form = DepositForm(user=request.user)  # Pass user to DepositForm
     settings_form = SettingsForm(instance=profile)
+    support_ticket_form = SupportTicketForm() # <--- ADDED: Support Ticket Form
 
     # Fetch subscription price from SubscriptionSettings
     subscription_settings = SubscriptionSettings.objects.first()
@@ -92,6 +93,9 @@ def dashboard(request):
     # --- ADDED: Fetch dynamic deposit instructions ---
     site_content = SiteContent.objects.first()
     deposit_instructions = site_content.deposit_instructions if site_content else "<p>Please follow these instructions to make a deposit.</p>"
+
+    # --- ADDED: Fetch user's support tickets ---
+    support_tickets = SupportTicket.objects.filter(user=request.user)
 
     if request.method == 'POST':
         if 'update_profile' in request.POST:
@@ -332,6 +336,35 @@ def dashboard(request):
                         'errors': settings_form.errors
                     })
                 messages.error(request, 'Please correct the errors below.')
+        # --- ADDED: Handle Support Ticket Submission ---
+        elif 'submit_ticket' in request.POST:
+            support_ticket_form = SupportTicketForm(request.POST)
+            if support_ticket_form.is_valid():
+                ticket = support_ticket_form.save(commit=False)
+                ticket.user = request.user
+                ticket.save()
+                
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    utc6_tz_ajax = pytz.timezone('Asia/Dhaka')
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': f'Support ticket {ticket.ticket_number} submitted successfully.',
+                        'ticket': {
+                            'ticket_number': ticket.ticket_number,
+                            'date': ticket.created_at.astimezone(utc6_tz_ajax).strftime('%B %d, %Y, %I:%M %p'),
+                            'issue_type': ticket.get_issue_type_display(),
+                            'status': ticket.get_status_display(),
+                        }
+                    })
+                messages.success(request, f'Support ticket {ticket.ticket_number} submitted successfully.', extra_tags='support')
+            else:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please correct the errors below.',
+                        'errors': support_ticket_form.errors
+                    })
+                messages.error(request, 'Please correct the errors below.', extra_tags='support')
 
     # Get current time in UTC+6
     utc6_tz = pytz.timezone('Asia/Dhaka')  # UTC+6
@@ -396,6 +429,8 @@ def dashboard(request):
         'change_password_form': change_password_form,
         'deposit_form': deposit_form,
         'settings_form': settings_form,
+        'support_ticket_form': support_ticket_form, # <--- ADDED: Passed to template
+        'support_tickets': support_tickets,         # <--- ADDED: Passed to template
         'predictions': prediction_data,
         'total_predictions_all_users': total_predictions_all_users,
         'total_predictions_user': total_predictions_user,
@@ -408,7 +443,7 @@ def dashboard(request):
         'effective_price': effective_price,
         'regular_price': regular_price,
         'is_discounted': is_discounted,
-        'deposit_instructions': deposit_instructions # <--- ADDED: Passed to template
+        'deposit_instructions': deposit_instructions 
     })
 
 @login_required

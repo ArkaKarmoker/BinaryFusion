@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings # Added for media serving
 from django.conf.urls.static import static # Added for media serving
-
-from predictor import views
+from django.views.generic import RedirectView # রিডাইরেক্ট করার জন্য ইম্পোর্ট করা হয়েছে
+from . import views
 
 # --- ADDED: Custom Admin Panel Titles ---
 admin.site.site_header = "BinaryFusion Administration"
@@ -28,6 +28,8 @@ admin.site.index_title = "Welcome to BinaryFusion Admin Portal"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", views.home, name="home"),
+    path("home/", RedirectView.as_view(url='/', permanent=True)),
     path("", include("predictor.urls")),
     path("accounts/", include("accounts.urls")),  # Added accounts URLs
     path("accounts/", include("allauth.urls")),   # Added allauth URLs

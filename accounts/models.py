@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import transaction
 from tinymce.models import HTMLField  # <--- ADDED: Import HTMLField for rich text editing
+import uuid # <--- ADDED: For generating unique ticket numbers
 
 TIMEZONE_CHOICES = [
     ('UTC', 'UTC'),
@@ -232,3 +233,40 @@ class SiteContent(models.Model):
     class Meta:
         verbose_name = "Site Content Setting"
         verbose_name_plural = "Site Content Settings"
+
+# --- ADDED: Support Ticket Model ---
+class SupportTicket(models.Model):
+    ISSUE_TYPE_CHOICES = [
+        ('billing', 'Billing & Payments'),
+        ('technical', 'Technical Issue'),
+        ('general', 'General Inquiry'),
+    ]
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='support_tickets')
+    ticket_number = models.CharField(max_length=20, unique=True, blank=True)
+    issue_type = models.CharField(max_length=20, choices=ISSUE_TYPE_CHOICES)
+    description = HTMLField(help_text="Detailed description of your issue")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    admin_response = HTMLField(blank=True, null=True, help_text="Admin's response to the ticket")
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.ticket_number:
+            # Generate a unique ticket number: TKT-12345678
+            self.ticket_number = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.ticket_number} - {self.user.username} - {self.get_status_display()}"
+
+    class Meta:
+        verbose_name = 'Support Ticket'
+        verbose_name_plural = 'Support Tickets'
+        ordering = ['-created_at']

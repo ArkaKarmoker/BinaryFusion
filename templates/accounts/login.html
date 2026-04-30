@@ -205,19 +205,7 @@
         <span class="dark-icon hidden"><i class="fa fa-sun"></i></span>
     </button>
 
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 relative w-full px-4 sm:px-6 lg:px-8 mx-auto">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-center md:text-left">
-                <h1 class="text-3xl font-bold">📊 BinaryFusion</h1>
-                <p class="text-lg mt-1"><i>Login to Access Asset Price Predictor</i></p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full md:w-auto justify-center md:justify-end">
-                <a href="/" class="inline-block bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100 transition text-base font-semibold shadow-md whitespace-nowrap">
-                    <i class="fa fa-arrow-left mr-1"></i> Go to home page
-                </a>
-            </div>
-        </div>
-    </header>
+    {% include 'includes/header.html' with header_subtitle="Login to Access Asset Price Predictor" header_type="auth" %}
 
     <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
         <div class="login-card p-8 w-full max-w-md">
@@ -235,7 +223,7 @@
             {% endif %}
             
             <div class="flex justify-center">
-                <h2 class="text-xl section-title mb-6">🔒 Account Login</h2>
+                <h2 class="text-xl section-title mb-6"><i class="fa-solid fa-lock"></i> Account Login</h2>
             </div>
             
             <form method="POST" action="{% url 'login' %}" class="space-y-4">
@@ -258,6 +246,10 @@
                             <i id="eyeIcon" class="fa fa-eye text-lg"></i>
                         </button>
                     </div>
+                </div>
+                
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    By logging in or registering, you consent to BinaryFusion's <a href="#" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline transition-colors">Terms & Conditions</a> and <a href="#" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline transition-colors">Privacy Policy</a>.
                 </div>
                 
                 <div class="flex justify-end">
@@ -298,9 +290,30 @@
         </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-4 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <p>© <script>document.write(new Date().getFullYear())</script> BinaryFusion. All rights reserved.</p>
+    {% comment %} {% include 'includes/footer.html' %} {% endcomment %}
+    <footer class="bg-gray-800 text-white py-4 mt-auto w-full px-4 sm:px-6 lg:px-8 mx-auto text-sm">
+        <div class="container mx-auto px-4">
+            
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <p class="w-full md:w-1/3 text-center md:text-left mb-2 md:mb-0">
+                    © <script>document.write(new Date().getFullYear())</script> 
+                    <a href="https://binaryfusion.trade" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">BinaryFusion</a>. All rights reserved.
+                </p>
+
+                <p class="w-full md:w-1/3 text-center mb-2 md:mb-0">
+                    Developed with <i class="fa-solid fa-heart text-red-500"></i> By <a href="https://github.com/ArkaKarmoker" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Arka Karmoker</a>
+                </p>
+
+                <p class="w-full md:w-1/3 text-center md:text-right">
+                    <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Terms & Conditions</a> | 
+                    <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</a>
+                </p>
+            </div>
+            
+            <p class="text-center text-gray-400 text-xs mt-2 italic">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i> Disclaimer: BinaryFusion is an educational data analytics tool. We do not provide financial advice. Trading involves high risk.
+            </p>
+            
         </div>
     </footer>
 

@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm # Import built-in form
-from .models import Profile, PaymentHistory  # Add PaymentHistory import
+from .models import Profile, PaymentHistory, SupportTicket  # Add SupportTicket import
 
 # Input widget attributes
 INPUT_FIELD_ATTRS = {
@@ -129,10 +129,20 @@ class SettingsForm(forms.ModelForm):
             'push_notifications': forms.CheckboxInput(),
         }
 
-# --- Add this new form at the end ---
 class EmailValidationPasswordResetForm(PasswordResetForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
             raise ValidationError("This email address is not registered. Please register first.")
         return email
+
+# --- ADDED: Support Ticket Form ---
+class SupportTicketForm(forms.ModelForm):
+    class Meta:
+        model = SupportTicket
+        fields = ['issue_type', 'description']
+        widgets = {
+            'issue_type': forms.Select(attrs=INPUT_FIELD_ATTRS),
+            # Providing standard textarea that can be picked up by TinyMCE via frontend integration
+            'description': forms.Textarea(attrs={**INPUT_FIELD_ATTRS, 'rows': 5, 'id': 'support_description_editor', 'placeholder': 'Describe your issue in detail...'}),
+        }
