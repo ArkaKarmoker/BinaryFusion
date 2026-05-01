@@ -12,3 +12,9 @@ def home(request):
         'sub_settings': sub_settings,
     }
     return render(request, 'index.html', context)
+
+def terms_of_service(request):
+    return render(request, 'terms.html')
+
+def privacy_policy(request):
+    return render(request, 'privacy.html')

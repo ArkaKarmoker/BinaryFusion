@@ -30,6 +30,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
     path("home/", RedirectView.as_view(url='/', permanent=True)),
+    path("terms/", views.terms_of_service, name="terms"),
+    path("privacy/", views.privacy_policy, name="privacy"),
     path("", include("predictor.urls")),
     path("accounts/", include("accounts.urls")),  # Added accounts URLs
     path("accounts/", include("allauth.urls")),   # Added allauth URLs

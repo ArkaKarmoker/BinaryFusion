@@ -525,9 +525,9 @@
             <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs space-y-4 md:space-y-0">
                 <p>&copy; 2026 BinaryFusion. All rights reserved.</p>
                 <div class="flex space-x-6">
-                    <a href="#" class="hover:text-white transition">Terms of Service</a>
-                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition">Risk Disclosure</a>
+                    <a href="{% url 'terms' %}" class="hover:text-white transition">Terms of Service</a>
+                    <a href="{% url 'privacy' %}" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="{% url 'terms' %}#section-9" class="hover:text-white transition">Risk Disclosure</a>
                 </div>
             </div>
             

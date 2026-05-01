@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | BinaryFusion</title>
+    <meta name="description" content="BinaryFusion Terms of Service — Read our terms governing the use of our AI-powered trading intelligence platform.">
+    <link rel="icon" type="image/jpg" href="{% static 'images/favicon2.png' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .hero-gradient { background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%); }
+        html { scroll-behavior: smooth; }
+        
+        /* Legal Content Styling */
+        .legal-content h2 { font-size: 1.5rem; font-weight: 700; color: white; margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .legal-content h3 { font-size: 1.125rem; font-weight: 600; color: #93c5fd; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .legal-content p { color: #94a3b8; line-height: 1.8; margin-bottom: 1rem; }
+        .legal-content ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+        .legal-content ul li { position: relative; padding-left: 1.5rem; color: #94a3b8; line-height: 1.8; margin-bottom: 0.5rem; }
+        .legal-content ul li::before { content: '›'; position: absolute; left: 0; color: #3b82f6; font-weight: bold; font-size: 1.2rem; }
+        .legal-content a { color: #60a5fa; text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s; }
+        .legal-content a:hover { color: #93c5fd; }
+        .legal-content strong { color: #e2e8f0; }
+
+        /* Section Number Badge */
+        .section-num { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(59,130,246,0.15); color: #60a5fa; font-weight: 700; font-size: 0.875rem; margin-right: 0.75rem; flex-shrink: 0; }
+
+        /* Scroll Progress Bar */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #10b981); z-index: 9999; transition: width 0.1s linear; }
+    </style>
+</head>
+<body class="hero-gradient">
+    <!-- Scroll Progress -->
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 px-6 py-6 max-w-7xl mx-auto">
+        <div class="flex items-center justify-between">
+            <a href="{% url 'home' %}" class="flex items-center space-x-2">
+                <img src="{% static 'images/favicon2.png' %}" class="w-10 h-10" alt="Logo">
+                <span class="text-2xl font-bold tracking-tighter">BINARY<span class="text-blue-500">FUSION</span></span>
+            </a>
+            <a href="{% url 'home' %}" class="px-5 py-2 glass rounded-full text-sm font-semibold hover:bg-white/10 transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i>Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <section class="pt-10 pb-16 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                <i class="fa-solid fa-scale-balanced mr-1"></i> Legal
+            </span>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Terms of Service</h1>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-4">
+                Please read these terms carefully before using the BinaryFusion platform.
+            </p>
+            <p class="text-gray-500 text-sm">
+                <i class="fa-regular fa-calendar mr-1"></i> Last Updated: <strong class="text-gray-400">May 1, 2026</strong>
+                &nbsp;&middot;&nbsp;
+                <i class="fa-regular fa-clock mr-1"></i> Effective Immediately
+            </p>
+        </div>
+    </section>
+
+    <!-- Demo Disclaimer -->
+    <div class="max-w-4xl mx-auto px-6 mb-8">
+        <div class="relative bg-amber-500/10 border border-amber-500/30 rounded-2xl px-6 py-4 flex items-center justify-center space-x-3 text-center backdrop-blur-sm">
+            <i class="fa-solid fa-flask text-amber-400 text-lg flex-shrink-0"></i>
+            <p class="text-sm text-amber-200/90 font-medium">
+                <span class="font-bold uppercase tracking-wide mr-1">Demo Only:</span>
+                This Terms of Service page is for <span class="text-amber-400 font-bold">demonstration purposes only</span> and does not constitute a legally binding agreement.
+                This platform is currently <span class="text-amber-400 font-bold">under construction</span> as an academic project and is not fully built yet. Features and policies are subject to change.
+            </p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <section class="pb-24 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass rounded-3xl p-8 md:p-12 border-white/5 legal-content">
+
+                <!-- Intro -->
+                <div class="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 mb-8">
+                    <p class="text-gray-300 text-sm leading-relaxed m-0">
+                        <i class="fa-solid fa-info-circle text-blue-400 mr-2"></i>
+                        These Terms of Service ("<strong>Terms</strong>") constitute a legally binding agreement between you ("<strong>User</strong>", "<strong>you</strong>") and <strong>BinaryFusion</strong> ("<strong>we</strong>", "<strong>us</strong>", "<strong>our</strong>", the "<strong>Platform</strong>"), governing your access to and use of the BinaryFusion website, mobile application, APIs, and all related services (collectively, the "<strong>Service</strong>").
+                    </p>
+                </div>
+
+                <!-- Section 1 -->
+                <h2><span class="section-num">1</span> Acceptance of Terms</h2>
+                <p>By accessing, registering for, or using BinaryFusion in any manner, you acknowledge that you have read, understood, and agree to be bound by these Terms and our <a href="{% url 'privacy' %}">Privacy Policy</a>. If you do not agree to these Terms, you must immediately cease all use of the Service.</p>
+                <p>We reserve the right to modify these Terms at any time. When we do, we will update the "Last Updated" date above. Continued use of the Service after any modifications shall constitute your consent to such changes.</p>
+
+                <!-- Section 2 -->
+                <h2><span class="section-num">2</span> Description of Service</h2>
+                <p>BinaryFusion is an <strong>AI-powered data analytics and market intelligence platform</strong> that provides predictive trading signals for forex and binary options markets. The Service analyzes 5-minute candlestick data using a weighted majority voting algorithm across 8+ technical indicators, including but not limited to:</p>
+                <ul>
+                    <li>RSI (Relative Strength Index)</li>
+                    <li>MACD (Moving Average Convergence/Divergence)</li>
+                    <li>Bollinger Bands</li>
+                    <li>Ichimoku Cloud</li>
+                    <li>Stochastic Oscillator</li>
+                    <li>ATR (Average True Range)</li>
+                    <li>EMA / SMA combinations</li>
+                </ul>
+                <p>The Service is delivered via a web-based dashboard, an Android mobile application (APK), and optional Telegram bot notifications.</p>
+
+                <!-- Section 3 -->
+                <h2><span class="section-num">3</span> Eligibility</h2>
+                <p>You must be at least <strong>18 years of age</strong> (or the age of legal majority in your jurisdiction) to use BinaryFusion. By using the Service, you represent and warrant that:</p>
+                <ul>
+                    <li>You are of legal age to form a binding contract in your jurisdiction.</li>
+                    <li>You are not barred from using the Service under any applicable laws or regulations.</li>
+                    <li>Your use of the Service complies with all applicable local, state, national, and international laws and regulations, including those governing financial instruments and online trading.</li>
+                </ul>
+
+                <!-- Section 4 -->
+                <h2><span class="section-num">4</span> User Accounts</h2>
+                <h3>4.1 Registration</h3>
+                <p>To access certain features of the Service, you must create an account by providing accurate, complete, and current registration information, including a valid email address, username, and password. You may also register via Google OAuth.</p>
+                <h3>4.2 Account Security</h3>
+                <p>You are solely responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account. You agree to:</p>
+                <ul>
+                    <li>Use a strong, unique password for your BinaryFusion account.</li>
+                    <li>Immediately notify us at <strong>support@binaryfusion.trade</strong> of any unauthorized use of your account.</li>
+                    <li>Not share, transfer, or sell your account credentials to any third party.</li>
+                </ul>
+                <h3>4.3 Account Termination</h3>
+                <p>We reserve the right to suspend or terminate your account at our sole discretion, without prior notice, for conduct that we determine violates these Terms, is harmful to other users, or is otherwise objectionable.</p>
+
+                <!-- Section 5 -->
+                <h2><span class="section-num">5</span> Subscription Plans & Payments</h2>
+                <h3>5.1 Free Tier</h3>
+                <p>The Free Tier provides limited access to the Service, including up to <strong>5 daily predictions</strong> and basic chart visualization. No payment is required for the Free Tier.</p>
+                <h3>5.2 Premium Pro Subscription</h3>
+                <p>The Premium Pro plan unlocks unlimited daily predictions, advanced signal analytics, Telegram signal alerts, and auto-renewal capabilities. The subscription fee is payable in <strong>USDT (Tether)</strong> or other supported cryptocurrencies.</p>
+                <h3>5.3 Payment Methods</h3>
+                <p>Payments are processed exclusively through <strong>Binance Pay</strong> and <strong>NOWPayments</strong>. We do not accept traditional credit/debit card payments. All transactions are settled in cryptocurrency.</p>
+                <h3>5.4 Token System</h3>
+                <p>Predictions consume tokens from your account balance. Free users receive up to 10 tokens; Premium users receive up to 100 tokens. Token refills may occur automatically if the Auto-Refill feature is enabled and sufficient USDT balance is available.</p>
+                <h3>5.5 Refund Policy</h3>
+                <p>Due to the nature of digital services and cryptocurrency transactions, <strong>all payments are final and non-refundable</strong> once the subscription or tokens have been activated. If you experience a technical issue preventing service delivery, please contact our support team.</p>
+
+                <!-- Section 6 -->
+                <h2><span class="section-num">6</span> Prohibited Conduct</h2>
+                <p>You agree not to:</p>
+                <ul>
+                    <li>Use the Service for any illegal or unauthorized purpose.</li>
+                    <li>Reverse-engineer, decompile, disassemble, or attempt to derive the source code of our algorithms, models, or software.</li>
+                    <li>Scrape, crawl, or use automated tools to extract data from the Service without our express written consent.</li>
+                    <li>Interfere with or disrupt the integrity or performance of the Service or its underlying infrastructure.</li>
+                    <li>Resell, redistribute, or commercially exploit signals, predictions, or any data obtained from BinaryFusion.</li>
+                    <li>Create multiple accounts to circumvent token limits or subscription restrictions.</li>
+                    <li>Engage in any form of market manipulation using our signals.</li>
+                </ul>
+
+                <!-- Section 7 -->
+                <h2><span class="section-num">7</span> Intellectual Property</h2>
+                <p>All content, algorithms, source code, designs, trademarks, logos, and other intellectual property associated with BinaryFusion are the exclusive property of BinaryFusion and its creator. You are granted a <strong>limited, non-exclusive, non-transferable, revocable license</strong> to access and use the Service strictly for personal, non-commercial purposes in accordance with these Terms.</p>
+                <p>You may not copy, modify, distribute, sell, or lease any part of the Service or its content without our prior written permission.</p>
+
+                <!-- Section 8 -->
+                <h2><span class="section-num">8</span> Disclaimer of Warranties</h2>
+                <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5 my-4">
+                    <p class="text-amber-200/90 text-sm leading-relaxed m-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i>
+                        <strong>IMPORTANT:</strong> THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. BINARYFUSION MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+                    </p>
+                </div>
+                <p>We do not guarantee:</p>
+                <ul>
+                    <li>The accuracy, reliability, or completeness of any trading signal or prediction.</li>
+                    <li>That the Service will be uninterrupted, error-free, or free of viruses or other harmful components.</li>
+                    <li>Any specific financial outcome or profit from using our signals.</li>
+                    <li>The availability of third-party payment gateways (Binance Pay, NOWPayments) at all times.</li>
+                </ul>
+
+                <!-- Section 9 -->
+                <h2><span class="section-num">9</span> Risk Disclosure & Financial Disclaimer</h2>
+                <div class="bg-red-500/5 border border-red-500/20 rounded-xl p-5 my-4">
+                    <p class="text-red-200/90 text-sm leading-relaxed m-0">
+                        <i class="fa-solid fa-skull-crossbones text-red-500 mr-2"></i>
+                        <strong>HIGH RISK WARNING:</strong> Trading binary options and forex instruments involves a substantial risk of loss and is not suitable for every investor. You could lose some or all of your invested capital. You should not invest money that you cannot afford to lose.
+                    </p>
+                </div>
+                <p>BinaryFusion is a <strong>data analytics tool</strong> and does <strong>NOT</strong> constitute financial advice, investment advice, trading advice, or any other form of professional advice. Signals generated by the Platform are for informational and educational purposes only. You are solely responsible for your own trading decisions and their financial consequences.</p>
+                <p>Past performance of our algorithm does not guarantee future results. The Martingale strategy carries significant additional risk and can lead to rapid capital depletion.</p>
+
+                <!-- Section 10 -->
+                <h2><span class="section-num">10</span> Limitation of Liability</h2>
+                <p>To the maximum extent permitted by applicable law, BinaryFusion, its creators, affiliates, officers, and agents shall <strong>not be liable</strong> for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
+                <ul>
+                    <li>Loss of profits, revenue, data, or other financial losses arising from your use of or inability to use the Service.</li>
+                    <li>Losses incurred from trades placed based on BinaryFusion signals.</li>
+                    <li>Unauthorized access to or alteration of your account, data, or transmissions.</li>
+                    <li>Any interruption or cessation of the Service.</li>
+                </ul>
+                <p>Our total aggregate liability to you for any claims arising from or related to these Terms or the Service shall not exceed the amount you have paid to BinaryFusion in the <strong>twelve (12) months</strong> preceding the claim.</p>
+
+                <!-- Section 11 -->
+                <h2><span class="section-num">11</span> Third-Party Services</h2>
+                <p>The Service integrates with third-party platforms and services, including but not limited to:</p>
+                <ul>
+                    <li><strong>Binance Pay & NOWPayments</strong> — for cryptocurrency payment processing.</li>
+                    <li><strong>Telegram</strong> — for signal delivery and community engagement.</li>
+                    <li><strong>Google OAuth</strong> — for social login functionality.</li>
+                    <li><strong>Yahoo Finance API</strong> — for market data retrieval.</li>
+                </ul>
+                <p>We are not responsible for the practices, policies, or availability of these third-party services. Your use of third-party services is governed by their respective terms and privacy policies.</p>
+
+                <!-- Section 12 -->
+                <h2><span class="section-num">12</span> Academic Project Disclosure</h2>
+                <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-5 my-4">
+                    <p class="text-purple-200/90 text-sm leading-relaxed m-0">
+                        <i class="fa-solid fa-graduation-cap text-purple-400 mr-2"></i>
+                        BinaryFusion was originally developed as a <strong>university academic project</strong>. While the platform is functional and actively maintained, certain features may be under active development. We make no representations regarding the platform's suitability for professional or institutional trading.
+                    </p>
+                </div>
+
+                <!-- Section 13 -->
+                <h2><span class="section-num">13</span> Indemnification</h2>
+                <p>You agree to indemnify, defend, and hold harmless BinaryFusion, its creator, affiliates, and agents from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable legal fees) arising out of or related to your use of the Service, your violation of these Terms, or your violation of any rights of a third party.</p>
+
+                <!-- Section 14 -->
+                <h2><span class="section-num">14</span> Governing Law & Dispute Resolution</h2>
+                <p>These Terms shall be governed by and construed in accordance with the laws of Bangladesh, without regard to its conflict of law provisions. Any disputes arising from these Terms or the Service shall be resolved through good-faith negotiation. If negotiation fails, the dispute shall be submitted to the competent courts of Dhaka, Bangladesh.</p>
+
+                <!-- Section 15 -->
+                <h2><span class="section-num">15</span> Severability</h2>
+                <p>If any provision of these Terms is held to be invalid, illegal, or unenforceable, the remaining provisions shall continue in full force and effect. The invalid provision shall be modified to the minimum extent necessary to make it valid and enforceable.</p>
+
+                <!-- Section 16 -->
+                <h2><span class="section-num">16</span> Contact Information</h2>
+                <p>If you have any questions, concerns, or requests regarding these Terms of Service, please contact us at:</p>
+                <div class="glass rounded-xl p-5 mt-4">
+                    <div class="flex flex-col space-y-2 text-sm">
+                        <span class="text-gray-300"><i class="fa-solid fa-building text-blue-400 mr-2 w-5 text-center"></i> <strong>BinaryFusion</strong></span>
+                        <span class="text-gray-400"><i class="fa-solid fa-envelope text-blue-400 mr-2 w-5 text-center"></i> support@binaryfusion.trade</span>
+                        <span class="text-gray-400"><i class="fa-brands fa-telegram text-blue-400 mr-2 w-5 text-center"></i> <a href="https://t.me/BinaryFusion_trade">t.me/BinaryFusion_trade</a></span>
+                        <span class="text-gray-400"><i class="fa-solid fa-globe text-blue-400 mr-2 w-5 text-center"></i> <a href="https://binaryfusion.trade">binaryfusion.trade</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pt-12 pb-8 px-6 border-t border-white/5 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center text-gray-500 text-xs space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-2">
+                    <img src="{% static 'images/favicon2.png' %}" class="w-6 h-6" alt="Logo">
+                    <p>&copy; 2026 BinaryFusion. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="{% url 'terms' %}" class="text-blue-400 font-medium">Terms of Service</a>
+                    <a href="{% url 'privacy' %}" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="{% url 'home' %}" class="hover:text-white transition">Home</a>
+                </div>
+            </div>
+            <div class="mt-6 text-center text-xs text-gray-500">
+                Developed with <i class="fa-solid fa-heart text-red-500 mx-1"></i> by <a href="https://github.com/ArkaKarmoker" target="_blank" class="text-white hover:text-blue-400 transition font-medium">Arka Karmoker</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
+        });
+    </script>
+</body>
+</html>
