@@ -22,6 +22,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -765,6 +767,13 @@
                         <div>
                             <p class="text-sm font-medium opacity-75">Balance</p>
                             <p class="text-2xl font-bold" id="profile-balance">{{ balance }} USDT</p>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-sm font-medium opacity-75 mb-4">Weekly Signal Generation</p>
+                            <div class="relative h-48 w-full">
+                                <canvas id="weeklySignalChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1532,6 +1541,9 @@
     </footer>
 
     <script>
+        // Global Chart Reference
+        let weeklySignalChart = null;
+
         // Initialize Notyf
         const notyf = new Notyf({
             duration: 5000,
@@ -1613,6 +1625,18 @@
             }
             // Re-initialize TinyMCE to match theme if it exists
             initTinyMCE();
+
+            // Update Chart.js Theme Colors
+            if (weeklySignalChart) {
+                const isDark = body.classList.contains('dark-mode');
+                const textColor = isDark ? '#e2e8f0' : '#4a5568';
+                const gridColor = isDark ? '#4a5568' : '#e2e8f0';
+                
+                weeklySignalChart.options.scales.x.ticks.color = textColor;
+                weeklySignalChart.options.scales.y.ticks.color = textColor;
+                weeklySignalChart.options.scales.y.grid.color = gridColor;
+                weeklySignalChart.update();
+            }
         }
         
         // --- ADDED: TinyMCE Initialization Function ---
@@ -1916,6 +1940,56 @@
                 darkIcon.classList.remove('hidden');
             }
             
+            // Initialize Chart.js for Weekly Signal Generation
+            const ctxChart = document.getElementById('weeklySignalChart').getContext('2d');
+            const isDark = document.body.classList.contains('dark-mode');
+            const textColor = isDark ? '#e2e8f0' : '#4a5568';
+            const gridColor = isDark ? '#4a5568' : '#e2e8f0';
+
+            weeklySignalChart = new Chart(ctxChart, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Signals Generated',
+                        data: [5, 12, 8, 15, 10, 22, 18], // Static dummy data
+                        borderColor: '#4a90e2',
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#4a90e2',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: textColor },
+                            grid: { color: gridColor, drawBorder: false }
+                        },
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+
             // Initialize TinyMCE
             initTinyMCE();
             
