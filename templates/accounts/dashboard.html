@@ -195,7 +195,8 @@
             display: block;
         }
         .deposit-tab-button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.875rem;
             border-radius: 8px 8px 0 0;
             transition: all 0.3s ease;
         }
@@ -216,7 +217,7 @@
         /* Increased breakpoint to 1023px to include Tablets/iPads */
         @media (max-width: 1023px) {
             /* Transform tabs into a grid of buttons */
-            .tab-button, .deposit-tab-button {
+            .tab-button {
                 border-radius: 8px !important; /* Rounded all corners for button look */
                 text-align: center;
                 display: flex;
@@ -224,6 +225,17 @@
                 justify-content: center;
                 padding: 0.5rem 0.5rem;
                 font-size: 0.875rem; /* Smaller text */
+                width: 100%;
+            }
+
+            .deposit-tab-button {
+                border-radius: 8px !important;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.35rem 0.5rem; /* Even smaller for deposit tabs */
+                font-size: 0.8rem; /* Even smaller for deposit tabs */
                 width: 100%;
             }
             
@@ -252,6 +264,10 @@
                 display: none; /* Chrome, Safari and Opera */
             }
 
+            .tab-container.deposit-tab-container {
+                padding: 0.25rem; /* Smaller wrapper for smaller deposit tabs */
+            }
+
             .light-mode .tab-container {
                 background-color: #f1f5f9;
                 border: 1px solid #e2e8f0;
@@ -262,12 +278,22 @@
                 border: 1px solid #2d3748;
             }
 
-            .tab-container .tab-button,
-            .tab-container .deposit-tab-button {
+            .tab-container .tab-button {
                 border-radius: 100px !important;
                 background-color: transparent !important;
                 border: 1px solid transparent !important;
                 padding: 0.5rem 1.25rem !important;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                margin: 0 !important;
+            }
+
+            .tab-container .deposit-tab-button {
+                border-radius: 100px !important;
+                background-color: transparent !important;
+                border: 1px solid transparent !important;
+                padding: 0.35rem 1rem !important; /* Smaller padding */
+                font-size: 0.875rem !important; /* Smaller text */
                 font-weight: 500;
                 transition: all 0.3s ease;
                 margin: 0 !important;
@@ -1045,7 +1071,7 @@
                 <div class="card p-6 row-span-2">
                     <h2 class="text-xl section-title mb-4"><i class="fa fa-money-bill-transfer"></i> Deposit USDT</h2>
                     <div class="space-y-4">
-                        <div class="mb-6 grid grid-cols-2 gap-2 tab-container">
+                        <div class="mb-6 grid grid-cols-2 gap-2 tab-container deposit-tab-container">
                             <button class="deposit-tab-button active" onclick="openDepositTab(event, 'nowpayments-tab')">NOWPayments</button>
                             <button class="deposit-tab-button" onclick="openDepositTab(event, 'binance-tab')">Binance Pay</button>
                         </div>
