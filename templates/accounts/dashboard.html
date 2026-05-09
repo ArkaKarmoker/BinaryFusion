@@ -52,24 +52,23 @@
             background: #09090b;
         }
  
+        /* shadcn/ui default card style */
         .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            border-radius: 0.75rem; /* 12px (rounded-xl) */
+            border-width: 1px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
         }
  
         .light-mode .card {
-            background: white;
-            color: #2d3748;
+            background-color: #ffffff;
+            color: #09090b;
+            border-color: #e4e4e7;
         }
  
         .dark-mode .card {
-            background: #2d3748;
-            color: #f7fafc;
-        }
- 
-        .card:hover {
-            transform: translateY(-5px);
+            background-color: #09090b;
+            color: #fafafa;
+            border-color: #27272a;
         }
  
         .section-title {
@@ -458,58 +457,165 @@
             color: white; /* White to be visible on dark card */
         }
 
-        /* DataTable Dark Mode Styling */
-        .dark-mode .dataTable {
-            background-color: #2d3748;
-            color: #e2e8f0;
+        /* --- SHADCN UI DATATABLES STYLING --- */
+        .dataTables_wrapper {
+            font-size: 0.875rem; /* text-sm */
+            color: #09090b;
         }
- 
+        .dark-mode .dataTables_wrapper {
+            color: #fafafa;
+        }
+
+        /* Top and Bottom Controls */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1rem;
+            color: #71717a; /* text-muted-foreground */
+        }
         .dark-mode .dataTables_wrapper .dataTables_length,
-        .dark-mode .dataTables_wrapper .dataTables_filter,
+        .dark-mode .dataTables_wrapper .dataTables_filter {
+            color: #a1a1aa;
+        }
+        
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 1rem;
+            color: #71717a !important; /* text-muted-foreground */
+        }
         .dark-mode .dataTables_wrapper .dataTables_info,
         .dark-mode .dataTables_wrapper .dataTables_paginate {
-            color: #e2e8f0;
+            color: #a1a1aa !important;
         }
- 
-        .dark-mode .dataTables_wrapper .dataTables_length select,
-        .dark-mode .dataTables_wrapper .dataTables_filter input {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border-color: #718096;
+
+        /* Inputs & Selects */
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #e4e4e7;
+            background-color: transparent;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            color: #09090b;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-left: 0.5rem;
         }
- 
+        .dataTables_wrapper .dataTables_filter input:focus,
+        .dataTables_wrapper .dataTables_length select:focus {
+            border-color: #09090b;
+            box-shadow: 0 0 0 1px #09090b;
+        }
+        .dark-mode .dataTables_wrapper .dataTables_filter input,
+        .dark-mode .dataTables_wrapper .dataTables_length select {
+            border-color: #27272a;
+            color: #fafafa;
+        }
+        .dark-mode .dataTables_wrapper .dataTables_filter input:focus,
+        .dark-mode .dataTables_wrapper .dataTables_length select:focus {
+            border-color: #fafafa;
+            box-shadow: 0 0 0 1px #fafafa;
+        }
+
+        /* Table */
+        table.dataTable,
+        table.dataTable.no-footer {
+            border-collapse: collapse !important;
+            border-bottom: 0 !important;
+            width: 100% !important;
+        }
+
+        /* Header */
+        table.dataTable thead th,
+        table.dataTable thead td {
+            border-bottom: 1px solid #e4e4e7 !important;
+            color: #71717a; /* text-muted-foreground */
+            font-weight: 500;
+            text-align: left;
+            padding: 0.75rem 1rem !important;
+        }
         .dark-mode table.dataTable thead th,
         .dark-mode table.dataTable thead td {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border-bottom: 1px solid #718096;
+            border-bottom-color: #27272a !important;
+            color: #a1a1aa;
         }
- 
+
+        /* Body */
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+            border-bottom: 1px solid #e4e4e7 !important;
+            transition: background-color 0.2s;
+        }
         .dark-mode table.dataTable tbody tr {
-            background-color: #2d3748;
-            color: #e2e8f0;
+            border-bottom-color: #27272a !important;
         }
- 
+        table.dataTable tbody tr:hover {
+            background-color: rgba(244, 244, 245, 0.5) !important; /* hover:bg-muted/50 */
+        }
         .dark-mode table.dataTable tbody tr:hover {
-            background-color: #4a5568;
+            background-color: rgba(39, 39, 42, 0.5) !important;
         }
- 
-        .dark-mode table.dataTable tbody td {
-            border-bottom: 1px solid #718096;
+
+        table.dataTable tbody td {
+            padding: 1rem !important;
+            vertical-align: middle;
+            border: none !important;
         }
- 
+
+        /* Pagination Buttons */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 0.375rem !important; /* rounded-md */
+            border: 1px solid transparent !important;
+            padding: 0.5rem 0.75rem !important;
+            margin-left: 0.25rem !important;
+            background: transparent !important;
+            color: #09090b !important;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: #e2e8f0 !important;
-            background: #4a5568 !important;
-            border-color: #718096 !important;
+            color: #fafafa !important;
         }
- 
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        
+        /* Hover state (ghost style) */
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #f4f4f5 !important; /* bg-accent */
+            border-color: transparent !important;
+            color: #09090b !important;
+        }
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #4a90e2 !important;
-            color: white !important;
-            border-color: #4a90e2 !important;
+            background-color: #27272a !important;
+            color: #fafafa !important;
         }
+
+        /* Active/Current state (outline style) */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            border: 1px solid #e4e4e7 !important;
+            background-color: #ffffff !important;
+            color: #09090b !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            border-color: #27272a !important;
+            background-color: #09090b !important;
+            color: #fafafa !important;
+        }
+
+        /* Disabled state */
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            background: transparent !important;
+            color: inherit !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
+        }
+
         /* Responsive padding for results section */
         @media (min-width: 1024px) {
             #dashboard {
@@ -837,7 +943,7 @@
                         </thead>
                         <tbody>
                         {% for prediction in predictions %}
-                        <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <tr>
                             <td class="py-3 px-4">{{ prediction.signal_id }}</td>
                             <td class="py-3 px-4">{{ prediction.date|date:"F j, Y" }}</td>
                             <td class="py-3 px-4">{{ prediction.asset }}</td>
@@ -1151,7 +1257,7 @@
                         </thead>
                         <tbody>
                             {% for payment in user.payment_history.all %}
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">{{ payment.created_at|date:"F j, Y" }}</td>
                                 <td class="py-3 px-4">{{ payment.payment_id }}</td>
                                 <td class="py-3 px-4">{{ payment.get_payment_type_display }}</td>
@@ -1255,7 +1361,7 @@
                         </thead>
                         <tbody>
                             {% for ticket in support_tickets %}
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">{{ ticket.created_at|date:"F j, Y, h:i A" }}</td>
                                 <td class="py-3 px-4 font-mono">{{ ticket.ticket_number }}</td>
                                 <td class="py-3 px-4">{{ ticket.get_issue_type_display }}</td>
@@ -1445,7 +1551,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">April 19, 2026, 02:30 PM</td>
                                 <td class="py-3 px-4 font-mono">REW-9A8B7C</td>
                                 <td class="py-3 px-4">PocketOption</td>
@@ -1465,7 +1571,7 @@
                                        data-remark="Your request is currently being verified by an administrator. Please allow up to 24-48 hours.">View</a>
                                 </td>
                             </tr>
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">April 15, 2026, 10:15 AM</td>
                                 <td class="py-3 px-4 font-mono">REW-1X2Y3Z</td>
                                 <td class="py-3 px-4">Quotex</td>
@@ -1485,7 +1591,7 @@
                                        data-remark="Deposit verified successfully! 50 USDT has been credited to your BinaryFusion balance.">View</a>
                                 </td>
                             </tr>
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">April 10, 2026, 09:00 AM</td>
                                 <td class="py-3 px-4 font-mono">REW-5K6L7M</td>
                                 <td class="py-3 px-4">Exness</td>
