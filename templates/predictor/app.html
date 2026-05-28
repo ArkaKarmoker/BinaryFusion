@@ -21,18 +21,66 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        
+        /* ============================================================
+           SHADCN/UI DEFAULT DESIGN TOKENS
+           Matches globals.css exactly — oklch converted to hex
+           ============================================================ */
+        :root {
+            --background:              #ffffff;
+            --foreground:              #09090b;
+            --card:                    #ffffff;
+            --card-foreground:         #09090b;
+            --popover:                 #ffffff;
+            --popover-foreground:      #09090b;
+            --primary:                 #09090b; 
+            --primary-foreground:      #fafafa; 
+            --secondary:               #f4f4f5; 
+            --secondary-foreground:    #09090b;
+            --muted:                   #f4f4f5; 
+            --muted-foreground:        #71717a; 
+            --accent:                  #f4f4f5; 
+            --accent-foreground:       #09090b;
+            --destructive:             #ef4444;
+            --destructive-foreground:  #fafafa;
+            --border:                  #e4e4e7; 
+            --input:                   #e4e4e7;
+            --ring:                    #09090b;
+            --radius:                  0.625rem;
+            --radius-sm:               calc(var(--radius) * 0.6);
+            --radius-md:               calc(var(--radius) * 0.8);
+            --radius-lg:               var(--radius);
+            --radius-xl:               calc(var(--radius) * 1.4);
+            --radius-2xl:              calc(var(--radius) * 1.8);
+        }
+
+        .dark-mode {
+            --background:              #09090b;
+            --foreground:              #fafafa;
+            --card:                    #18181b; 
+            --card-foreground:         #fafafa;
+            --popover:                 #18181b;
+            --popover-foreground:      #fafafa;
+            --primary:                 #fafafa; 
+            --primary-foreground:      #09090b; 
+            --secondary:               #27272a; 
+            --secondary-foreground:    #fafafa;
+            --muted:                   #27272a; 
+            --muted-foreground:        #a1a1aa; 
+            --accent:                  #3f3f46; 
+            --accent-foreground:       #fafafa;
+            --destructive:             #f87171;
+            --destructive-foreground:  #fafafa;
+            --border:                  rgba(255, 255, 255, 0.1);
+            --input:                   rgba(255, 255, 255, 0.15);
+            --ring:                    #71717a; 
+        }
+
         /* --- FIX FOR HORIZONTAL SCROLLING --- */
         html, body {
             max-width: 100%;
             overflow-x: hidden;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            /* Inter is a highly legible sans-serif font, adjust font-size here if needed */
-        }
-        
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
         * {
             -webkit-tap-highlight-color: transparent;
@@ -43,126 +91,205 @@
         }
         /* ---------------------------------------------------- */
 
-        /* Custom styles for additional flair */
-        .light-mode {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        
-        .dark-mode {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-        }
-        
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            max-width: 400px; /* Smaller card size for desktop */
-            /* Add wrapping to prevent wider font characters from breaking containers */
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            /* width: 100%; */
+        /* ============================================================
+           BASE RESET & ZINC PRIMARY UTILITIES
+           ============================================================ */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            font-synthesis-weight: none;
+            text-rendering: optimizeLegibility;
+            background-color: var(--background);
+            color: var(--foreground);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* --- UPDATED CLASS: Matches width of 3 result cards + gaps --- */
+        .bg-primary { background-color: var(--primary) !important; color: var(--primary-foreground) !important; }
+        .bg-primary:hover { opacity: 0.9 !important; }
+        .text-primary { color: var(--primary) !important; }
+        .text-primary:hover { opacity: 0.7 !important; }
+
+        /* ============================================================
+           CARD & INPUT COMPONENTS
+           ============================================================ */
+        .card {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            max-width: 400px;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
         .calendar-card {
             width: 100%;
             /* Dynamically calculate: (3 cards * 400px) + (2 gaps * 1.5rem) */
-            /* max-width: calc((400px * 3) + (1.5rem * 2)) !important; */
             max-width: calc((277.61px + 400px + 400px) + (1.5rem * 2)) !important;
             margin-left: auto;
             margin-right: auto;
         }
-        
-        .light-mode .card {
-            background: white;
-            color: #2d3748;
-        }
-        
-        .dark-mode .card {
-            background: #2d3748;
-            color: #f7fafc;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
+
         .section-title {
             font-weight: 600;
-            border-bottom: 2px solid #4a90e2;
-            display: inline-block;
-            padding-bottom: 4px;
+            font-size: 1rem;
+            color: var(--foreground);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .light-mode .section-title {
-            color: #2d3748;
+
+        .input-field {
+            background-color: var(--background);
+            color: var(--foreground);
+            border: 1px solid var(--input);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        
-        .dark-mode .section-title {
-            color: #e2e8f0;
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
         }
-        
+
+        .input-field::placeholder {
+            color: var(--muted-foreground);
+        }
+
+        /* ============================================================
+           BUTTONS (shadcn/ui matched)
+           ============================================================ */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            padding: 0.375rem 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            height: 2.25rem;
+            transition: opacity 0.15s ease, background-color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--input);
+            background-color: transparent;
+            color: var(--foreground);
+            padding: 0.375rem 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            height: 2.25rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        /* ============================================================
+           HEADER & FOOTER MATCHING DASHBOARD
+           ============================================================ */
+        header {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        footer {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-top: 1px solid var(--border);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ============================================================
+           PREDICTOR SPECIFIC STYLES
+           ============================================================ */
         .graph-container img {
-            border-radius: 8px;
-            width: 100%; /* Ensure chart scales to card width */
-            cursor: pointer; /* Add cursor pointer for clickable image */
-        }
-        
-        .light-mode .graph-container img {
-            border: 1px solid #e2e8f0;
-        }
-        
-        .dark-mode .graph-container img {
-            border: 1px solid #718096;
+            border-radius: var(--radius-md);
+            width: 100%;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: border-color 0.3s ease;
         }
         
         .error-message {
-            border-left: 4px solid #e53e3e;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-md);
+            padding: 0.875rem;
         }
-        
-        .light-mode .error-message {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-        
+
         .dark-mode .error-message {
-            background: #742a2a;
-            color: #fed7d7;
+            color: #f87171;
         }
         
         pre {
             padding: 10px;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
             white-space: pre-wrap;
+            background-color: var(--muted);
+            color: var(--foreground);
+            border: 1px solid var(--border);
         }
-        
-        .light-mode pre {
-            background: #f7fafc;
-            color: #2d3748;
-        }
-        
-        .dark-mode pre {
-            background: #4a5568;
-            color: #e2e8f0;
-        }
-        
-        /* Toggle button styles */
+
         .theme-toggle {
             position: fixed;
             bottom: 85px;
             right: 20px;
             z-index: 1000;
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: background-color 0.2s ease;
         }
 
-        /* Spinner styles */
+        .theme-toggle:hover {
+            background-color: var(--accent);
+        }
+
         .spinner {
             display: none;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4a90e2;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
             margin-left: 10px;
         }
@@ -172,33 +299,13 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Countdown timer styles */
         .countdown {
             display: none;
             margin-left: 10px;
-            font-size: 0.9rem;
-            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-        /* Optimized input field for dark mode */
-        .input-field {
-            transition: all 0.3s ease;
-        }
-        .light-mode .input-field {
-            background-color: #ffffff;
-            color: #2d3748;
-            border-color: #e2e8f0;
-        }
-        .dark-mode .input-field {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border-color: #718096;
-        }
-        .input-field:focus {
-            ring-color: #4a90e2;
-        }
-
-        /* Background animation styles */
         .trading-animation {
             position: fixed;
             top: 0;
@@ -206,52 +313,18 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.1;
+            opacity: 0.05;
             pointer-events: none;
         }
 
-        .candle {
-            position: absolute;
-            bottom: 0;
-            width: 8px;
-            background: #4a90e2;
-            opacity: 0.6;
-            transition: height 1s ease-in-out;
-        }
-
-        .light-mode .candle {
-            background: #4a90e2;
-        }
-
-        .dark-mode .candle {
-            background: #63b3ed;
-        }
-
-        .candle.wick {
-            width: 2px;
-            background: #2d3748;
-            position: absolute;
-            left: 3px;
-        }
-
-        .light-mode .candle.wick {
-            background: #2d3748;
-        }
-
-        .dark-mode .candle.wick {
-            background: #e2e8f0;
-        }
-
-        /* Center cards side by side */
         .results-container {
             display: flex;
             justify-content: center;
             gap: 1.5rem;
             flex-wrap: wrap;
-            margin-bottom: 1.5rem; /* Add space for buttons */
+            margin-bottom: 1.5rem;
         }
 
-        /* Button container styles - now positioned below results */
         .button-container {
             display: flex;
             justify-content: center;
@@ -259,21 +332,28 @@
             margin-top: 1rem;
             margin-bottom: 2rem;
             width: 100%;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            flex-wrap: wrap;
         }
 
-        /* Feedback Buttons Custom Styles */
+        .button-container button {
+            height: 2.5rem; /* Match UI sizing */
+        }
+
+        /* Feedback Buttons Custom Styles (Adapted to Shadcn) */
         .feedback-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1.5rem; /* px-6 py-2 */
-            border-radius: 9999px; /* rounded-full */
-            border-width: 1px;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
-            transition-property: all;
-            transition-duration: 200ms;
+            gap: 0.375rem;
+            padding: 0.375rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background-color: var(--card);
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
             outline: none;
             cursor: pointer;
         }
@@ -282,55 +362,36 @@
             outline: none;
         }
 
-        /* Light Mode Colors for Feedback Buttons */
-        .light-mode .feedback-btn {
-            background-color: #ffffff;
-            color: #374151; /* text-gray-700 */
-            border-color: #e5e7eb; /* border-gray-200 */
-        }
-        
-        /* HOVER EFFECTS REMOVED AS REQUESTED */
-        /* .light-mode .feedback-btn.like:hover { ... } */
-        /* .light-mode .feedback-btn.dislike:hover { ... } */
-
-        /* Dark Mode Colors for Feedback Buttons */
-        .dark-mode .feedback-btn {
-            background-color: #4a5568; /* gray-700 */
-            color: #e2e8f0; /* gray-200 */
-            border-color: #718096; /* border-gray-600 */
+        .feedback-btn:hover {
+            color: var(--foreground);
+            border-color: var(--input);
+            background-color: var(--accent);
         }
 
-        /* HOVER EFFECTS REMOVED AS REQUESTED */
-        /* .dark-mode .feedback-btn.like:hover { ... } */
-        /* .dark-mode .feedback-btn.dislike:hover { ... } */
-
-        /* --- NEW ACTIVE STATE STYLES FOR FEEDBACK BUTTONS --- */
-        /* These ensure the selected button highlights correctly in both modes */
-        
-        .light-mode .feedback-btn.active-like {
-            background-color: #dcfce7; /* bg-green-100 */
-            color: #16a34a; /* text-green-600 */
-            border-color: #22c55e; /* border-green-500 */
+        /* Active State Styles */
+        .feedback-btn.active-like {
+            background-color: #dcfce7 !important;
+            color: #166534 !important;
+            border-color: #bbf7d0 !important;
         }
         
-        .light-mode .feedback-btn.active-dislike {
-            background-color: #fee2e2; /* bg-red-100 */
-            color: #dc2626; /* text-red-600 */
-            border-color: #ef4444; /* border-red-500 */
+        .feedback-btn.active-dislike {
+            background-color: #fee2e2 !important;
+            color: #991b1b !important;
+            border-color: #fecaca !important;
         }
 
         .dark-mode .feedback-btn.active-like {
-            background-color: #2f855a; /* Dark Green */
-            color: white;
-            border-color: #48bb78;
+            background-color: rgba(22, 101, 52, 0.25) !important;
+            color: #4ade80 !important;
+            border-color: rgba(74, 222, 128, 0.2) !important;
         }
 
         .dark-mode .feedback-btn.active-dislike {
-            background-color: #c53030; /* Dark Red */
-            color: white;
-            border-color: #f56565;
+            background-color: rgba(153, 27, 27, 0.25) !important;
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.2) !important;
         }
-        /* ---------------------------------------------------- */
 
         /* Modal styles for enlarged image */
         .modal {
@@ -345,11 +406,14 @@
             background-color: rgba(0,0,0,0.8);
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(4px);
         }
 
         .modal-content {
             max-width: 90%;
             max-height: 90%;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
         }
 
         .close-modal {
@@ -360,9 +424,15 @@
             font-size: 40px;
             font-weight: bold;
             cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.15s ease;
         }
 
-        /* Tooltip styles for Martingale info */
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        /* Tooltip styles */
         .tooltip {
             position: relative;
             display: inline-block;
@@ -372,10 +442,10 @@
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 200px;
-            background-color: #555;
-            color: #fff;
+            background-color: var(--popover);
+            color: var(--popover-foreground);
             text-align: center;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             padding: 8px;
             position: absolute;
             z-index: 10;
@@ -384,6 +454,9 @@
             margin-left: -100px;
             opacity: 0;
             transition: opacity 0.3s;
+            border: 1px solid var(--border);
+            font-size: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .tooltip:hover .tooltiptext {
@@ -391,113 +464,212 @@
             opacity: 1;
         }
 
-        .light-mode .tooltip .tooltiptext {
-            background-color: #4a5568;
+        /* ============================================================
+           BADGES — shadcn/ui Badge component (IMPORTED FROM DASHBOARD)
+           ============================================================ */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            border: 1px solid transparent;
+            padding: 0.125rem 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.25;
+            transition: background-color 0.2s ease;
         }
 
-        .dark-mode .tooltip .tooltiptext {
-            background-color: #e2e8f0;
-            color: #2d3748;
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+        .dark-mode .badge-success {
+            background-color: rgba(22, 101, 52, 0.25);
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.2);
         }
 
-        /* DataTables overrides for theme compatibility */
-        .dataTables_wrapper .dataTables_length, 
-        .dataTables_wrapper .dataTables_filter, 
-        .dataTables_wrapper .dataTables_info, 
-        .dataTables_wrapper .dataTables_processing, 
-        .dataTables_wrapper .dataTables_paginate {
-            color: inherit !important;
-            margin-bottom: 10px;
+        .badge-warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+            border-color: #fde68a;
         }
-        
-        .light-mode .dataTables_wrapper .dataTables_length select,
-        .light-mode .dataTables_wrapper .dataTables_filter input {
-            border: 1px solid #e2e8f0;
-            background-color: white;
-            color: #2d3748;
-            padding: 4px;
-            border-radius: 4px;
+        .dark-mode .badge-warning {
+            background-color: rgba(133, 77, 14, 0.25);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.2);
         }
 
-        .dark-mode .dataTables_wrapper .dataTables_length select,
-        .dark-mode .dataTables_wrapper .dataTables_filter input {
-            border: 1px solid #718096;
-            background-color: #2d3748;
-            color: #e2e8f0;
-            padding: 4px;
-            border-radius: 4px;
+        .badge-destructive {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+        .dark-mode .badge-destructive {
+            background-color: rgba(153, 27, 27, 0.25);
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.2);
+        }
+
+        .badge-secondary {
+            background-color: var(--secondary);
+            color: var(--muted-foreground);
+            border-color: var(--border);
+        }
+        .dark-mode .badge-secondary {
+            background-color: var(--secondary);
+            color: var(--muted-foreground);
+            border-color: var(--border);
+        }
+
+        .badge-info {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-color: #bae6fd;
+        }
+        .dark-mode .badge-info {
+            background-color: rgba(3, 105, 161, 0.25);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+
+        /* ============================================================
+           DATATABLES — shadcn/ui Table styling
+           ============================================================ */
+        .dataTables_wrapper {
+            font-size: 0.875rem;
+            color: var(--foreground);
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1rem;
+            color: var(--muted-foreground);
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate,
+        .dataTables_wrapper .dataTables_processing {
+            margin-top: 1rem;
+            color: var(--muted-foreground) !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--input);
+            background-color: var(--background);
+            color: var(--foreground);
+            padding: 0.25rem 0.625rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            margin-left: 0.5rem;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus,
+        .dataTables_wrapper .dataTables_length select:focus {
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+        }
+
+        table.dataTable,
+        table.dataTable.no-footer {
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-lg) !important;
+            width: 100% !important;
+            overflow: hidden;
+        }
+
+        table.dataTable thead th,
+        table.dataTable thead td {
+            border-bottom: 1px solid var(--border) !important;
+            color: var(--muted-foreground);
+            font-weight: 500;
+            font-size: 0.8125rem;
+            text-align: left;
+            padding: 0.75rem 1rem !important;
+            border-top: none !important;
+            background-color: transparent !important;
         }
 
         table.dataTable tbody tr {
             background-color: transparent !important;
-        }
-        
-        /* Table Border Removal/Customization */
-        table.dataTable.no-footer {
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        .dark-mode table.dataTable.no-footer {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background-color 0.15s ease;
         }
 
-        /* --- DATATABLES DARK MODE FIX --- */
-        /* These styles force correct colors when .dark-mode class is active */
-        
-        /* 1. Ensure Table Header (Thead) is Dark Gray with Light Text */
-        .dark-mode #calendarTable thead th {
-            background-color: #4a5568 !important; /* Tailwind gray-700 */
-            color: #e2e8f0 !important; /* Tailwind gray-200 */
-            border-bottom-color: #718096;
+        table.dataTable tbody tr:hover {
+            background-color: var(--muted) !important;
         }
 
-        /* 2. Ensure Table Body (Tbody) Text is Light */
-        .dark-mode #calendarTable tbody {
-            color: #e2e8f0 !important;
+        table.dataTable tbody td {
+            padding: 0.875rem 1rem !important;
+            vertical-align: middle;
+            border: none !important;
+            border-bottom: 1px solid var(--border) !important;
+            color: var(--foreground);
         }
 
-        /* 3. Ensure Row Borders are visible but subtle */
-        .dark-mode #calendarTable tbody td {
-            border-bottom: 1px solid #4a5568;
+        table.dataTable tbody tr:last-child td {
+            border-bottom: none !important;
         }
 
-        /* 4. Fix Pagination Buttons (Previous/Next/Numbers) */
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: #e2e8f0 !important; /* Default text color */
+        table.dataTable thead th.sorting,
+        table.dataTable thead th.sorting_asc,
+        table.dataTable thead th.sorting_desc {
+            background-color: transparent !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: var(--radius-md) !important;
+            border: 1px solid transparent !important;
+            padding: 0.375rem 0.625rem !important;
+            margin-left: 0.125rem !important;
+            background: transparent !important;
+            color: var(--foreground) !important;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: var(--accent) !important;
+            border-color: transparent !important;
+            color: var(--accent-foreground) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            border: 1px solid var(--border) !important;
+            background-color: var(--background) !important;
+            color: var(--foreground) !important;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05) !important;
         }
 
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
         .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: #4a5568 !important; /* Active background */
-            color: white !important;
-            border: 1px solid #718096 !important;
+            background-color: var(--card) !important;
         }
 
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #718096 !important; /* Hover background */
-            color: white !important;
-            border: 1px solid #e2e8f0 !important;
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+            background: transparent !important;
+            color: var(--muted-foreground) !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
         }
 
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
-        .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
-            color: #718096 !important; /* Disabled text color */
-        }
-        
-        /* 5. Fix Info Text (Showing 1 to X of Y entries) */
-        .dark-mode .dataTables_info {
-            color: #e2e8f0 !important;
-        }
-        /* -------------------------------- */
-
-        /* --- FIX FOR TABLE SCROLLING --- */
-        /* Forces table to keep width on small screens, triggering the scrollbar */
         #calendarTable th, #calendarTable td {
             white-space: nowrap;
         }
-        /* ------------------------------- */
 
-        /* MOBILE & TABLET RESPONSIVE OVERRIDES (Matches Dashboard) */
+        /* MOBILE & TABLET RESPONSIVE OVERRIDES */
         @media (max-width: 1023px) {
             .container {
                 padding-left: 1rem;
@@ -505,12 +677,12 @@
             }
 
             .card {
-                max-width: 100% !important; /* Full width on mobile */
-                width: 100%; /* Full width on mobile constrained by max-width */ 
+                max-width: 100% !important;
+                width: 100%;
             }
 
             .results-container {
-                flex-direction: column; /* Stack cards on mobile */
+                flex-direction: column;
                 align-items: center;
             }
 
@@ -520,21 +692,28 @@
             }
             
             .button-container {
-                flex-direction: column; /* Stack buttons on mobile */
+                flex-direction: column;
                 align-items: center;
             }
             
             .button-container button {
-                width: 100%; /* Full width buttons on mobile */
+                width: 100%;
                 max-width: 300px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            header .container, footer .container {
+                padding-left: 100px;
+                padding-right: 100px;
             }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
+<body class="min-h-screen flex flex-col transition-colors duration-300" id="body">
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
-    <button class="theme-toggle bg-gray-200 dark:bg-gray-700 w-10 h-10 flex items-center justify-center rounded-full" onclick="toggleTheme()">
+    <button class="theme-toggle" onclick="toggleTheme()">
         <span class="light-icon"><i class="fa fa-moon fa-flip-horizontal"></i></span>
         <span class="dark-icon hidden"><i class="fa fa-sun"></i></span>
     </button>
@@ -549,11 +728,11 @@
     <main class="container mx-auto px-4 py-8 flex-grow">
         <section class="mb-8">
             <div class="card p-6 max-w-md mx-auto w-full">
-                <h2 class="text-xl section-title mb-4 w-full text-center">Enter Trading Asset</h2>
-                <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4" onsubmit="submitPrediction(event)">
+                <h2 class="text-base section-title mb-4 w-full text-center flex justify-center"><i class="fa-solid fa-crosshairs text-sm"></i> Enter Trading Asset</h2>
+                <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-3" onsubmit="submitPrediction(event)">
                     {% csrf_token %}
                     <input type="search" id="symbol" name="symbol" list="popular-assets" placeholder="e.g., EURUSD=X or BTC-USD" required
-                           class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                           class="input-field w-full p-2 text-center">
                     
                     <datalist id="popular-assets">
                         <option value="EURUSD=X">EUR/USD (Euro / US Dollar)</option>
@@ -579,14 +758,13 @@
                         <option value="CL=F">Crude Oil Futures</option>
                     </datalist>
 
-                    <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center whitespace-nowrap">
-                        <i class="fa fa-rocket mr-2"></i> Predict
+                    <button type="submit" class="btn-primary w-full sm:w-auto h-10 px-6 whitespace-nowrap">
+                        <i class="fa fa-rocket"></i> Predict
                         <span id="loading-spinner" class="spinner"></span>
-                        <span id="countdown-timer" class="countdown"></span>
+                        <span id="countdown-timer" class="countdown text-primary-foreground"></span>
                     </button>
                 </form>
-                <p class="text-sm text-center mt-4">Available Tokens: <span id="token-count">{{ initial_tokens }}</span> / <span id="max-tokens">{{ max_tokens }}</span></p>
+                <p class="text-xs text-center mt-4 font-medium" style="color: var(--muted-foreground);">Available Tokens: <span id="token-count" style="color: var(--foreground);">{{ initial_tokens }}</span> / <span id="max-tokens">{{ max_tokens }}</span></p>
             </div>
         </section>
 
@@ -604,48 +782,72 @@
             </div>
 
             <div id="button-container" class="button-container">
-                <button id="btn-telegram" onclick="sendToTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-telegram" onclick="sendToTelegram()" class="btn-outline w-full sm:w-auto" style="color: #3b82f6; border-color: #bfdbfe;">
                     <i class="fab fa-telegram"></i> Telegram
                 </button>
 
-                <button id="btn-copy" onclick="copySignal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-copy" onclick="copySignal()" class="btn-outline w-full sm:w-auto" style="color: #6366f1; border-color: #c7d2fe;">
                     <i class="fa fa-copy"></i> Copy
                 </button>
 
-                <button id="btn-share" onclick="shareSignal()" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button id="btn-share" onclick="shareSignal()" class="btn-outline w-full sm:w-auto" style="color: #10b981; border-color: #a7f3d0;">
                     <i class="fa fa-share-alt"></i> Share
                 </button>
 
-                <button onclick="closeResults()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto flex items-center justify-center gap-2 transition duration-200">
+                <button onclick="closeResults()" class="btn-outline w-full sm:w-auto" style="color: var(--destructive); border-color: rgba(239, 68, 68, 0.2);">
                     <i class="fa fa-close"></i> Close
                 </button>
             </div>
         </div>
 
         <div class="card calendar-card p-6 mt-6 w-full overflow-hidden">
-            <h3 class="text-xl section-title mb-4"><i class="fa fa-calendar-alt"></i> Upcoming Economic Events</h3>
+            <h3 class="text-base section-title mb-6"><i class="fa fa-calendar-alt text-sm"></i> Upcoming Economic Events</h3>
             <div class="overflow-x-auto">
-                <table id="calendarTable" class="w-full text-sm text-left">
-                    <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-300">
+                <table id="calendarTable" class="w-full">
+                    <thead>
                         <tr>
-                            <th class="px-4 py-3">Date</th>
-                            <th class="px-4 py-3">Time</th>
-                            <th class="px-4 py-3">Cur</th>
-                            <th class="px-4 py-3">Event</th>
-                            <th class="px-4 py-3">Impact</th>
-                            <th class="px-4 py-3">Prev</th>
-                            <th class="px-4 py-3">Actual</th>
-                            <th class="px-4 py-3">Fcst</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Cur</th>
+                            <th>Event</th>
+                            <th>Impact</th>
+                            <th>Prev</th>
+                            <th>Actual</th>
+                            <th>Fcst</th>
                         </tr>
                     </thead>
-                    <tbody class="dark:text-gray-300">
-                        </tbody>
+                    <tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    {% include 'includes/footer.html' %}
+    <footer class="py-4 mt-auto w-full mx-auto text-sm transition-colors duration-300">
+        <div class="container mx-auto px-4">
+            
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <p class="w-full md:w-1/3 text-center md:text-left mb-2 md:mb-0" style="color: var(--muted-foreground);">
+                    © <script>document.write(new Date().getFullYear())</script> 
+                    <a href="https://binaryfusion.trade" target="_blank" class="text-primary font-medium hover:opacity-70 transition-colors">BinaryFusion</a>. All rights reserved.
+                </p>
+
+                <p class="w-full md:w-1/3 text-center mb-2 md:mb-0" style="color: var(--muted-foreground);">
+                    Developed with <i class="fa-solid fa-heart text-red-500"></i> By <a href="https://github.com/ArkaKarmoker" target="_blank" class="text-primary font-medium hover:opacity-70 transition-colors">Arka Karmoker</a>
+                </p>
+
+                <p class="w-full md:w-1/3 text-center md:text-right" style="color: var(--muted-foreground);">
+                    <a href="#" class="text-primary font-medium hover:opacity-70 transition-colors">Terms & Conditions</a> | 
+                    <a href="#" class="text-primary font-medium hover:opacity-70 transition-colors">Privacy Policy</a>
+                </p>
+            </div>
+            
+            <p class="text-center text-xs mt-2 italic" style="color: var(--muted-foreground);">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i> Disclaimer: BinaryFusion is an educational data analytics tool. We do not provide financial advice. Trading involves high risk.
+            </p>
+            
+        </div>
+    </footer>
 
     <script>
         // Global variable to store the latest prediction data for sharing
@@ -686,20 +888,17 @@
             const lightIcon = document.querySelector('.light-icon');
             const darkIcon = document.querySelector('.dark-icon');
             
-            if (body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode');
+            if (!body.classList.contains('dark-mode')) {
                 body.classList.add('dark-mode');
                 lightIcon.classList.add('hidden');
                 darkIcon.classList.remove('hidden');
                 localStorage.setItem('theme', 'dark');
             } else {
                 body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
                 lightIcon.classList.remove('hidden');
                 darkIcon.classList.add('hidden');
                 localStorage.setItem('theme', 'light');
             }
-            updateTableTheme(); // Update DataTable text colors
         }
 
         // Initialize Calendar Table
@@ -763,12 +962,12 @@
                         { 
                             data: 'impact',
                             render: function(data) {
-                                let color = 'gray';
-                                if(data.includes('High')) color = '#ef4444'; // Red-500
-                                if(data.includes('Medium')) color = '#f59e0b'; // Amber-500
-                                if(data.includes('Low')) color = '#10b981'; // Emerald-500
+                                let badgeClass = 'badge-secondary';
+                                if(data.includes('High')) { badgeClass = 'badge-destructive'; }
+                                if(data.includes('Medium')) { badgeClass = 'badge-warning'; }
+                                if(data.includes('Low')) { badgeClass = 'badge-success'; }
                                 
-                                return `<span class="px-2 py-1 rounded text-xs text-white" style="background-color: ${color};">${data}</span>`;
+                                return `<span class="badge ${badgeClass}">${data}</span>`;
                             }
                         },
                         { data: 'previous' },
@@ -784,18 +983,6 @@
                         emptyTable: "No upcoming events found."
                     }
                 });
-                updateTableTheme();
-            }
-        }
-
-        function updateTableTheme() {
-            const isDark = document.body.classList.contains('dark-mode');
-            if(isDark) {
-                $('#calendarTable').addClass('text-gray-200');
-                $('.dataTables_wrapper').addClass('text-gray-200');
-            } else {
-                $('#calendarTable').removeClass('text-gray-200');
-                $('.dataTables_wrapper').removeClass('text-gray-200');
             }
         }
 
@@ -807,7 +994,6 @@
             const darkIcon = document.querySelector('.dark-icon');
 
             if (savedTheme === 'dark') {
-                body.classList.remove('light-mode');
                 body.classList.add('dark-mode');
                 lightIcon.classList.add('hidden');
                 darkIcon.classList.remove('hidden');
@@ -857,11 +1043,11 @@
                     }
 
                     // Draw candle body
-                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#63b3ed' : '#4a90e2';
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(250, 250, 250, 0.3)' : 'rgba(9, 9, 11, 0.3)';
                     ctx.fillRect(candle.x, canvas.height - candle.height, 8, candle.height);
 
                     // Draw wick
-                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#2d3748';
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(250, 250, 250, 0.6)' : 'rgba(9, 9, 11, 0.6)';
                     ctx.fillRect(candle.x + 3, canvas.height - candle.height - candle.wickHeight, 2, candle.wickHeight);
                     ctx.fillRect(candle.x + 3, canvas.height, 2, candle.wickHeight);
                 });
@@ -1006,9 +1192,9 @@
 
                 const resultsSection = document.getElementById('results-section');
                 resultsSection.innerHTML = `
-                    <div class="card p-6 error-message">
-                        <h3 class="text-lg font-semibold">Error</h3>
-                        <p>Failed to fetch prediction: ${error.message}</p>
+                    <div class="card p-6 error-message w-full">
+                        <h3 class="text-sm font-semibold mb-2">Error</h3>
+                        <p class="text-sm">Failed to fetch prediction: ${error.message}</p>
                     </div>`;
                 resultsWrapper.classList.remove('hidden'); // Show error and buttons
             });
@@ -1094,9 +1280,9 @@
         function renderResults(result) {
             if (result.error) {
                 return `
-                    <div class="card p-6 error-message">
-                        <h3 class="text-lg font-semibold">Error</h3>
-                        <p>${result.error}</p>
+                    <div class="card p-6 error-message w-full">
+                        <h3 class="text-sm font-semibold mb-2">Error</h3>
+                        <p class="text-sm">${result.error}</p>
                     </div>`;
             }
 
@@ -1111,59 +1297,64 @@
                 );
 
                 // Generate content for contributing indicators only
-                indicatorContent = '<ul class="list-disc pl-5 space-y-2">';
+                indicatorContent = '<ul class="list-disc pl-5 space-y-2.5 text-sm" style="color: var(--muted-foreground);">';
                 contributingIndicators.forEach(indicator => {
                     if (indicator === 'RSI') {
-                        indicatorContent += `<li><span class="font-semibold">RSI:</span> ${result.indicator_values.RSI.toFixed(2)} (${result.indicator_signals.RSI})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">RSI:</span> ${result.indicator_values.RSI.toFixed(2)} (${result.indicator_signals.RSI})</li>`;
                     } else if (indicator === 'MACD') {
-                        indicatorContent += `<li><span class="font-semibold">MACD:</span> ${result.indicator_values.MACD.toFixed(4)} vs Signal: ${result.indicator_values.MACD_Signal.toFixed(4)} (${result.indicator_signals.MACD})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">MACD:</span> ${result.indicator_values.MACD.toFixed(4)} vs Signal: ${result.indicator_values.MACD_Signal.toFixed(4)} (${result.indicator_signals.MACD})</li>`;
                     } else if (indicator === 'Bollinger Bands') {
-                        indicatorContent += `<li><span class="font-semibold">Bollinger Bands:</span> Upper: ${result.indicator_values.BB_Upper.toFixed(4)}, Middle: ${result.indicator_values.BB_Middle.toFixed(4)}, Lower: ${result.indicator_values.BB_Lower.toFixed(4)} (${result.indicator_signals['Bollinger Bands']})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">Bollinger Bands:</span> Upper: ${result.indicator_values.BB_Upper.toFixed(4)}, Middle: ${result.indicator_values.BB_Middle.toFixed(4)}, Lower: ${result.indicator_values.BB_Lower.toFixed(4)} (${result.indicator_signals['Bollinger Bands']})</li>`;
                     } else if (indicator === 'ADX') {
-                        indicatorContent += `<li><span class="font-semibold">ADX:</span> ${result.indicator_values.ADX.toFixed(2)}, +DI: ${result.indicator_values.Plus_DI.toFixed(2)}, -DI: ${result.indicator_values.Minus_DI.toFixed(2)} (${result.indicator_signals.ADX})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">ADX:</span> ${result.indicator_values.ADX.toFixed(2)}, +DI: ${result.indicator_values.Plus_DI.toFixed(2)}, -DI: ${result.indicator_values.Minus_DI.toFixed(2)} (${result.indicator_signals.ADX})</li>`;
                     } else if (indicator === 'Stochastic') {
-                        indicatorContent += `<li><span class="font-semibold">Stochastic:</span> %K: ${result.indicator_values.Stochastic_K.toFixed(2)}, %D: ${result.indicator_values.Stochastic_D.toFixed(2)} (${result.indicator_signals.Stochastic})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">Stochastic:</span> %K: ${result.indicator_values.Stochastic_K.toFixed(2)}, %D: ${result.indicator_values.Stochastic_D.toFixed(2)} (${result.indicator_signals.Stochastic})</li>`;
                     } else if (indicator === 'EMA') {
-                        indicatorContent += `<li><span class="font-semibold">EMA:</span> Fast: ${result.indicator_values.EMA_Fast.toFixed(4)}, Slow: ${result.indicator_values.EMA_Slow.toFixed(4)} (${result.indicator_signals.EMA})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">EMA:</span> Fast: ${result.indicator_values.EMA_Fast.toFixed(4)}, Slow: ${result.indicator_values.EMA_Slow.toFixed(4)} (${result.indicator_signals.EMA})</li>`;
                     } else if (indicator === 'ATR') {
-                        indicatorContent += `<li><span class="font-semibold">ATR:</span> ${result.indicator_values.ATR.toFixed(4)} (${result.indicator_signals.ATR})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">ATR:</span> ${result.indicator_values.ATR.toFixed(4)} (${result.indicator_signals.ATR})</li>`;
                     } else if (indicator === 'Ichimoku Cloud') {
-                        indicatorContent += `<li><span class="font-semibold">Ichimoku Cloud:</span> Tenkan: ${result.indicator_values.Ichimoku_Tenkan.toFixed(4)}, Kijun: ${result.indicator_values.Ichimoku_Kijun.toFixed(4)}, Senkou A: ${result.indicator_values.Ichimoku_Senkou_A.toFixed(4)}, Senkou B: ${result.indicator_values.Ichimoku_Senkou_B.toFixed(4)}, Chikou: ${result.indicator_values.Ichimoku_Chikou ? result.indicator_values.Ichimoku_Chikou.toFixed(4) : 'N/A'} (${result.indicator_signals['Ichimoku Cloud']})</li>`;
+                        indicatorContent += `<li><span class="font-medium" style="color: var(--foreground);">Ichimoku Cloud:</span> Tenkan: ${result.indicator_values.Ichimoku_Tenkan.toFixed(4)}, Kijun: ${result.indicator_values.Ichimoku_Kijun.toFixed(4)}, Senkou A: ${result.indicator_values.Ichimoku_Senkou_A.toFixed(4)}, Senkou B: ${result.indicator_values.Ichimoku_Senkou_B.toFixed(4)}, Chikou: ${result.indicator_values.Ichimoku_Chikou ? result.indicator_values.Ichimoku_Chikou.toFixed(4) : 'N/A'} (${result.indicator_signals['Ichimoku Cloud']})</li>`;
                     }
                 });
                 indicatorContent += '</ul>';
 
                 // If no indicators contributed to the signal, show a message
                 if (contributingIndicators.length === 0) {
-                    indicatorContent = '<p>No indicators contributed to the signal.</p>';
+                    indicatorContent = '<p class="text-sm" style="color: var(--muted-foreground);">No indicators contributed to the signal.</p>';
                 }
             } else {
-                indicatorContent = '<p>No clear signal direction available.</p>';
+                indicatorContent = '<p class="text-sm" style="color: var(--muted-foreground);">No clear signal direction available.</p>';
             }
 
             return `
                 <div class="card p-6">
-                    <h2 class="text-2xl section-title mb-4">⚡ Generated Signal</h2>
-                    <div class="space-y-3">
-                        <p><span class="font-semibold">💰 Asset:</span> ${result.symbol}</p>
-                        <p><span class="font-semibold">🚀 Signal:</span> ${result.direction}</p>
-                        <p><span class="font-semibold">🎯 Accuracy:</span> ${result.accuracy}%</p>
-                        <p><span class="font-semibold">📍 Entry Price:</span> ${result.entry_price ? result.entry_price.toFixed(5) : 'N/A'}</p>
-                        <p><span class="font-semibold">🛑 Stop Loss:</span> ${result.stop_loss ? result.stop_loss.toFixed(5) : 'N/A'}</p>
-                        <p><span class="font-semibold">✅ Take Profit:</span> ${result.take_profit ? result.take_profit.toFixed(5) : 'N/A'}</p>
-                        <p><span class="font-semibold">⏳ Timeframe:</span> M5</p>
-                        <p><span class="font-semibold">⏰ Impact Time:</span> ${result.impact_time}</p>
-                        <p><span class="font-semibold"><i>Use 1 Step Martingale if loss.</i> <span class="tooltip"><i class="fa fa-info-circle"></i><span class="tooltiptext">1-Step Martingale: Double your position size after a loss to recover the loss with the next trade, then revert to the original size. Use cautiously due to high risk.</span></span></p>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-bolt text-sm"></i> Generated Signal</h2>
+                    <div class="space-y-3.5 text-sm" style="color: var(--muted-foreground);">
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-coins w-4 text-yellow-500"></i> Asset:</span> ${result.symbol}</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-rocket w-4"></i> Signal:</span> <span class="font-bold text-primary">${result.direction}</span></p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-bullseye w-4"></i> Accuracy:</span> ${result.accuracy}%</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-map-pin w-4 text-blue-500"></i> Entry Price:</span> ${result.entry_price ? result.entry_price.toFixed(5) : 'N/A'}</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-stop-circle w-4 text-red-500"></i> Stop Loss:</span> ${result.stop_loss ? result.stop_loss.toFixed(5) : 'N/A'}</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-check-circle w-4 text-green-500"></i> Take Profit:</span> ${result.take_profit ? result.take_profit.toFixed(5) : 'N/A'}</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-clock w-4"></i> Timeframe:</span> M5</p>
+                        <p><span class="font-medium" style="color: var(--foreground);"><i class="fa fa-hourglass-half w-4"></i> Impact Time:</span> ${result.impact_time}</p>
+                        
+                        <div style="border-top: 1px solid var(--border); padding-top: 0.875rem; margin-top: 0.875rem;">
+                            <p class="text-xs italic"><i class="fa fa-exclamation-triangle text-yellow-500 mr-1"></i> Use 1 Step Martingale if loss. 
+                                <span class="tooltip ml-1 text-primary"><i class="fa fa-info-circle"></i><span class="tooltiptext">1-Step Martingale: Double your position size after a loss to recover the loss with the next trade, then revert to the original size. Use cautiously due to high risk.</span></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div class="card p-6">
-                    <h3 class="text-xl section-title mb-4">📊 Candlestick Chart (M5)</h3>
+                    <h3 class="text-base section-title mb-6"><i class="fa fa-chart-line text-sm"></i> Candlestick Chart (M5)</h3>
                     <div class="graph-container">
                         <img src="data:image/png;base64,${result.candlestick_plot}" alt="Candlestick Chart">
                     </div>
                 </div>
                 <div class="card p-6">
-                    <h3 class="text-xl section-title mb-4">⚖ Technical Indicators</h3>
+                    <h3 class="text-base section-title mb-6"><i class="fa fa-balance-scale text-sm"></i> Technical Indicators</h3>
                     ${indicatorContent}
                 </div>`;
         }

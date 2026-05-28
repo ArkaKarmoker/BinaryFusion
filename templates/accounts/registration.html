@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - BinaryFusion</title>
 
-    <!-- <link rel="icon" type="image/jpg" href="https://cdn.vectorstock.com/i/500p/24/31/candlestick-chart-icon-stock-fluctuations-vector-45672431.jpg"> -->
     <link rel="icon" type="image/jpg" href="{% static 'images/favicon2.png' %}">
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -15,9 +14,53 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        body { 
-            font-family: 'Inter', sans-serif; 
-            /* Inter is a highly legible sans-serif font, adjust font-size here if needed */
+        /* ============================================================
+           SHADCN/UI DEFAULT DESIGN TOKENS
+           Matches globals.css exactly — oklch converted to hex
+           ============================================================ */
+        :root {
+            --background:              #ffffff;
+            --foreground:              #09090b;
+            --card:                    #ffffff;
+            --card-foreground:         #09090b;
+            --primary:                 #09090b; 
+            --primary-foreground:      #fafafa; 
+            --secondary:               #f4f4f5; 
+            --secondary-foreground:    #09090b;
+            --muted:                   #f4f4f5; 
+            --muted-foreground:        #71717a; 
+            --accent:                  #f4f4f5; 
+            --accent-foreground:       #09090b;
+            --destructive:             #ef4444;
+            --destructive-foreground:  #fafafa;
+            --border:                  #e4e4e7; 
+            --input:                   #e4e4e7;
+            --ring:                    #09090b;
+            --radius:                  0.625rem;
+            --radius-sm:               calc(var(--radius) * 0.6);
+            --radius-md:               calc(var(--radius) * 0.8);
+            --radius-lg:               var(--radius);
+            --radius-xl:               calc(var(--radius) * 1.4);
+        }
+
+        .dark-mode {
+            --background:              #09090b;
+            --foreground:              #fafafa;
+            --card:                    #18181b; 
+            --card-foreground:         #fafafa;
+            --primary:                 #fafafa; 
+            --primary-foreground:      #09090b; 
+            --secondary:               #27272a; 
+            --secondary-foreground:    #fafafa;
+            --muted:                   #27272a; 
+            --muted-foreground:        #a1a1aa; 
+            --accent:                  #3f3f46; 
+            --accent-foreground:       #fafafa;
+            --destructive:             #f87171;
+            --destructive-foreground:  #fafafa;
+            --border:                  rgba(255, 255, 255, 0.1);
+            --input:                   rgba(255, 255, 255, 0.15);
+            --ring:                    #71717a; 
         }
 
         /* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
@@ -30,112 +73,173 @@
         }
         /* ---------------------------------------------------- */
 
-        /* Custom styles matching app.html */
-        .light-mode {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        /* ============================================================
+           BASE RESET & ZINC PRIMARY UTILITIES
+           ============================================================ */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            font-synthesis-weight: none;
+            text-rendering: optimizeLegibility;
+            background-color: var(--background);
+            color: var(--foreground);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        
-        .dark-mode {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+
+        .bg-primary { background-color: var(--primary) !important; color: var(--primary-foreground) !important; }
+        .bg-primary:hover { opacity: 0.9 !important; }
+        .text-primary { color: var(--primary) !important; }
+        .text-primary:hover { opacity: 0.7 !important; }
+
+        /* ============================================================
+           CARD & INPUT COMPONENTS
+           ============================================================ */
+        .card {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
         }
-        
-        .register-card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            max-width: 450px;
+
+        .card:hover {
+            transform: translateY(-2px);
         }
-        
-        .light-mode .register-card {
-            background: white;
-            color: #2d3748;
-        }
-        
-        .dark-mode .register-card {
-            background: #2d3748;
-            color: #f7fafc;
-        }
-        
-        .register-card:hover {
-            transform: translateY(-5px);
-        }
-        
+
         .section-title {
             font-weight: 600;
-            border-bottom: 2px solid #4a90e2;
-            display: inline-block;
-            padding-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--foreground);
+        }
+
+        /* Django Form Input Styling Mapping */
+        .form-group {
+            margin-bottom: 1.25rem;
         }
         
-        .light-mode .section-title {
-            color: #2d3748;
+        .form-group label {
+            display: block;
+            margin-bottom: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
         
-        .dark-mode .section-title {
-            color: #e2e8f0;
-        }
-        
-        /* Input Styling applied to Django Form Fields */
-        .form-group input {
-            width: 100%;
+        .form-group input, .input-field {
+            background-color: var(--background);
+            color: var(--foreground);
+            border: 1px solid var(--input);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
             padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem; /* Matches rounded-lg */
-            border: 1px solid;
-            transition: all 0.3s ease;
+            width: 100%;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .light-mode .form-group input {
-            background-color: #ffffff;
-            color: #2d3748;
-            border-color: #e2e8f0;
-        }
-        
-        .dark-mode .form-group input {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border-color: #718096;
-        }
-
-        .form-group input:focus {
+        .form-group input:focus, .input-field:focus {
             outline: none;
-            box-shadow: 0 0 0 2px #4a90e2;
-        }
-        
-        .register-button {
-            transition: all 0.3s ease;
-        }
-        
-        .message {
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-        
-        .light-mode .error-message {
-            background: #fed7d7;
-            color: #742a2a;
-            border-left: 4px solid #e53e3e;
-        }
-        
-        .dark-mode .error-message {
-            background: #742a2a;
-            color: #fed7d7;
-            border-left: 4px solid #e53e3e;
-        }
-        
-        .light-mode .success-message {
-            background: #c6f6d5;
-            color: #22543d;
-            border-left: 4px solid #38a169;
-        }
-        
-        .dark-mode .success-message {
-            background: #22543d;
-            color: #c6f6d5;
-            border-left: 4px solid #38a169;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
         }
 
-        /* Trading Background Animation */
+        .form-group input::placeholder, .input-field::placeholder {
+            color: var(--muted-foreground);
+        }
+
+        /* ============================================================
+           BUTTONS (shadcn/ui matched)
+           ============================================================ */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            padding: 0.375rem 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            height: 2.25rem;
+            transition: opacity 0.15s ease, background-color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--input);
+            background-color: transparent;
+            color: var(--foreground);
+            padding: 0.375rem 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.25rem;
+            height: 2.25rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        /* ============================================================
+           MESSAGES (shadcn/ui alert style)
+           ============================================================ */
+        .message {
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+        }
+        
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--destructive);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        
+        .success-message {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+        .dark-mode .success-message {
+            color: #4ade80;
+        }
+
+        /* ============================================================
+           HEADER & FOOTER MATCHING DASHBOARD
+           ============================================================ */
+        header {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        footer {
+            background-color: var(--card);
+            color: var(--card-foreground);
+            border-top: 1px solid var(--border);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ============================================================
+           TRADING ANIMATION & THEME TOGGLE
+           ============================================================ */
         .trading-animation {
             position: fixed;
             top: 0;
@@ -143,78 +247,44 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.1;
+            opacity: 0.05;
             pointer-events: none;
         }
 
-        /* Theme Toggle Button */
         .theme-toggle {
             position: fixed;
             bottom: 85px;
             right: 20px;
             z-index: 1000;
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: background-color 0.2s ease;
         }
 
-        /* Form field styling */
-        .form-group {
-            margin-bottom: 1rem;
+        .theme-toggle:hover {
+            background-color: var(--accent);
         }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.25rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        /* Google Button and Divider Dark Mode Fix */
-        .divider-container {
-            background: transparent;
-        }
-        
-        .light-mode .divider-container .divider-text {
-            background: white;
-            color: #6b7280;
-        }
-        
-        .dark-mode .divider-container .divider-text {
-            background: #2d3748;
-            color: #d1d5db;
-        }
-        
-        .light-mode .google-button {
-            background: white;
-            color: #374151;
-            border-color: #d1d5db;
-        }
-        
-        .light-mode .google-button:hover {
-            background: #f9fafb;
-        }
-        
-        .dark-mode .google-button {
-            background: #4b5563;
-            color: #f3f4f6;
-            border-color: #6b7280;
-        }
-        
-        .dark-mode .google-button:hover {
-            background: #6b7280;
-        }
-        
-        .divider-line {
-            border-color: #d1d5db;
-        }
-        
-        .dark-mode .divider-line {
-            border-color: #6b7280;
+
+        @media (min-width: 1024px) {
+            header .container, footer .container {
+                padding-left: 100px;
+                padding-right: 100px;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col light-mode transition-colors duration-300" id="body">
+<body class="min-h-screen flex flex-col transition-colors duration-300" id="body">
     <canvas id="tradingCanvas" class="trading-animation"></canvas>
 
-    <button class="theme-toggle bg-gray-200 dark:bg-gray-700 w-10 h-10 flex items-center justify-center rounded-full" onclick="toggleTheme()">
+    <button class="theme-toggle" onclick="toggleTheme()">
         <span class="light-icon"><i class="fa fa-moon fa-flip-horizontal"></i></span>
         <span class="dark-icon hidden"><i class="fa fa-sun"></i></span>
     </button>
@@ -222,7 +292,7 @@
     {% include 'includes/header.html' with header_subtitle="Create Your Account" header_type="auth" %}
 
     <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
-        <div class="register-card p-8 w-full max-w-md">
+        <div class="card p-8 w-full max-w-md">
             {% if messages %}
                 <div class="mb-6">
                     {% for message in messages %}
@@ -237,7 +307,7 @@
             {% endif %}
             
             <div class="flex justify-center">
-                <h2 class="text-xl section-title mb-6"><i class="fa-solid fa-rocket"></i> Get Started</h2>
+                <h2 class="text-xl section-title mb-6"><i class="fa-solid fa-rocket text-base"></i> Get Started</h2>
             </div>
             
             <form method="POST" action="{% url 'register' %}" class="space-y-4">
@@ -245,19 +315,19 @@
                 
                 {% for field in form %}
                     <div class="form-group">
-                        <label for="{{ field.id_for_label }}">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1.5">
                             {% if field.name == 'username' %}
-                                <i class="fa fa-user"></i> Username
+                                <i class="fa fa-user opacity-70"></i> Username
                             {% elif field.name == 'email' %}
-                                <i class="fa fa-envelope"></i> Email
+                                <i class="fa fa-envelope opacity-70"></i> Email
                             {% elif field.name == 'first_name' %}
-                                <i class="fa fa-id-card"></i> First Name
+                                <i class="fa fa-id-card opacity-70"></i> First Name
                             {% elif field.name == 'last_name' %}
-                                <i class="fa fa-id-card"></i> Last Name
+                                <i class="fa fa-id-card opacity-70"></i> Last Name
                             {% elif 'password' in field.name %}
-                                <i class="fa fa-lock"></i> {{ field.label }}
+                                <i class="fa fa-lock opacity-70"></i> {{ field.label }}
                             {% else %}
-                                <i class="fa fa-pencil-square-o"></i> {{ field.label }}
+                                <i class="fa fa-pencil-square-o opacity-70"></i> {{ field.label }}
                             {% endif %}
                         </label>
                         
@@ -266,57 +336,56 @@
                             
                             {% if 'password' in field.name %}
                             <button type="button" onclick="togglePassword('{{ field.auto_id }}', this)"
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
-                                    style="top: 50%; transform: translateY(-50%);">
-                                <i class="fa fa-eye text-lg"></i>
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+                                    style="top: 50%; transform: translateY(-50%); color: var(--muted-foreground);">
+                                <i class="fa fa-eye text-sm transition hover:opacity-75"></i>
                             </button>
                             {% endif %}
                         </div>
 
                         {% if field.errors %}
-                            <div class="text-red-500 text-xs mt-1">
+                            <div class="text-xs mt-1" style="color: var(--destructive);">
                                 {{ field.errors|join:", " }}
                             </div>
                         {% endif %}
                         {% if field.help_text %}
-                            <div class="text-gray-500 text-xs mt-1 dark:text-gray-400">
+                            <div class="text-xs mt-1" style="color: var(--muted-foreground);">
                                 {{ field.help_text }}
                             </div>
                         {% endif %}
                     </div>
                 {% endfor %}
                 
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                    By logging in or registering, you consent to BinaryFusion's <a href="#" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline transition-colors">Terms & Conditions</a> and <a href="#" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline transition-colors">Privacy Policy</a>.
+                <div class="text-xs mt-2" style="color: var(--muted-foreground);">
+                    By logging in or registering, you consent to BinaryFusion's <a href="#" class="text-primary hover:opacity-70 font-medium underline transition-colors">Terms & Conditions</a> and <a href="#" class="text-primary hover:opacity-70 font-medium underline transition-colors">Privacy Policy</a>.
                 </div>
 
-                <button type="submit" 
-                        class="register-button w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200 mt-2">
+                <button type="submit" class="btn-primary w-full h-10 text-base mt-4">
                     <i class="fa fa-user-plus"></i> Register
                 </button>
             </form>
             
             <div class="mt-6">
-                <div class="relative divider-container">
+                <div class="relative flex items-center justify-center">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t divider-line"></div>
+                        <div class="w-full border-t" style="border-color: var(--border);"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="divider-text px-2">Or continue with</span>
+                        <span class="px-2 text-xs" style="background-color: var(--card); color: var(--muted-foreground);">Or continue with</span>
                     </div>
                 </div>
                 <div class="mt-6">
                     <a href="{% provider_login_url 'google' %}" 
-                       class="google-button w-full flex items-center justify-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium transition duration-150 ease-in-out">
-                        <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
+                       class="btn-outline w-full h-10">
+                        <img class="h-4 w-4 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
                         Sign up with Google
                     </a>
                 </div>
             </div>
 
-            <div class="mt-6 text-center text-sm">
+            <div class="mt-6 text-center text-sm" style="color: var(--muted-foreground);">
                 <p>Already have an account? 
-                    <a href="{% url 'login' %}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                    <a href="{% url 'login' %}" class="text-primary hover:opacity-70 font-medium ml-1 transition-opacity">
                         <i class="fa fa-sign-in"></i> Login
                     </a>
                 </p>
@@ -324,27 +393,26 @@
         </div>
     </main>
 
-    {% comment %} {% include 'includes/footer.html' %} {% endcomment %}
-    <footer class="bg-gray-800 text-white py-4 mt-auto w-full px-4 sm:px-6 lg:px-8 mx-auto text-sm">
+    <footer class="py-4 mt-auto w-full mx-auto text-sm transition-colors duration-300">
         <div class="container mx-auto px-4">
             
             <div class="flex flex-col md:flex-row items-center justify-between">
-                <p class="w-full md:w-1/3 text-center md:text-left mb-2 md:mb-0">
+                <p class="w-full md:w-1/3 text-center md:text-left mb-2 md:mb-0" style="color: var(--muted-foreground);">
                     © <script>document.write(new Date().getFullYear())</script> 
-                    <a href="https://binaryfusion.trade" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">BinaryFusion</a>. All rights reserved.
+                    <a href="https://binaryfusion.trade" target="_blank" class="text-primary font-medium hover:opacity-70 transition-colors">BinaryFusion</a>. All rights reserved.
                 </p>
 
-                <p class="w-full md:w-1/3 text-center mb-2 md:mb-0">
-                    Developed with <i class="fa-solid fa-heart text-red-500"></i> By <a href="https://github.com/ArkaKarmoker" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Arka Karmoker</a>
+                <p class="w-full md:w-1/3 text-center mb-2 md:mb-0" style="color: var(--muted-foreground);">
+                    Developed with <i class="fa-solid fa-heart text-red-500"></i> By <a href="https://github.com/ArkaKarmoker" target="_blank" class="text-primary font-medium hover:opacity-70 transition-colors">Arka Karmoker</a>
                 </p>
 
-                <p class="w-full md:w-1/3 text-center md:text-right">
-                    <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Terms & Conditions</a> | 
-                    <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</a>
+                <p class="w-full md:w-1/3 text-center md:text-right" style="color: var(--muted-foreground);">
+                    <a href="#" class="text-primary font-medium hover:opacity-70 transition-colors">Terms & Conditions</a> | 
+                    <a href="#" class="text-primary font-medium hover:opacity-70 transition-colors">Privacy Policy</a>
                 </p>
             </div>
             
-            <p class="text-center text-gray-400 text-xs mt-2 italic">
+            <p class="text-center text-xs mt-2 italic" style="color: var(--muted-foreground);">
                 <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i> Disclaimer: BinaryFusion is an educational data analytics tool. We do not provide financial advice. Trading involves high risk.
             </p>
             
@@ -385,21 +453,19 @@
             }
         }
 
-        // Theme Toggle Functionality
+        // Theme Toggle Functionality (matching dashboard.html)
         function toggleTheme() {
             const body = document.getElementById('body');
             const lightIcon = document.querySelector('.light-icon');
             const darkIcon = document.querySelector('.dark-icon');
             
-            if (body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode');
+            if (!body.classList.contains('dark-mode')) {
                 body.classList.add('dark-mode');
                 lightIcon.classList.add('hidden');
                 darkIcon.classList.remove('hidden');
                 localStorage.setItem('theme', 'dark');
             } else {
                 body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
                 lightIcon.classList.remove('hidden');
                 darkIcon.classList.add('hidden');
                 localStorage.setItem('theme', 'light');
@@ -414,7 +480,6 @@
             const darkIcon = document.querySelector('.dark-icon');
 
             if (savedTheme === 'dark') {
-                body.classList.remove('light-mode');
                 body.classList.add('dark-mode');
                 lightIcon.classList.add('hidden');
                 darkIcon.classList.remove('hidden');
@@ -432,12 +497,12 @@
             }
         });
 
-        // Trading Background Animation
+        // Trading Background Animation (matched to dashboard.html colors)
         function initTradingAnimation() {
             const canvas = document.getElementById('tradingCanvas');
+            const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const ctx = canvas.getContext('2d');
 
             const candles = [];
             const candleCount = Math.floor(window.innerWidth / 20);
@@ -466,11 +531,11 @@
                     }
 
                     // Draw candle body
-                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#63b3ed' : '#4a90e2';
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(250, 250, 250, 0.3)' : 'rgba(9, 9, 11, 0.3)';
                     ctx.fillRect(candle.x, canvas.height - candle.height, 8, candle.height);
 
                     // Draw wick
-                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#2d3748';
+                    ctx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(250, 250, 250, 0.6)' : 'rgba(9, 9, 11, 0.6)';
                     ctx.fillRect(candle.x + 3, canvas.height - candle.height - candle.wickHeight, 2, candle.wickHeight);
                     ctx.fillRect(candle.x + 3, canvas.height, 2, candle.wickHeight);
                 });

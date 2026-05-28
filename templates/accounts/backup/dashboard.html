@@ -859,7 +859,7 @@
         }
 
         /* ============================================================
-           TINYMCE CONTENT & EDITOR OVERRIDES
+           TINYMCE CONTENT
            ============================================================ */
         .tinymce-content ul  { list-style-type: disc;    padding-left: 1.5rem; margin-bottom: 1rem; }
         .tinymce-content ol  { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
@@ -867,47 +867,6 @@
         .tinymce-content a   { color: var(--primary); text-decoration: underline; }
         .tinymce-content strong { font-weight: 700; }
         .tinymce-content em  { font-style: italic; }
-
-        /* TinyMCE Editor matching input field */
-        .tox-tinymce {
-            border: 1px solid var(--input) !important;
-            border-radius: var(--radius-md) !important;
-            background-color: var(--background) !important;
-        }
-        .tox:not(.tox-tinymce-inline) .tox-editor-header {
-            background-color: var(--background) !important;
-            border-bottom: 1px solid var(--border) !important;
-            box-shadow: none !important;
-            padding: 4px !important;
-        }
-        .tox .tox-toolbar-overlord, .tox .tox-toolbar__primary, .tox .tox-toolbar__overflow {
-            background-color: var(--background) !important;
-            background: var(--background) !important;
-        }
-        .tox .tox-statusbar {
-            background-color: var(--background) !important;
-            border-top: 1px solid var(--border) !important;
-            color: var(--muted-foreground) !important;
-        }
-        .dark-mode .tox .tox-tbtn svg {
-            fill: var(--muted-foreground) !important;
-        }
-        .dark-mode .tox .tox-tbtn:hover {
-            background-color: var(--accent) !important;
-        }
-        .dark-mode .tox .tox-tbtn:hover svg {
-            fill: var(--foreground) !important;
-        }
-        .dark-mode .tox .tox-tbtn--enabled {
-            background-color: var(--accent) !important;
-        }
-        .dark-mode .tox .tox-tbtn--enabled svg {
-            fill: var(--foreground) !important;
-        }
-        .dark-mode .tox .tox-statusbar__path-item, 
-        .dark-mode .tox .tox-statusbar__wordcount {
-            color: var(--muted-foreground) !important;
-        }
 
         /* ============================================================
            RESPONSIVE PADDING
@@ -1333,7 +1292,7 @@
                     {% csrf_token %}
                     <div>
                         <h3 class="text-sm font-semibold mb-4">System Settings</h3>
-                        <div class="space-y-4">
+                        <div class="space-y-4 max-w-md">
                             <div>
                                 <label for="{{ settings_form.timezone.id_for_label }}" class="block text-sm font-medium mb-1.5">Timezone</label>
                                 {{ settings_form.timezone }}
@@ -1995,28 +1954,14 @@
             if (tinymce.get('support_description_editor')) {
                 tinymce.remove('#support_description_editor');
             }
-            
-            const isDark = document.body.classList.contains('dark-mode');
-            const bgColor = isDark ? '#09090b' : '#ffffff';
-            const textColor = isDark ? '#fafafa' : '#09090b';
-
             tinymce.init({
                 selector: '#support_description_editor',
                 height: 250,
                 menubar: false,
                 plugins: 'lists link code',
                 toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link',
-                skin: isDark ? 'oxide-dark' : 'oxide',
-                content_css: isDark ? 'dark' : 'default',
-                content_style: `
-                    body { 
-                        background-color: ${bgColor} !important; 
-                        color: ${textColor} !important; 
-                        font-family: 'Inter', sans-serif; 
-                        font-size: 0.875rem; 
-                        margin: 1rem;
-                    }
-                `,
+                skin: document.body.classList.contains('dark-mode') ? 'oxide-dark' : 'oxide',
+                content_css: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
                 setup: function (editor) {
                     editor.on('change', function () {
                         editor.save(); // Auto sync with textarea
