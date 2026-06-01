@@ -6,7 +6,7 @@ from .models import Profile, PaymentHistory, SubscriptionSettings  # Import addi
 from predictor.models import EconomicCalendar  # Import the new model
 from decimal import Decimal
 import requests  # Required for API calls
-
+import os
 def check_expired_subscriptions():
     """
     Checks for expired premium subscriptions and attempts to auto-renew them if enabled and balance is sufficient.
@@ -74,7 +74,9 @@ def update_economic_calendar():
     
     try:
         # High timeout because the Render free tier sleeps
-        response = requests.get(url, timeout=120)
+        api_key = os.environ.get("FOREX_API_KEY", "")
+        headers = {"X-API-Key": api_key}
+        response = requests.get(url, headers=headers, timeout=120)
         
         if response.status_code == 200:
             data = response.json()
