@@ -479,7 +479,8 @@ def create_nowpayments_deposit(request):
 
         # 3. NOWPayments Sandbox API Config
         # IMPORTANT: Replace this with your actual Sandbox API Key
-        NP_API_KEY = 'TVP9DGR-J0Y46ZC-PARW344-STM3YW4'  # <--- REPLACE THIS WITH YOUR KEY
+        from django.conf import settings
+        NP_API_KEY = settings.NP_API_KEY_SANDBOX
         NP_API_URL = 'https://api-sandbox.nowpayments.io/v1/invoice'
 
         headers = {
@@ -538,7 +539,8 @@ def nowpayments_ipn(request):
     if request.method == 'POST':
         # 1. Verify the signature (SECURITY CRITICAL)
         # PASTE THE FULL IPN SECRET KEY FROM YOUR DASHBOARD SCREENSHOT HERE
-        IPN_SECRET_KEY = 'plPIRuMdLHWUYWMt7OwMoSRriNtRL30F' # <--- UPDATE THIS
+        from django.conf import settings
+        IPN_SECRET_KEY = settings.IPN_SECRET_KEY_SANDBOX
         
         x_nowpayments_sig = request.headers.get('x-nowpayments-sig')
         

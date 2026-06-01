@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f%1(c^j=rervgd5o@1qn4r#va)c4q#f@ywp++s4@*ojiplv-zx'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -107,11 +111,11 @@ WSGI_APPLICATION = 'BinaryFusion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BinaryFusion',       # Your database name
-        'USER': 'postgres.uyfypjkoudtjbeotrfas',           # Your PostgreSQL username
-        'PASSWORD': 'gdeiDDcAF8U-**6',   # Your PostgreSQL password
-        'HOST': 'aws-1-ap-northeast-1.pooler.supabase.com',        # Or the server IP
-        'PORT': '5432',             # Default PostgreSQL port
+        'NAME': os.getenv('DB_NAME', 'BinaryFusion'),       # Your database name
+        'USER': os.getenv('DB_USER'),           # Your PostgreSQL username
+        'PASSWORD': os.getenv('DB_PASSWORD'),   # Your PostgreSQL password
+        'HOST': os.getenv('DB_HOST'),        # Or the server IP
+        'PORT': os.getenv('DB_PORT', '5432'),             # Default PostgreSQL port
         # 'OPTIONS': {'sslmode': 'require'},  # Added for Supabase compatibility
     }
 }
@@ -178,11 +182,15 @@ LOGIN_REDIRECT_URL = '/app/'  # Redirect to app.html after login
 LOGOUT_REDIRECT_URL = '/login/'  # Redirect to login page after logout
 
 # Add these to your settings.py
-NOWPAYMENTS_API_KEY = '6FYMWZX-VTBMRY5-NTZCMJW-PGHV3NZ'
-NOWPAYMENTS_IPN_SECRET = '224hR6qELB8ByjJUbqtn9DN7xrpYxOSH' # From Store Settings tab
+NOWPAYMENTS_API_KEY = os.getenv('NOWPAYMENTS_API_KEY')
+NOWPAYMENTS_IPN_SECRET = os.getenv('NOWPAYMENTS_IPN_SECRET') # From Store Settings tab
 NOWPAYMENTS_API_URL = 'https://api.nowpayments.io/v1/invoice' # Using Invoice for hosted page
 
-NOWPAYMENTS_IPN_SECRET_SANDBOX = 'MMrDx78EfJTPPj4nJ2ZfOfRRjAOe5UuO6'
+NOWPAYMENTS_IPN_SECRET_SANDBOX = os.getenv('NOWPAYMENTS_IPN_SECRET_SANDBOX')
+
+# Sandbox keys used in accounts/views.py
+NP_API_KEY_SANDBOX = os.getenv('NP_API_KEY_SANDBOX')
+IPN_SECRET_KEY_SANDBOX = os.getenv('IPN_SECRET_KEY_SANDBOX')
 
 # ==========================================
 # ALLAUTH & GOOGLE LOGIN CONFIGURATION
@@ -237,8 +245,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'arkakarmoker.business@gmail.com' # Your Gmail Address
-EMAIL_HOST_PASSWORD = 'gzxn yubg eveq qete' # Generate App Password from Google Account Security
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # Your Gmail Address
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # Generate App Password from Google Account Security
 
 # ==========================================
 # TINYMCE CONFIGURATION
