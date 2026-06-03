@@ -127,6 +127,14 @@
             transform: translateY(-2px);
         }
 
+        .glow-card {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .dark-mode .glow-card {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.25) !important;
+        }
+
         .calendar-card {
             width: 100%;
             /* Dynamically calculate: (3 cards * 400px) + (2 gaps * 1.5rem) */
@@ -285,8 +293,8 @@
 
         .spinner {
             display: none;
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--primary);
+            border: 3px solid currentColor;
+            border-right-color: transparent;
             border-radius: 50%;
             width: 20px;
             height: 20px;
@@ -546,6 +554,7 @@
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 1rem;
             color: var(--muted-foreground);
+            padding: 4px;
         }
 
         .dataTables_wrapper .dataTables_info,
@@ -727,10 +736,9 @@
 
     <main class="container mx-auto px-4 py-8 flex-grow">
         <section class="mb-8">
-            <div class="card p-6 max-w-md mx-auto w-full">
+            <div class="card p-6 max-w-md mx-auto w-full glow-card">
                 <h2 class="text-base section-title mb-4 w-full text-center flex justify-center"><i class="fa-solid fa-crosshairs text-sm"></i> Enter Trading Asset</h2>
                 <form id="predict-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-3" onsubmit="submitPrediction(event)">
-                    {% csrf_token %}
                     <input type="search" id="symbol" name="symbol" list="popular-assets" placeholder="e.g., EURUSD=X or BTC-USD" required
                            class="input-field w-full p-2 text-center">
                     
@@ -763,8 +771,10 @@
                         <span id="loading-spinner" class="spinner"></span>
                         <span id="countdown-timer" class="countdown text-primary-foreground"></span>
                     </button>
+                    {% csrf_token %}
                 </form>
-                <p class="text-xs text-center mt-4 font-medium" style="color: var(--muted-foreground);">Available Tokens: <span id="token-count" style="color: var(--foreground);">{{ initial_tokens }}</span> / <span id="max-tokens">{{ max_tokens }}</span></p>
+                <p class="text-xs text-center mt-4 font-medium" style="color: var(--muted-foreground);">Timeframe: <span class="badge badge-secondary" style="font-size: 0.7rem; padding: 0.1rem 0.5rem;">M5</span></p>
+                <p class="text-xs text-center mt-2 font-medium" style="color: var(--muted-foreground);">Available Tokens: <span id="token-count" style="color: var(--foreground);">{{ initial_tokens }}</span> / <span id="max-tokens">{{ max_tokens }}</span></p>
             </div>
         </section>
 
