@@ -1,6 +1,6 @@
 # BinaryFusion
 AI Powered Trading Signal
-<img width="1763" height="7582" alt="image" src="https://github.com/user-attachments/assets/92a1fa4b-2fa2-4b2a-b209-05aac77cbfae" />
+<img width="1763" alt="image" src="https://github.com/user-attachments/assets/92a1fa4b-2fa2-4b2a-b209-05aac77cbfae" />
 <br>
 <img width="1763" height="1548" alt="image" src="https://github.com/user-attachments/assets/81da8da0-3917-4671-ac60-589e31b60264" />
 <br>
