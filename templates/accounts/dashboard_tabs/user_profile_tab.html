@@ -1,115 +1,115 @@
 <div id="user-tab" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-user"></i> User Information</h2>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-user text-sm"></i> User Information</h2>
                     
                     <div class="flex justify-center mb-6 relative">
                         <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% endif %}" id="user-avatar-img" class="{% if not user.profile.image %}hidden{% endif %} w-24 h-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-md cursor-pointer hover:opacity-80 transition duration-200 object-cover" onclick="openModal(this.src)">
-                        <div id="user-avatar-initial" class="{% if user.profile.image %}hidden{% endif %} w-24 h-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center bg-blue-600 text-white text-4xl font-bold uppercase select-none cursor-default">
+                        <div id="user-avatar-initial" class="{% if user.profile.image %}hidden{% endif %} w-24 h-24 rounded-full border-4 border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center bg-primary text-4xl font-bold uppercase select-none cursor-default text-primary-foreground">
                             {{ user.first_name|default:user.username|slice:":1"|upper }}
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-medium opacity-75">Full Name</p>
-                            <p class="text-lg" id="user-fullname">{{ user.first_name }} {{ user.last_name }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Full Name</p>
+                            <p class="text-sm font-medium mt-0.5" id="user-fullname">{{ user.first_name }} {{ user.last_name }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Username</p>
-                            <p class="text-lg" id="user-username">{{ user.username }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Username</p>
+                            <p class="text-sm font-medium mt-0.5" id="user-username">{{ user.username }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Email</p>
-                            <p class="text-lg" id="user-email">{{ user.email }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Email</p>
+                            <p class="text-sm font-medium mt-0.5" id="user-email">{{ user.email }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Telegram</p>
-                            <p class="text-lg" id="user-telegram">{{ user.profile.telegram|default_if_none:"Not set" }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Telegram</p>
+                            <p class="text-sm font-medium mt-0.5" id="user-telegram">{{ user.profile.telegram|default_if_none:"Not set" }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Phone</p>
-                            <p class="text-lg" id="user-phone">{{ user.profile.phone|default_if_none:"Not set" }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Phone</p>
+                            <p class="text-sm font-medium mt-0.5" id="user-phone">{{ user.profile.phone|default_if_none:"Not set" }}</p>
+                        </div>
+                        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Account Created</p>
+                            <p class="text-sm font-medium mt-0.5">{{ user.date_joined|date:"F j, Y" }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Account Created</p>
-                            <p class="text-lg">{{ user.date_joined|date:"F j, Y" }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium opacity-75">Last Login</p>
-                            <p class="text-lg">{{ user.last_login|date:"F j, Y, H:i:s A" }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Last Login</p>
+                            <p class="text-sm font-medium mt-0.5">{{ user.last_login|date:"F j, Y, H:i:s A" }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-pen-to-square"></i> Edit Information</h2>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-pen-to-square text-sm"></i> Edit Information</h2>
                     
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <label class="block text-sm font-medium mb-2">Profile Photo</label>
                         <div class="flex items-center space-x-3">
                             <input type="file" id="cropper-input" accept="image/*" class="hidden">
-                            <button type="button" id="btn-upload-photo" class="photo-action-btn px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <button type="button" id="btn-upload-photo" class="photo-action-btn">
                                 {% if user.profile.image %}
                                     <i class="fa fa-camera"></i> Update Photo
                                 {% else %}
                                     <i class="fa fa-plus"></i> Add Photo
                                 {% endif %}
                             </button>
-                            <button type="button" id="btn-remove-photo" class="{% if not user.profile.image %}hidden{% endif %} text-red-500 hover:text-red-700 transition text-sm font-medium">
+                            <button type="button" id="btn-remove-photo" class="{% if not user.profile.image %}hidden{% endif %} text-sm font-medium transition" style="color: var(--destructive);">
                                 <i class="fa fa-trash"></i> Remove
                             </button>
                         </div>
-                        <p id="photo-update-warning" class="hidden text-xs text-orange-500 mt-2"><i class="fa fa-info-circle"></i> Click 'Update Profile' below to save your new profile photo.</p>
+                        <p id="photo-update-warning" class="hidden text-xs mt-2" style="color: #f97316;"><i class="fa fa-info-circle"></i> Click 'Update Profile' below to save your new profile photo.</p>
                     </div>
 
                     <form id="profile-form" method="post" action="{% url 'dashboard' %}" class="space-y-4" enctype="multipart/form-data">
                         {% csrf_token %}
                         
                         <div>
-                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium mb-1">First Name</label>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium mb-1.5">First Name</label>
                             {{ form.first_name }}
                             {% if form.first_name.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.first_name.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.first_name.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div>
-                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium mb-1">Last Name</label>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium mb-1.5">Last Name</label>
                             {{ form.last_name }}
                             {% if form.last_name.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.last_name.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.last_name.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div>
-                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium mb-1">Username</label>
+                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium mb-1.5">Username</label>
                             {{ form.username }}
                             {% if form.username.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.username.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.username.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div>
-                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium mb-1">Email</label>
+                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium mb-1.5">Email</label>
                             {{ form.email }}
                             {% if form.email.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.email.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.email.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div>
-                            <label for="{{ form.telegram.id_for_label }}" class="block text-sm font-medium mb-1">Telegram</label>
+                            <label for="{{ form.telegram.id_for_label }}" class="block text-sm font-medium mb-1.5">Telegram</label>
                             {{ form.telegram }}
                             {% if form.telegram.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.telegram.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.telegram.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div>
-                            <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium mb-1">Phone</label>
+                            <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium mb-1.5">Phone</label>
                             {{ form.phone }}
                             {% if form.phone.errors %}
-                                <div class="text-red-500 text-xs mt-1">{{ form.phone.errors }}</div>
+                                <div class="text-xs mt-1" style="color: var(--destructive);">{{ form.phone.errors }}</div>
                             {% endif %}
                         </div>
 
@@ -118,34 +118,41 @@
                             <input type="checkbox" name="clear_image" id="id_clear_image" {% if form.clear_image.value %}checked{% endif %}>
                         </div>
 
-                        <button type="submit" name="update_profile" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Update Profile</button>
+                        <button type="submit" name="update_profile" class="btn-primary w-full">Update Profile</button>
                     </form>
                 </div>
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-chart-area"></i> Account Statistics</h2>
-                    <div class="space-y-6">
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-chart-area text-sm"></i> Account Statistics</h2>
+                    <div class="space-y-5">
                         <div>
-                            <p class="text-sm font-medium opacity-75">Total Predictions</p>
-                            <p class="text-2xl font-bold">{{ total_predictions_user }}</p>
-                            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-2">
-                                <div class="h-2 bg-green-500 rounded-full" style="width: {{ prediction_percentage }}%"></div>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Total Predictions</p>
+                            <p class="text-2xl font-bold tracking-tight mt-0.5">{{ total_predictions_user }}</p>
+                            <div class="h-1.5 rounded-full mt-2" style="background-color: var(--border);">
+                                <div class="h-1.5 bg-green-500 rounded-full" style="width: {{ prediction_percentage }}%"></div>
                             </div>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Prediction Count Ranking</p>
-                            <p class="text-2xl font-bold"># {{ user_ranking }}</p>
-                            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-2">
-                                <div class="h-2 bg-blue-500 rounded-full" style="width: {{ ranking_percentage }}%"></div>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Prediction Count Ranking</p>
+                            <p class="text-2xl font-bold tracking-tight mt-0.5"># {{ user_ranking }}</p>
+                            <div class="h-1.5 rounded-full mt-2" style="background-color: var(--border);">
+                                <div class="h-1.5 bg-primary rounded-full" style="width: {{ ranking_percentage }}%"></div>
                             </div>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Subscription Status</p>
-                            <p class="text-2xl font-bold" id="subscription-status-user">{{ user.profile.subscription|capfirst }}</p>
-                            <p class="text-sm mt-1" id="subscription-expiry-user">Expires on: {% if user.profile.subscription_end_date %}{{ user.profile.subscription_end_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Subscription Status</p>
+                            <p class="text-2xl font-bold tracking-tight mt-0.5" id="subscription-status-user">{{ user.profile.subscription|capfirst }}</p>
+                            <p class="text-xs mt-1" style="color: var(--muted-foreground);" id="subscription-expiry-user">Expires on: {% if user.profile.subscription_end_date %}{{ user.profile.subscription_end_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Balance</p>
-                            <p class="text-2xl font-bold" id="profile-balance">{{ balance }} USDT</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Balance</p>
+                            <p class="text-2xl font-bold tracking-tight mt-0.5" id="profile-balance">{{ balance }} USDT</p>
+                        </div>
+
+                        <div class="pt-4" style="border-top: 1px solid var(--border);">
+                            <p class="text-xs font-medium mb-3" style="color: var(--muted-foreground);">Weekly Signal Generation</p>
+                            <div class="relative h-48 w-full">
+                                <canvas id="weeklySignalChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

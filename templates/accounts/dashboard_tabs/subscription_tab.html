@@ -2,103 +2,103 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="card p-6 subscription-tier">
                     <div class="text-center">
-                        <h3 class="text-xl font-bold">Free</h3>
-                        <p class="text-3xl font-bold mt-2">$0<span class="text-sm font-normal">/month</span></p>
-                        <p class="text-sm mt-2">Basic access to BinaryFusion</p>
+                        <h3 class="text-lg font-semibold">Free</h3>
+                        <p class="text-3xl font-bold tracking-tight mt-2">$0<span class="text-sm font-normal" style="color: var(--muted-foreground);">/month</span></p>
+                        <p class="text-sm mt-2" style="color: var(--muted-foreground);">Basic access to BinaryFusion</p>
                     </div>
                     <div class="mt-6 space-y-3">
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>5 predictions per day</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>Basic chart visualizations</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                            <span class="opacity-50">Telegram integration</span>
+                        <div class="flex items-center gap-2 text-sm" style="color: var(--muted-foreground);">
+                            <i class="fas fa-times w-4"></i>
+                            <span>Telegram integration</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                            <span class="opacity-50">Advanced analytics</span>
+                        <div class="flex items-center gap-2 text-sm" style="color: var(--muted-foreground);">
+                            <i class="fas fa-times w-4"></i>
+                            <span>Advanced analytics</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                            <span class="opacity-50">Priority support</span>
+                        <div class="flex items-center gap-2 text-sm" style="color: var(--muted-foreground);">
+                            <i class="fas fa-times w-4"></i>
+                            <span>Priority support</span>
                         </div>
                     </div>
-                    <button class="mt-6 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-lg" id="free-plan-button">{% if user.profile.subscription == 'free' %}Current Plan{% else %}Previous Plan{% endif %}</button>
+                    <button class="mt-6 w-full btn-outline" id="free-plan-button">{% if user.profile.subscription == 'free' %}Current Plan{% else %}Previous Plan{% endif %}</button>
                 </div>
                 <div class="card p-6 subscription-tier popular">
                     <div class="popular-badge">POPULAR</div>
                     <div class="text-center">
-                        <h3 class="text-xl font-bold">Premium</h3>
-                        <p class="text-3xl font-bold mt-2">
+                        <h3 class="text-lg font-semibold">Premium</h3>
+                        <p class="text-3xl font-bold tracking-tight mt-2">
                             {% if is_discounted %}
-                                ${{ effective_price }}<span class="text-sm font-normal">/month</span>
-                                <span class="text-lg line-through text-gray-500 ml-2">${{ regular_price }}</span>
+                                ${{ effective_price }}<span class="text-sm font-normal" style="color: var(--muted-foreground);">/month</span>
+                                <span class="text-lg line-through ml-2" style="color: var(--muted-foreground);">${{ regular_price }}</span>
                             {% else %}
-                                ${{ regular_price }}<span class="text-sm font-normal">/month</span>
+                                ${{ regular_price }}<span class="text-sm font-normal" style="color: var(--muted-foreground);">/month</span>
                             {% endif %}
                         </p>
-                        <p class="text-sm mt-2">For Professional Traders</p>
+                        <p class="text-sm mt-2" style="color: var(--muted-foreground);">For Professional Traders</p>
                     </div>
                     <div class="mt-6 space-y-3">
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>Unlimited predictions per day</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>Advanced chart visualizations</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>Telegram integration</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="fas fa-check text-green-500 w-4"></i>
                             <span>Advanced analytics</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-times text-red-500 mr-2"></i>
-                            <span class="opacity-50">Priority support</span>
+                        <div class="flex items-center gap-2 text-sm" style="color: var(--muted-foreground);">
+                            <i class="fas fa-times w-4"></i>
+                            <span>Priority support</span>
                         </div>
                     </div>
                     {% if user.profile.subscription == 'premium' %}
-                    <button class="mt-6 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-2 rounded-lg" id="premium-plan-button">Current Plan</button>
+                    <button class="mt-6 w-full btn-outline" id="premium-plan-button">Current Plan</button>
                     {% else %}
-                    <button onclick="openSubscriptionModal()" class="mt-6 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200" id="premium-plan-button">Upgrade Now</button>
+                    <button onclick="openSubscriptionModal()" class="mt-6 w-full btn-primary" id="premium-plan-button">Upgrade Now</button>
                     {% endif %}
                 </div>
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-money-check-dollar"></i> Subscription Status</h2>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-money-check-dollar text-sm"></i> Subscription Status</h2>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-medium opacity-75">Current Plan</p>
-                            <p class="text-2xl font-bold" id="subscription-status">{{ user.profile.subscription|capfirst }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Current Plan</p>
+                            <p class="text-2xl font-bold tracking-tight mt-0.5" id="subscription-status">{{ user.profile.subscription|capfirst }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Start Date</p>
-                            <p class="text-lg" id="subscription-start-date">{% if user.profile.subscription_start_date %}{{ user.profile.subscription_start_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Start Date</p>
+                            <p class="text-sm font-medium mt-0.5" id="subscription-start-date">{% if user.profile.subscription_start_date %}{{ user.profile.subscription_start_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Expiry Date</p>
-                            <p class="text-lg" id="subscription-expiry-date">{% if user.profile.subscription_end_date %}{{ user.profile.subscription_end_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Expiry Date</p>
+                            <p class="text-sm font-medium mt-0.5" id="subscription-expiry-date">{% if user.profile.subscription_end_date %}{{ user.profile.subscription_end_date|date:"F j, Y" }}{% else %}N/A{% endif %}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium opacity-75">Remaining Tokens</p>
-                            <p class="text-lg" id="remaining-tokens-value">{{ tokens }} / {{ max_tokens }}</p>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Remaining Tokens</p>
+                            <p class="text-sm font-medium mt-0.5" id="remaining-tokens-value">{{ tokens }} / {{ max_tokens }}</p>
                         </div>
-                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-2" id="token-bar-container">
-                            <div class="h-2 rounded-full" id="token-bar"></div>
+                        <div class="h-1.5 rounded-full" style="background-color: var(--border);" id="token-bar-container">
+                            <div class="h-1.5 rounded-full" id="token-bar"></div>
                         </div>
                         <div>
                             {% if user.profile.subscription == 'premium' %}
-                            <button id="status-card-button" onclick="openRenewModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Renew Subscription</button>
+                            <button id="status-card-button" onclick="openRenewModal()" class="btn-primary w-full">Renew Subscription</button>
                             {% else %}
-                            <button id="status-card-button" onclick="openSubscriptionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Subscribe to Premium</button>
+                            <button id="status-card-button" onclick="openSubscriptionModal()" class="btn-primary w-full">Subscribe to Premium</button>
                             {% endif %}
                         </div>
                     </div>

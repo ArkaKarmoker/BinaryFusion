@@ -1,28 +1,28 @@
 <div id="settings-tab" class="tab-content">
             <div class="card p-6">
-                <h2 class="text-xl section-title mb-4"><i class="fa fa-gear"></i> Settings</h2>
+                <h2 class="text-base section-title mb-6"><i class="fa fa-gear text-sm"></i> Settings</h2>
                 <form id="settings-form" method="post" action="{% url 'dashboard' %}" class="space-y-8">
                     {% csrf_token %}
                     <div>
-                        <h3 class="text-lg font-semibold mb-4">System Settings</h3>
+                        <h3 class="text-sm font-semibold mb-4">System Settings</h3>
                         <div class="space-y-4">
                             <div>
-                                <label for="{{ settings_form.timezone.id_for_label }}" class="block text-sm font-medium mb-1">Timezone</label>
+                                <label for="{{ settings_form.timezone.id_for_label }}" class="block text-sm font-medium mb-1.5">Timezone</label>
                                 {{ settings_form.timezone }}
                             </div>
                             <div>
-                                <label for="{{ settings_form.theme_preference.id_for_label }}" class="block text-sm font-medium mb-1">Theme Preference</label>
+                                <label for="{{ settings_form.theme_preference.id_for_label }}" class="block text-sm font-medium mb-1.5">Theme Preference</label>
                                 {{ settings_form.theme_preference }}
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">Subscription Settings</h3>
-                        <div class="space-y-4">
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <h3 class="text-sm font-semibold mb-4">Subscription Settings</h3>
+                        <div class="space-y-5">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium">Auto Renew Subscription</p>
-                                    <p class="text-sm opacity-75">Automatically renew your subscription when it expires</p>
+                                    <p class="text-sm font-medium">Auto Renew Subscription</p>
+                                    <p class="text-xs mt-0.5" style="color: var(--muted-foreground);">Automatically renew your subscription when it expires</p>
                                 </div>
                                 <label class="switch">
                                     {{ settings_form.auto_renew_subscription }}
@@ -31,8 +31,8 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium">Auto Refill Token</p>
-                                    <p class="text-sm opacity-75">Automatically refill tokens when low</p>
+                                    <p class="text-sm font-medium">Auto Refill Token</p>
+                                    <p class="text-xs mt-0.5" style="color: var(--muted-foreground);">Automatically refill tokens when low</p>
                                 </div>
                                 <label class="switch">
                                     {{ settings_form.auto_refill_tokens }}
@@ -41,13 +41,13 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">Notification Settings</h3>
-                        <div class="space-y-4">
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <h3 class="text-sm font-semibold mb-4">Notification Settings</h3>
+                        <div class="space-y-5">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium">Email Notifications</p>
-                                    <p class="text-sm opacity-75">Receive important account notifications</p>
+                                    <p class="text-sm font-medium">Email Notifications</p>
+                                    <p class="text-xs mt-0.5" style="color: var(--muted-foreground);">Receive important account notifications</p>
                                 </div>
                                 <label class="switch">
                                     {{ settings_form.email_notifications }}
@@ -56,8 +56,8 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium">Push Notifications</p>
-                                    <p class="text-sm opacity-75">Receive real-time updates and alerts</p>
+                                    <p class="text-sm font-medium">Push Notifications</p>
+                                    <p class="text-xs mt-0.5" style="color: var(--muted-foreground);">Receive real-time updates and alerts</p>
                                 </div>
                                 <label class="switch">
                                     {{ settings_form.push_notifications }}
@@ -66,8 +66,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <button type="submit" name="save_settings" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Save Settings</button>
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <button type="submit" name="save_settings" class="btn-primary w-full">Save Settings</button>
                     </div>
                 </form>
             </div>

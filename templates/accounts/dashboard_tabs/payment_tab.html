@@ -1,8 +1,8 @@
 {% load static %}
-<div id="payment-tab" class="tab-content">
+        <div id="payment-tab" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-sack-dollar"></i> Current Balance</h2>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-sack-dollar text-sm"></i> Current Balance</h2>
                     <img src="{% static 'images/usdt.png' %}" alt="binance Logo" class="w-14 h-auto mx-auto mb-4 rounded">
                     <div class="flex items-center justify-center mb-6">
                         <div class="progress-circle" style="width: 80px; height: 80px;">
@@ -13,75 +13,73 @@
                             <i class="fas fa-coins icon" style="font-size: 2rem;"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-3xl font-bold" id="usdt-balance">{{ balance }} USDT</p>
-                            <p class="text-sm opacity-75">Available balance in USDT</p>
+                            <p class="text-3xl font-bold tracking-tight" id="usdt-balance">{{ balance }} USDT</p>
+                            <p class="text-sm mt-0.5" style="color: var(--muted-foreground);">Available balance in USDT</p>
                         </div>
                     </div>
                     <div class="text-center">
-                        <p class="text-sm mb-4">Use your USDT balance to access premium features and predictions.</p>
+                        <p class="text-sm" style="color: var(--muted-foreground);">Use your USDT balance to access premium features and predictions.</p>
                     </div>
                 </div>
                 <div class="card p-6 row-span-2">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-money-bill-transfer"></i> Deposit USDT</h2>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-money-bill-transfer text-sm"></i> Deposit USDT</h2>
                     <div class="space-y-4">
-                        <div class="mb-6 grid grid-cols-2 lg:flex lg:space-x-1 lg:gap-0 gap-2">
+                        <div class="mb-6 grid grid-cols-2 gap-2 tab-container deposit-tab-container">
                             <button class="deposit-tab-button active" onclick="openDepositTab(event, 'nowpayments-tab')">NOWPayments</button>
                             <button class="deposit-tab-button" onclick="openDepositTab(event, 'binance-tab')">Binance Pay</button>
                         </div>
                         <div id="nowpayments-tab" class="deposit-tab-content active">
                             <div class="text-center">
-                                <img src="{% static 'images/nowpayments_logo.png' %}" alt="NOWPayments Logo" class="w-21 h-auto mx-auto mb-4 rounded"> <h3 class="text-lg font-medium">Deposit via NOWPayments</h3>
-                                <p class="text-sm opacity-75 mb-4">Enter the deposit amount and note to proceed with NOWPayments.</p>
-                                <form id="nowpayments-deposit-form" class="space-y-4">
+                                <img src="{% static 'images/nowpayments_logo.png' %}" alt="NOWPayments Logo" class="w-21 h-auto mx-auto mb-4 rounded"> <h3 class="text-sm font-semibold">Deposit via NOWPayments</h3>
+                                <p class="text-sm mt-1 mb-4" style="color: var(--muted-foreground);">Enter the deposit amount and note to proceed with NOWPayments.</p>
+                                <form id="nowpayments-deposit-form" class="space-y-4 text-left">
                                     {% csrf_token %}
                                     <div>
-                                        <label for="deposit-amount" class="block text-sm font-medium mb-1">Deposit Amount (USDT)</label>
-                                        <input type="number" id="deposit-amount" name="amount" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter amount in USDT" min="5" required>
+                                        <label for="deposit-amount" class="block text-sm font-medium mb-1.5">Deposit Amount (USDT)</label>
+                                        <input type="number" id="deposit-amount" name="amount" class="input-field w-full p-2" placeholder="Enter amount in USDT" min="5" required>
                                     </div>
                                     <div>
-                                        <label for="payment-note-now" class="block text-sm font-medium mb-1">Payment Note</label>
-                                        <textarea id="payment-note-now" name="payment_note" class="input-field w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional payment note" rows="3"></textarea>
+                                        <label for="payment-note-now" class="block text-sm font-medium mb-1.5">Payment Note</label>
+                                        <textarea id="payment-note-now" name="payment_note" class="input-field w-full p-2" placeholder="Optional payment note" rows="3"></textarea>
                                     </div>
-                                    <button type="submit" id="btn-nowpayments-pay" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">
+                                    <button type="submit" id="btn-nowpayments-pay" class="btn-primary w-full">
                                         <i class="fas fa-external-link-alt mr-2"></i> Pay with NOWPayments
                                     </button>
                                </form>
-                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after confirmation.</p>
+                                <p class="text-xs text-red-500 mt-3">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after confirmation.</p>
                             </div>
                         </div>
                         <div id="binance-tab" class="deposit-tab-content">
                             <div class="text-center">
                                 <img src="{% static 'images/binance_logo.jpg' %}" alt="Binance Logo" class="w-14 h-auto mx-auto mb-4 rounded">
-                                <h3 class="text-lg font-medium">Send USDT to Binance</h3>
-                                <p class="text-sm opacity-75 mb-4">Scan the QR code using binance mobile app to deposit USDT to your account.</p>
+                                <h3 class="text-sm font-semibold">Send USDT to Binance</h3>
+                                <p class="text-sm mt-1 mb-4" style="color: var(--muted-foreground);">Scan the QR code using binance mobile app to deposit USDT to your account.</p>
                                 <div class="flex justify-center mb-4">
-                                    <img src="{% static 'images/binance_qr_code.png' %}" alt="Binance USDT QR Code" class="w-42 h-42 cursor-pointer" onclick="openModal(this.src)">
+                                    <img src="{% static 'images/binance_qr_code.png' %}" alt="Binance USDT QR Code" class="w-42 h-42 cursor-pointer rounded-lg" onclick="openModal(this.src)">
                                 </div>
-                                <form id="deposit-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
+                                <form id="deposit-form" method="post" action="{% url 'dashboard' %}" class="space-y-4 text-left">
                                     {% csrf_token %}
                                     {{ deposit_form.as_p }}
-                                    <button type="submit" name="deposit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 w-full">Deposit</button>
+                                    <button type="submit" name="deposit" class="btn-primary w-full">Deposit</button>
                                 </form>
-                                <p class="text-sm text-red-500 mt-2">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after admin confirmation.</p>
+                                <p class="text-xs text-red-500 mt-3">Important: Send USDT using the BSC (BNB Smart Chain (BSC)) network only. Deposits will be credited after admin confirmation.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card p-6">
-                    <h2 class="text-xl section-title mb-4"><i class="fa fa-clipboard-list"></i> Deposit Instructions</h2>
-                    <div class="space-y-4">
-                        <div class="text-left text-sm tinymce-content">
-                            {{ deposit_instructions|safe }}
-                        </div>
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-clipboard-list text-sm"></i> Deposit Instructions</h2>
+                    <div class="text-sm tinymce-content" style="color: var(--muted-foreground);">
+                        {{ deposit_instructions|safe }}
                     </div>
                 </div>
             </div>
             <div class="card p-6 mt-8">
-                <h2 class="text-xl section-title mb-4"><i class="fa fa-file-invoice-dollar"></i> Payment History</h2>
+                <h2 class="text-base section-title mb-6"><i class="fa fa-file-invoice-dollar text-sm"></i> Payment History</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full" id="paymentTable">
                         <thead>
-                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <tr style="border-bottom: 1px solid var(--border);">
                                 <th class="text-left py-3 px-4">Date</th>
                                 <th class="text-left py-3 px-4">Payment ID</th>
                                 <th class="text-left py-3 px-4">Payment Type</th>
@@ -95,7 +93,7 @@
                         </thead>
                         <tbody>
                             {% for payment in user.payment_history.all %}
-                            <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr>
                                 <td class="py-3 px-4">{{ payment.created_at|date:"F j, Y" }}</td>
                                 <td class="py-3 px-4">{{ payment.payment_id }}</td>
                                 <td class="py-3 px-4">{{ payment.get_payment_type_display }}</td>
@@ -105,9 +103,9 @@
                                         -
                                     {% elif payment.amount %}
                                         {% if payment.payment_type == 'deposit' or payment.payment_type == 'bonus' %}
-                                            <span class="text-green-500">+{{ payment.amount }}</span>
+                                            <span class="text-green-500 font-medium">+{{ payment.amount }}</span>
                                         {% else %}
-                                            <span class="text-red-500">-{{ payment.amount }}</span>
+                                            <span class="text-red-500 font-medium">-{{ payment.amount }}</span>
                                         {% endif %}
                                     {% else %}
                                         -
@@ -116,11 +114,11 @@
                                 <td class="py-3 px-4">{{ payment.payment_method }}</td>
                                 <td class="py-3 px-4">{{ payment.transaction_id|default_if_none:"-" }}</td>
                                 <td class="py-3 px-4">
-                                    <span class="{% if payment.status == 'successful' %}text-green-500{% elif payment.status == 'pending' or payment.status == 'partially_paid' %}text-yellow-500{% else %}text-red-500{% endif %}">
+                                    <span class="badge {% if payment.status == 'successful' %}badge-success{% elif payment.status == 'pending' or payment.status == 'partially_paid' %}badge-warning{% else %}badge-destructive{% endif %}">
                                         {{ payment.get_status_display }}
                                     </span>
                                 </td>
-                                <td class="py-3 px-4"><a href="#" class="text-blue-500 hover:underline view-details"
+                                <td class="py-3 px-4"><a href="#" class="btn-outline view-details"
                                     data-payment-id="{{ payment.payment_id }}"
                                     data-user="{{ payment.user.username }}"
                                     data-payment-type="{{ payment.get_payment_type_display }}"

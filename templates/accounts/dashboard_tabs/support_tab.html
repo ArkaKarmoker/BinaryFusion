@@ -1,0 +1,83 @@
+<div id="support-tab" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div class="card p-6 md:col-span-1">
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-circle-info text-sm"></i> Support Info</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Full Name</p>
+                            <p class="text-sm font-medium mt-0.5">{{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Username</p>
+                            <p class="text-sm font-medium mt-0.5">{{ user.username }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium" style="color: var(--muted-foreground);">Email</p>
+                            <p class="text-sm font-medium mt-0.5">{{ user.email }}</p>
+                        </div>
+                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <p class="text-sm" style="color: var(--muted-foreground);">Need help? Fill out the form to submit a ticket. Our support team will respond to your issue as soon as possible.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card p-6 md:col-span-2">
+                    <h2 class="text-base section-title mb-6"><i class="fa fa-ticket text-sm"></i> Submit a Ticket</h2>
+                    <form id="support-form" method="post" action="{% url 'dashboard' %}" class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+                            <label for="{{ support_ticket_form.issue_type.id_for_label }}" class="block text-sm font-medium mb-1.5">Issue Type</label>
+                            {{ support_ticket_form.issue_type }}
+                        </div>
+                        <div>
+                            <label for="{{ support_ticket_form.description.id_for_label }}" class="block text-sm font-medium mb-1.5">Description</label>
+                            {{ support_ticket_form.description }}
+                        </div>
+                        <button type="submit" name="submit_ticket" class="btn-primary w-full md:w-auto mt-2">
+                            Submit Ticket
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h2 class="text-base section-title mb-6"><i class="fa fa-list text-sm"></i> Support Ticket History</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full" id="supportTable">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <th class="text-left py-3 px-4">Date</th>
+                                <th class="text-left py-3 px-4">Ticket No.</th>
+                                <th class="text-left py-3 px-4">Issue Type</th>
+                                <th class="text-left py-3 px-4">Status</th>
+                                <th class="text-left py-3 px-4">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in support_tickets %}
+                            <tr>
+                                <td class="py-3 px-4">{{ ticket.created_at|date:"F j, Y, h:i A" }}</td>
+                                <td class="py-3 px-4 font-mono">{{ ticket.ticket_number }}</td>
+                                <td class="py-3 px-4">{{ ticket.get_issue_type_display }}</td>
+                                <td class="py-3 px-4">
+                                    <span class="badge {% if ticket.status == 'resolved' or ticket.status == 'closed' %}badge-secondary{% elif ticket.status == 'in_progress' %}badge-warning{% else %}badge-info{% endif %}">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <a href="#" class="btn-outline view-ticket-details"
+                                       data-ticket="{{ ticket.ticket_number }}"
+                                       data-type="{{ ticket.get_issue_type_display }}"
+                                       data-status="{{ ticket.get_status_display }}"
+                                       data-date="{{ ticket.created_at|date:'F j, Y, h:i A' }}"
+                                       data-updated="{{ ticket.last_updated|date:'F j, Y, h:i A' }}"
+                                       data-desc="{{ ticket.description|force_escape }}"
+                                       data-response="{{ ticket.admin_response|default:'No response yet.'|force_escape }}">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>

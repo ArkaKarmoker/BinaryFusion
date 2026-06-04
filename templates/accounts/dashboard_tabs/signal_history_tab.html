@@ -1,15 +1,15 @@
 <div id="signal-history-tab" class="tab-content">
             <div class="card p-6">
-                <h2 class="text-xl section-title mb-4"><i class="fa fa-tower-broadcast"></i> Signal History</h2>
+                <h2 class="text-base section-title mb-6"><i class="fa fa-tower-broadcast text-sm"></i> Signal History</h2>
                 <div class="mb-4">
-                <p class="dark:text-gray-200">
-                    Your Total Predictions: <span class="font-bold">{{ total_predictions_user }}</span>
-                </p>
-            </div>
+                    <p class="text-sm" style="color: var(--muted-foreground);">
+                        Your Total Predictions: <span class="font-semibold" style="color: var(--foreground);">{{ total_predictions_user }}</span>
+                    </p>
+                </div>
                 <div class="overflow-x-auto">
                     <table id="predictionTable" class="w-full">
                         <thead>
-                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <tr style="border-bottom: 1px solid var(--border);">
                                 <th class="text-left py-3 px-4">Signal ID</th>
                                 <th class="text-left py-3 px-4">Date</th>
                                 <th class="text-left py-3 px-4">Asset</th>
@@ -21,7 +21,7 @@
                         </thead>
                         <tbody>
                         {% for prediction in predictions %}
-                        <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <tr>
                             <td class="py-3 px-4">{{ prediction.signal_id }}</td>
                             <td class="py-3 px-4">{{ prediction.date|date:"F j, Y" }}</td>
                             <td class="py-3 px-4">{{ prediction.asset }}</td>
@@ -37,14 +37,14 @@
                             </td>
                             <td class="py-3 px-4">{{ prediction.impact_time|time:"H:i:s" }} (UTC+6)</td>
                             <td class="py-3 px-4">
-                                <span class="{% if prediction.status == 'Active' %}text-green-500{% else %}text-red-500{% endif %}">
+                                <span class="{% if prediction.status == 'Active' %}text-green-500{% else %}text-red-500{% endif %} text-sm font-medium">
                                     {{ prediction.status }}
                                 </span>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="py-3 px-4 text-center">No predictions found.</td>
+                            <td colspan="7" class="py-3 px-4 text-center text-sm" style="color: var(--muted-foreground);">No predictions found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
