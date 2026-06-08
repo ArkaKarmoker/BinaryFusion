@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ============================================================
+   SHADCN/UI DEFAULT DESIGN TOKENS
+   Matches globals.css exactly — oklch converted to hex
+   ============================================================ */
+:root {
+    --background:              #ffffff;
+    --foreground:              #09090b;
+    --card:                    #ffffff;
+    --card-foreground:         #09090b;
+    --primary:                 #09090b; 
+    --primary-foreground:      #fafafa; 
+    --secondary:               #f4f4f5; 
+    --secondary-foreground:    #09090b;
+    --muted:                   #f4f4f5; 
+    --muted-foreground:        #71717a; 
+    --accent:                  #f4f4f5; 
+    --accent-foreground:       #09090b;
+    --destructive:             #ef4444;
+    --destructive-foreground:  #fafafa;
+    --border:                  #e4e4e7; 
+    --input:                   #e4e4e7;
+    --ring:                    #09090b;
+    --radius:                  0.625rem;
+    --radius-sm:               calc(var(--radius) * 0.6);
+    --radius-md:               calc(var(--radius) * 0.8);
+    --radius-lg:               var(--radius);
+    --radius-xl:               calc(var(--radius) * 1.4);
+}
+
+.dark-mode {
+    --background:              #09090b;
+    --foreground:              #fafafa;
+    --card:                    #18181b; 
+    --card-foreground:         #fafafa;
+    --primary:                 #fafafa; 
+    --primary-foreground:      #09090b; 
+    --secondary:               #27272a; 
+    --secondary-foreground:    #fafafa;
+    --muted:                   #27272a; 
+    --muted-foreground:        #a1a1aa; 
+    --accent:                  #3f3f46; 
+    --accent-foreground:       #fafafa;
+    --destructive:             #f87171;
+    --destructive-foreground:  #fafafa;
+    --border:                  rgba(255, 255, 255, 0.1);
+    --input:                   rgba(255, 255, 255, 0.15);
+    --ring:                    #71717a; 
+}
+
+/* --- FIX FOR MOBILE TAP HIGHLIGHT (SQUARE SHADOW) --- */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus {
+    outline: none !important;
+}
+/* ---------------------------------------------------- */
+
+/* ============================================================
+   BASE RESET & ZINC PRIMARY UTILITIES
+   ============================================================ */
+body { 
+    font-family: 'Inter', sans-serif; 
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bg-primary { background-color: var(--primary) !important; color: var(--primary-foreground) !important; }
+.bg-primary:hover { opacity: 0.9 !important; }
+.text-primary { color: var(--primary) !important; }
+.text-primary:hover { opacity: 0.7 !important; }
+
+/* ============================================================
+   CARD & FORM COMPONENTS
+   ============================================================ */
+.card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.section-title {
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--foreground);
+}
+
+/* Django Form Input Styling Mapping */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-group input, .input-field {
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus, .input-field:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.form-group input::placeholder, .input-field::placeholder {
+    color: var(--muted-foreground);
+}
+
+.form-group input[type="password"] {
+    padding-right: 2.5rem;
+}
+
+/* ============================================================
+   BUTTONS (shadcn/ui matched)
+   ============================================================ */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.375rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    height: 2.25rem;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--input);
+    background-color: transparent;
+    color: var(--foreground);
+    padding: 0.375rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    height: 2.25rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-outline:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* ============================================================
+   MESSAGES (shadcn/ui alert style)
+   ============================================================ */
+.message {
+    padding: 0.875rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    border: 1px solid transparent;
+}
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--destructive);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.success-message {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    border-color: rgba(34, 197, 94, 0.2);
+}
+.dark-mode .success-message {
+    color: #4ade80;
+}
+
+/* ============================================================
+   HEADER & FOOTER MATCHING DASHBOARD
+   ============================================================ */
+header {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+footer {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-top: 1px solid var(--border);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================================
+   TRADING ANIMATION & THEME TOGGLE
+   ============================================================ */
+.trading-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.theme-toggle {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    z-index: 1000;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    transition: background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--accent);
+}
+
+@media (min-width: 1024px) {
+    header .container, footer .container {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+}
