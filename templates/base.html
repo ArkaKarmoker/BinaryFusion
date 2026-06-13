@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            {% if request.resolver_match.url_name == 'app' %}BinaryFusion - Predictor
+            {% elif request.resolver_match.url_name == 'dashboard' %}BinaryFusion - Dashboard
+            {% else %}BinaryFusion{% endif %}
+        {% endblock %}
+    </title>
+
+    <link rel="icon" type="image/jpg" href="{% static 'images/logo-dark.png' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    {% if request.resolver_match.url_name == 'app' or request.resolver_match.url_name == 'dashboard' %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    {% endif %}
+
+    {% if request.resolver_match.url_name == 'dashboard' %}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% endif %}
+
+    {% if request.resolver_match.url_name == 'app' %}
+        <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% elif request.resolver_match.url_name == 'dashboard' %}
+        <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    {% elif request.resolver_match.url_name == 'terms' or request.resolver_match.url_name == 'privacy' %}
+        <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+        <link rel="stylesheet" href="{% static 'css/legal.css' %}">
+    {% else %}
+        <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    {% endif %}
+
+    {% block extra_head %}{% endblock %}
+    {% block legal_extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col transition-colors duration-300" id="body">
+    <canvas id="tradingCanvas" class="trading-animation"></canvas>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon"><i class="fa fa-moon fa-flip-horizontal"></i></span>
+        <span class="dark-icon hidden"><i class="fa fa-sun"></i></span>
+    </button>
+
+    {% if request.resolver_match.url_name == 'app' or request.resolver_match.url_name == 'dashboard' %}
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="enlargedImage">
+    </div>
+    {% endif %}
+
+    {% if request.resolver_match.url_name == 'dashboard' %}
+    <div id="cropperModal" class="modal">
+        <div class="cropper-modal-box p-5 shadow-2xl" style="width: 500px; max-width: 95%;">
+            <h3 class="text-base font-semibold mb-4">Crop Profile Photo</h3>
+            <div class="cropper-container-wrapper mb-4 flex justify-center items-center">
+                <img id="cropper-image" src="" style="max-width: 100%; display: block;">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn-outline" onclick="closeCropperModal()">Cancel</button>
+                <button type="button" class="btn-primary" id="btn-crop-confirm">Crop & Save</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% block header %}
+        {% if request.resolver_match.url_name == 'app' %}
+            {% include 'includes/header.html' with header_subtitle="AI Powered Trading Signal" header_type="app" %}
+        {% elif request.resolver_match.url_name == 'dashboard' %}
+            {% include 'includes/header.html' with header_subtitle="User Dashboard" header_type="dashboard" %}
+        {% endif %}
+    {% endblock %}
+
+    {% if request.resolver_match.url_name == 'terms' or request.resolver_match.url_name == 'privacy' %}
+    <!-- Scroll Progress -->
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+    {% endif %}
+
+    {% block content %}
+        {% block legal_content %}{% endblock %}
+    {% endblock %}
+
+    {% include 'includes/footer.html' %}
+
+    {% block app_config %}{% endblock %}
+    {% block dashboard_config %}{% endblock %}
+
+    {% if request.resolver_match.url_name == 'app' %}
+        <script src="{% static 'js/app.js' %}"></script>
+    {% elif request.resolver_match.url_name == 'dashboard' %}
+        <script src="{% static 'js/dashboard.js' %}"></script>
+    {% elif request.resolver_match.url_name == 'terms' or request.resolver_match.url_name == 'privacy' %}
+        <script src="{% static 'js/auth.js' %}"></script>
+        <script src="{% static 'js/legal.js' %}"></script>
+    {% else %}
+        <script src="{% static 'js/auth.js' %}"></script>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+    {% block legal_extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -182,11 +182,7 @@ LOGIN_REDIRECT_URL = '/app/'  # Redirect to app.html after login
 LOGOUT_REDIRECT_URL = '/login/'  # Redirect to login page after logout
 
 # Add these to your settings.py
-NOWPAYMENTS_API_KEY = os.getenv('NOWPAYMENTS_API_KEY')
-NOWPAYMENTS_IPN_SECRET = os.getenv('NOWPAYMENTS_IPN_SECRET') # From Store Settings tab
-NOWPAYMENTS_API_URL = 'https://api.nowpayments.io/v1/invoice' # Using Invoice for hosted page
 
-NOWPAYMENTS_IPN_SECRET_SANDBOX = os.getenv('NOWPAYMENTS_IPN_SECRET_SANDBOX')
 
 # Sandbox keys used in accounts/views.py
 NP_API_KEY_SANDBOX = os.getenv('NP_API_KEY_SANDBOX')
