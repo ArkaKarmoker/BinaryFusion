@@ -465,8 +465,7 @@
                         {% if sub_settings.is_discounted %}
                         <span class="text-3xl font-bold text-gray-500 line-through">${{ sub_settings.price }}</span>
                         {% endif %}
-                        <span class="text-5xl font-bold text-white">${{ sub_settings.effective_price|default:"10.00"
-                            }}</span>
+                        <span class="text-5xl font-bold text-white">${{ sub_settings.effective_price|default:"10.00" }}</span>
                         <span class="text-zinc-400/50">/mo</span>
                     </div>
                     {% if sub_settings.is_discounted %}
