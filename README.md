@@ -78,7 +78,7 @@ The platform is built with **Django 5.1**, backed by **PostgreSQL**, and deploye
 - **Payment History** — Full audit trail with status tracking (Pending → Successful / Cancelled / Partially Paid)
 
 ### 📅 Economic Calendar
-- **Forex Factory Data** — Daily-synced economic events from an external API
+- **Forex Factory Data** — Scraped natively from Forex Factory using a `curl_cffi` Cloudflare-bypass scraper
 - **Impact Color-Coding** — High (red), Medium (orange), Low (green) impact indicators
 - **DataTables Integration** — Searchable, sortable, paginated event table in both admin and frontend
 
@@ -388,9 +388,6 @@ IPN_SECRET_KEY_SANDBOX="your-sandbox-ipn-secret-key"
 # Email (Gmail SMTP for password reset)
 EMAIL_HOST_USER="your-gmail@gmail.com"
 EMAIL_HOST_PASSWORD="your-gmail-app-password"
-
-# Forex Economic Calendar API
-FOREX_API_KEY="your-forex-api-key"
 ```
 
 ### Database Setup
@@ -464,7 +461,6 @@ Set these in your Render dashboard under **Environment → Environment Variables
 | `IPN_SECRET_KEY_SANDBOX` | Sandbox IPN secret (testing) |
 | `EMAIL_HOST_USER` | Gmail address for SMTP |
 | `EMAIL_HOST_PASSWORD` | Gmail app password |
-| `FOREX_API_KEY` | Forex calendar API key |
 
 ---
 
@@ -525,7 +521,7 @@ BinaryFusion uses **APScheduler** with `BackgroundScheduler` to run periodic tas
 | Job | Schedule | Description |
 |-----|----------|-------------|
 | `check_expired_subscriptions` | Daily (configurable cron) | Checks for expired premium subscriptions. Auto-renews if enabled and balance is sufficient; otherwise downgrades to free tier. |
-| `update_economic_calendar` | Daily (configurable cron) | Fetches economic events from the Forex Calendar API and stores them in the database. |
+| `update_economic_calendar` | Daily (12:00 AM) | Directly scrapes economic events from Forex Factory using `curl_cffi` and stores them in the database. |
 
 The scheduler is initialized in [`accounts/apps.py`](accounts/apps.py) via the `ready()` method, ensuring it starts with the Django application.
 
