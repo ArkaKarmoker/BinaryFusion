@@ -18,3 +18,4 @@ cryptography==46.0.3
 django-cleanup==9.0.0
 django-tinymce==5.0.0
 python-dotenv==1.0.1
+curl_cffi>=0.15.0

@@ -5,8 +5,10 @@ from django.db import transaction
 from .models import Profile, PaymentHistory, SubscriptionSettings  # Import additional models
 from predictor.models import EconomicCalendar  # Import the new model
 from decimal import Decimal
-import requests  # Required for API calls
 import os
+
+# Import our new local scraper
+from predictor.scraper import get_forex_factory_data
 def check_expired_subscriptions():
     """
     Checks for expired premium subscriptions and attempts to auto-renew them if enabled and balance is sufficient.
@@ -67,19 +69,14 @@ def check_expired_subscriptions():
 # --- New Task: Update Economic Calendar ---
 def update_economic_calendar():
     """
-    Fetches economic calendar data from the external API and saves it to the DB.
+    Fetches economic calendar data locally using Selenium and saves it to the DB.
     """
-    url = "https://forex-calender-api.onrender.com/calendar"
-    print("Starting Economic Calendar update...")
+    print("Starting Economic Calendar update via local scraper...")
     
     try:
-        # High timeout because the Render free tier sleeps
-        api_key = os.environ.get("FOREX_API_KEY", "")
-        headers = {"X-API-Key": api_key}
-        response = requests.get(url, headers=headers, timeout=120)
+        data = get_forex_factory_data()
         
-        if response.status_code == 200:
-            data = response.json()
+        if data and "events" in data:
             # Save to Database (we only keep one record and update it)
             # Using ID 1 to ensure singleton pattern
             EconomicCalendar.objects.update_or_create(
@@ -88,7 +85,7 @@ def update_economic_calendar():
             )
             print(f"Economic Calendar updated successfully. Events: {data.get('count', 0)}")
         else:
-            print(f"Failed to fetch calendar: {response.status_code}")
+            print("Failed to fetch calendar data or data was empty.")
             
     except Exception as e:
         print(f"Error updating economic calendar: {e}")
@@ -108,10 +105,10 @@ def start_scheduler():
     )
 
     # --- NEW JOB: Update Calendar Daily ---
-    # Runs at 01:00 AM every day
+    # Runs at 12:00 AM (midnight) every day
     scheduler.add_job(
         update_economic_calendar,
-        trigger=CronTrigger(hour=21, minute=30),
+        trigger=CronTrigger(hour=0, minute=0),
         id='update_calendar',
         replace_existing=True
     )
