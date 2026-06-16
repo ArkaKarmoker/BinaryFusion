@@ -21,11 +21,13 @@
         </style>
         <div class="flex flex-col md:flex-row items-center justify-center md:justify-start">
             <h1 class="text-3xl font-bold flex items-center text-primary">
-                <img src="{% static 'images/logo-light.png' %}" alt="BinaryFusion Logo"
-                    class="h-8 w-auto mr-2 logo-light-mode">
-                <img src="{% static 'images/logo-dark.png' %}" alt="BinaryFusion Logo"
-                    class="h-8 w-auto mr-2 logo-dark-mode">
-                BinaryFusion
+                <a href="/" class="flex items-center text-primary hover:opacity-80 transition-opacity">
+                    <img src="{% static 'images/logo-light.png' %}" alt="BinaryFusion Logo"
+                        class="h-8 w-auto mr-2 logo-light-mode">
+                    <img src="{% static 'images/logo-dark.png' %}" alt="BinaryFusion Logo"
+                        class="h-8 w-auto mr-2 logo-dark-mode">
+                    BinaryFusion
+                </a>
             </h1>
             <p class="text-base mt-1 md:mt-0 md:ml-4 opacity-75"><i>{{ header_subtitle }}</i></p>
         </div>
