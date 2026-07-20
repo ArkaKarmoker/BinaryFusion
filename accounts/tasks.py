@@ -108,7 +108,7 @@ def start_scheduler():
     # Runs at 12:00 AM (midnight) every day
     scheduler.add_job(
         update_economic_calendar,
-        trigger=CronTrigger(hour=0, minute=0),
+        trigger=CronTrigger(hour=5, minute=29),
         id='update_calendar',
         replace_existing=True
     )
