@@ -99,7 +99,7 @@ def start_scheduler():
 
     scheduler.add_job(
         check_expired_subscriptions,
-        trigger=CronTrigger(hour=12, minute=29),
+        trigger=CronTrigger(hour=0, minute=0),
         id='check_subscriptions',  # Unique ID for the job
         replace_existing=True      # Overwrite if already exists (handles restarts)
     )
@@ -108,7 +108,7 @@ def start_scheduler():
     # Runs at 12:00 AM (midnight) every day
     scheduler.add_job(
         update_economic_calendar,
-        trigger=CronTrigger(hour=5, minute=29),
+        trigger=CronTrigger(hour=0, minute=0),
         id='update_calendar',
         replace_existing=True
     )
